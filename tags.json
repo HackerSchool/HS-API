@@ -1,0 +1,145 @@
+{   "tags": {
+        "sysadmin": {
+            "name": "System Administrator",
+            "description": "The person who manages the server, the network and the API.",
+            "color": "#FF0000",
+            "level": 0,
+            "permissions": {
+                "create_member" : true,
+                "edit_member"   : true,
+                "delete_member" : true,
+                "create_project": true,
+                "edit_project"  : true,
+                "delete_project": true
+            }
+        },
+        "president": {
+            "name": "President",
+            "description": "The person who manages HackerSchool.",
+            "color": "#00FF00",
+            "level": 1,
+            "permissions": {
+                "create_member" : true,
+                "edit_member"   : true,
+                "delete_member" : true,
+                "create_project": true,
+                "edit_project"  : true,
+                "delete_project": true
+            }
+        },
+        "vice": {
+            "name": "Vice President",
+            "description": "Gabriel Gabriel.",
+            "color": "#0000FF",
+            "level": 2,
+            "permissions": {
+                "create_member" : true,
+                "edit_member"   : true,
+                "delete_member" : true,
+                "create_project": true,
+                "edit_project"  : true,
+                "delete_project": true
+
+            }
+        },
+        "dev": {
+            "name": "Development",
+            "description": "The person who manages the development team.",
+            "color": "#00FF00",
+            "level": 2,
+            "permissions": {
+                "create_member" : true,
+                "edit_member"   : true,
+                "delete_member" : true,
+                "create_project": true,
+                "edit_project"  : true,
+                "delete_project": true
+            }
+        },
+        "rh": {
+            "name": "Human Resources",
+            "description": "The person who manages the human resources.",
+            "color": "#FFFF00",
+            "level": 3,
+            "permissions": {
+                "create_member" : true,
+                "edit_member"   : true,
+                "delete_member" : true,
+                "create_project": true,
+                "edit_project"  : true,
+                "delete_project": true
+            }
+        },
+        "market": {
+            "name": "Marketing",
+            "description": "The person who manages the marketing team.",
+            "color": "#00FFFF",
+            "level": 3,
+            "permissions": {
+                "create_member" : false,
+                "edit_member"   : false,
+                "delete_member" : false,
+                "create_project": true,
+                "edit_project"  : true,
+                "delete_project": false
+            }
+        },
+        "lab": {
+            "name": "Laboratory",
+            "description": "The person who manages the laboratory.",
+            "color": "#FF00FF",
+            "level": 3,
+            "permissions": {
+                "create_member" : false,
+                "edit_member"   : false,
+                "delete_member" : false,
+                "create_project": true,
+                "edit_project"  : true,
+                "delete_project": false
+            }
+        },
+        "money": {
+            "name": "Finance",
+            "description": "The person who manages the finance team.",
+            "color": "#000000",
+            "level": 3,
+            "permissions": {
+                "create_member" : false,
+                "edit_member"   : false,
+                "delete_member" : false,
+                "create_project": true,
+                "edit_project"  : true,
+                "delete_project": false
+            }
+        },
+        "member": {
+            "name": "Member",
+            "description": "The person who is a member of the company.",
+            "color": "#FFFFFF",
+            "level": 4,
+            "permissions": {
+                "create_member" : false,
+                "edit_member"   : false,
+                "delete_member" : false,
+                "create_project": false,
+                "edit_project"  : false,
+                "delete_project": false
+            }
+        },
+        "app": {
+            "name": "Applicant",
+            "description": "The person who is an applicant of the company.",
+            "color": "#CCCCCC",
+            "level": 4,
+            "permissions": {
+                "create_member" : false,
+                "edit_member"   : false,
+                "delete_member" : false,
+                "create_project": false,
+                "edit_project"  : false,
+                "delete_project": false
+            }
+        }
+    },
+    "default": "member"
+}
