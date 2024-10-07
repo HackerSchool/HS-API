@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 # Importing the methods for the projects
 from API import handlers
 from Tags import Tags
@@ -26,6 +26,11 @@ def createProjectBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
     @project_bp.route('/projects', methods=['POST'])
     @login_required
     def create_project():
+        # Does the user have permition to create a project
+        user_tags = session['tags'].split(',')
+        if not tags.can(user_tags, 'create_project'):
+            return jsonify({'message': 'You do not have permission to create a project'}), 403
+
         data = request.json
         projectHandler.createProject(data['name'], data['description'], data['tags'], data['members'])
         return jsonify({'message': 'Project created successfully!'})
@@ -39,6 +44,11 @@ def createProjectBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
     @project_bp.route('/projects/<int:project_id>', methods=['PUT'])
     @login_required
     def update_project(project_id):
+        # Does the user have permition to update a project
+        user_tags = session['tags'].split(',')
+        if not tags.can(user_tags, 'edit_project'):
+            return jsonify({'message': 'You do not have permission to edit a project'}), 403
+
         data = request.json
         projectHandler.updateProject(project_id, data['name'], data['description'], data['tags'], data['members'])
         return jsonify({'message': 'Project updated successfully!'})
@@ -46,6 +56,11 @@ def createProjectBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
     @project_bp.route('/projects/<int:project_id>', methods=['DELETE'])
     @login_required
     def delete_project(project_id):
+        # Does the user have permition to delete a project
+        user_tags = session['tags'].split(',')
+        if not tags.can(user_tags, 'delete_project'):
+            return jsonify({'message': 'You do not have permission to delete a project'}), 403
+
         projectHandler.deleteProject(project_id)
         return jsonify({'message': 'Project deleted successfully!'})
     

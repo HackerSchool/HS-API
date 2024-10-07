@@ -27,8 +27,7 @@ def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
     @login_required
     def create_member():
         # Does the user have permission to create a member?
-        username = session['username']
-        user_tags = memberHandler.getTags(username)
+        user_tags = session['tags'].split(',')
         if not tags.can(user_tags, 'create_member'):
             return jsonify({'message': 'You do not have permission to create a member'}), 403
         
@@ -46,10 +45,10 @@ def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
     @login_required
     def update_member(member_username):
         # Does the user have permission to update the member?
-        username = session['username']
-        user_tags = memberHandler.getTags(username)
+        user_tags = session['tags'].split(',')
         if not tags.can(user_tags, 'update_member') and username != member_username:
             return jsonify({'message': 'You do not have permission to update a member'}), 403
+
         data = request.json
         member_id = memberHandler.getMemberIdByUsername(member_username)
         if member_id is None:
@@ -61,10 +60,10 @@ def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
     @login_required
     def delete_member(member_username):
         # Does the user have permission to delete the member?
-        username = session['username']
-        user_tags = memberHandler.getTags(username)
+        user_tags = session['tags'].split(',')
         if not tags.can(user_tags, 'delete_member'):
             return jsonify({'message': 'You do not have permission to delete a member'}), 403
+        
         member_id = memberHandler.getMemberIdByUsername(member_username)
         if member_id is None:
             return jsonify({'message': 'Member not found'}), 404
