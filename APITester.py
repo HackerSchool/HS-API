@@ -4,7 +4,7 @@ BASE_URL = 'http://0.0.0.0:5100'  # Base URL for the API
 
 def request_members(cookies=None):
     try:
-        response = requests.get(f'{BASE_URL}/members/fpicarras', cookies=cookies)
+        response = requests.get(f'{BASE_URL}/members', cookies=cookies)
         return response.json()
     except requests.exceptions.RequestException as e:
         return {"error": str(e)}
@@ -25,7 +25,7 @@ def login(username, password):
         return None
 
 # Example of a create user function
-def create_user(cookies, istID, memberNumber, name, username, password, join_date, course, description):
+def create_user(cookies, istID, memberNumber, name, username, password, join_date, course, description, mail):
     create_member_url = f'{BASE_URL}/members'
     data = {
         "istID": istID,
@@ -35,7 +35,8 @@ def create_user(cookies, istID, memberNumber, name, username, password, join_dat
         "password": password,
         "join_date": join_date,
         "course": course,
-        "description": description
+        "description": description,
+        "mail": mail
     }
     response = requests.post(create_member_url, json=data, cookies=cookies)
     print(response.json())
@@ -87,7 +88,7 @@ cookies = login('fpicarras', 'password')
 # Make request with cookies to see if authentication works
 print(request_members(cookies))
 
-create_user(cookies, "ist123", "69", "João Pinheiros de Sá", "jpinhas", "123", "7/10/2024", "LEFT", "they/them")
+create_user(cookies, "ist123", "69", "João Pinheiros de Sá", "jpinhas", "123", "7/10/2024", "LEFT", "they/them", "mail@mail.mail")
 edit_user(cookies, "44", "Filipe Correia")
 # Make another request to test if cookies still work
 print(request_members(cookies))

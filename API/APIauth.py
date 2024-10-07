@@ -35,6 +35,9 @@ def createAuthBlueprint(login_manager, session_expiration_seconds: int = SESSION
     @auth_bp.route('/login', methods=['POST'])
     def login():
         data = request.json
+        # TODO: Implement encryption
+        # This data should arrive encrypted to the system, so that a man in the middle attack is not possible
+        # on the login request to the server
         username = data.get('username')
         password = data.get('password')
 

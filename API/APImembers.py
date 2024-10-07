@@ -3,12 +3,9 @@ from flask import Blueprint, request, jsonify, session
 from API import handlers
 from Tags import Tags
 
-# AVISO À NAVEGAÇÃO
-# As routs aqui presentes apresentam cabaçalhos que não fazem muito sentido
-# no contexto da chamada à base de dados. Por isso ainda existe muita coisa a ser
-# feita, nomeadamente:
-# - Ajustar os cabaçalhos das rotas
-# - DEFINIR QUAL O CORPO DOS REQUESTS/POSTS
+# TODO: Implement the return messages for the API calls
+# TODO: Implement the tags for the API calls
+# TODO: Change/Return logo image for the member
 
 ############# Members #############
 def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Tags):
@@ -33,7 +30,7 @@ def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
         
         # Validate request data
         data = request.json
-        required_fields = ['istID', 'memberNumber', 'name', 'username', 'password', 'join_date', 'course', 'description']
+        required_fields = ['istID', 'memberNumber', 'name', 'username', 'password', 'join_date', 'course', 'description', 'mail']
 
         missing_fields = [field for field in required_fields if field not in data]
         if missing_fields:
@@ -42,7 +39,7 @@ def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
         # Proceed if all required fields are present
         memberHandler.createMember(data['istID'], data['memberNumber'], data['name'], data['username'], 
                                 data['password'], data['join_date'], data['course'], 
-                                data['description'], '{}', None, 'member')
+                                data['description'], data['mail'], '{}', None, 'member')
         return jsonify({'message': 'Member created successfully!'})
 
     @members_bp.route('/members/<string:member_username>', methods=['GET'])
@@ -75,7 +72,7 @@ def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
 
         # Define valid columns
         valid_columns = {"istID", "memberNumber", "name", "username", "password", "entry_date", 
-                        "exit_date", "course", "description", "extra"}
+                        "exit_date", "course", "description", "mail", "extra"}
 
         # Check for invalid fields in the data
         invalid_fields = [key for key in data.keys() if key not in valid_columns]

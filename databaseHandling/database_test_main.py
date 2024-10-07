@@ -1,11 +1,12 @@
 # main.py
 from database_handler import DatabaseHandler
-from member import create_member, list_members, get_member_id_by_name, delete_member
-from project import create_project, list_projects, get_project_id_by_name, delete_project
-from member_project import associate_member_with_project, list_projects_for_member, list_members_for_project
+from member import MemberHandler
+from project import ProjectHandler
+from member_project import MemberProjectHandler
 from datetime import date
 
 def main():
+    """
     # Initialize the database handler with the database name
     db_handler = DatabaseHandler('hackerschool.db')
 
@@ -42,6 +43,15 @@ def main():
     delete_project(db_handler, beta_id)
 
     create_member(db_handler, 'ist1103592', 1, 'Filipe Piçarra', 'fpicarras', 'password', str(date.today()), 'MEEC', 'Student', '{}', 'path/to/logo.png', ['sysadmin', 'dev']) 
+    """
+    # Generate the database for the first time
+    db = DatabaseHandler('hackerschool.db')
+    member_handler = MemberHandler(db)
+    project_handler = ProjectHandler(db)
+    member_project_handler = MemberProjectHandler(db)
+
+    member_handler.createMember('ist1103592', 1, 'Filipe Piçarra', 'fpicarras', 'password', str(date.today()), 'MEEC', 'Student', 'me@fpicarras.dev', '{}', 'path/to/logo.png', ['sysadmin', 'dev'])
+    print(member_handler.listMembers())
 
 if __name__ == '__main__':
     main()

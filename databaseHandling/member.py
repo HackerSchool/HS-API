@@ -1,18 +1,27 @@
 # member.py
 import sqlite3, time
+import bcrypt
+
+# Hashing the password
+def hash_password(password):
+    # Generate a salt and hash the password
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed.decode('utf-8')
 
 class MemberHandler:
     def __init__(self, db_handler):
         self.db_handler = db_handler
 
-    def createMember(self, istID, memberNumber, name, username, password, entry_date, course, description, extra, logo, tags):
+    def createMember(self, istID, memberNumber, name, username, password, entry_date, course, description, mail, extra, logo, tags):
         try:
             with self.db_handler.get_connection() as conn:
+                hash = hash_password(password)
                 cursor = conn.cursor()
                 cursor.execute('''
-                    INSERT INTO Members (istID, memberNumber, Name, Username, Password, Entry_date, Course, Description, Extra, Logo, Tags)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ''', (istID, memberNumber, name, username, password, entry_date, course, description, extra, logo, ",".join(tags)))
+                    INSERT INTO Members (istID, memberNumber, Name, Username, Password, Entry_date, Course, Description, Mail, Extra, Logo, Tags)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (istID, memberNumber, name, username, hash, entry_date, course, description, mail, extra, logo, ",".join(tags)))
                 conn.commit()
                 print(f"Member {name} created successfully!")
                 return True
@@ -26,6 +35,9 @@ class MemberHandler:
             return False
         try:
             with self.db_handler.get_connection() as conn:
+                # Hash the password if it is being updated
+                if 'password' in kwargs:
+                    kwargs['password'] = hash_password(kwargs['password'])
                 cursor = conn.cursor()
                 columns = ', '.join(f"{key} = ?" for key in kwargs.keys())
                 values = list(kwargs.values())

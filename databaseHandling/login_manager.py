@@ -1,4 +1,13 @@
-import sqlite3
+import sqlite3, bcrypt
+
+# Verifying the password
+def check_password(stored_hash, password):
+    # Ensure stored_hash is bytes; if stored as a string in DB, convert it back
+    if isinstance(stored_hash, str):
+        stored_hash = stored_hash.encode('utf-8')
+    
+    # Check if the password matches the hash
+    return bcrypt.checkpw(password.encode('utf-8'), stored_hash)
 
 class LoginManager:
     def __init__(self, db_handler):
@@ -9,8 +18,12 @@ class LoginManager:
         # Otherwise, return None
         conn = self.db_handler.get_connection()
         c = conn.cursor()
-        c.execute("SELECT * FROM members WHERE username = ? AND password = ?", (username, password))
+        # Check if the username exists and get it's hashed password
+        c.execute("SELECT * FROM members WHERE username = ?", (username,))
         user = c.fetchone()
+        conn.close()
+        if not user or not check_password(user[5], password):
+            return None
         if user:
             # Get the user's tags
             query = "SELECT Tags FROM Members WHERE Username = ?"        

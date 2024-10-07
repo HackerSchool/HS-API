@@ -21,6 +21,7 @@ def setup_database():
         Exit_date TEXT,
         Course TEXT,
         Description TEXT,
+        Mail TEXT,
         Extra TEXT,
         Logo TEXT,
         Tags TEXT

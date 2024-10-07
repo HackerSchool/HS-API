@@ -3,12 +3,10 @@ from flask import Blueprint, request, jsonify, session
 from API import handlers
 from Tags import Tags
 
-# AVISO À NAVEGAÇÃO
-# As routs aqui presentes apresentam cabaçalhos que não fazem muito sentido
-# no contexto da chamada à base de dados. Por isso ainda existe muita coisa a ser
-# feita, nomeadamente:
-# - Ajustar os cabaçalhos das rotas
-# - DEFINIR QUAL O CORPO DOS REQUESTS/POSTS
+# TODO: Implement the return messages for the API calls
+# TODO: Change the routs to work with the project name and not the project id
+# TODO: Associate the members with the projects
+# TODO: Change/Return logo image for the project
 
 ############# Projects #############
 def createProjectBlueprint(handlers: handlers.Handlers, login_required, tags: Tags):
