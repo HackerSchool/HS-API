@@ -31,8 +31,18 @@ def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
         if not tags.can(user_tags, 'create_member'):
             return jsonify({'message': 'You do not have permission to create a member'}), 403
         
+        # Validate request data
         data = request.json
-        memberHandler.createMember(data['username'], data['role_id'], data['name'], data['username'], data['password'], data['join_date'], data['department'], data['role'], data['tags'], data['logo'])
+        required_fields = ['istID', 'memberNumber', 'name', 'username', 'password', 'join_date', 'course', 'description']
+
+        missing_fields = [field for field in required_fields if field not in data]
+        if missing_fields:
+            return jsonify({'message': 'Missing required fields', 'missing_fields': missing_fields}), 400
+
+        # Proceed if all required fields are present
+        memberHandler.createMember(data['istID'], data['memberNumber'], data['name'], data['username'], 
+                                data['password'], data['join_date'], data['course'], 
+                                data['description'], '{}', None, 'member')
         return jsonify({'message': 'Member created successfully!'})
 
     @members_bp.route('/members/<string:member_username>', methods=['GET'])
@@ -44,17 +54,42 @@ def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
     @members_bp.route('/members/<string:member_username>', methods=['PUT'])
     @login_required
     def update_member(member_username):
-        # Does the user have permission to update the member?
-        user_tags = session['tags'].split(',')
-        if not tags.can(user_tags, 'update_member') and username != member_username:
-            return jsonify({'message': 'You do not have permission to update a member'}), 403
-
+        # Get the request data
         data = request.json
+        if not data:
+            return jsonify({'message': 'No data provided for update'}), 400
+
+        # Check if the user has permission to update the member
+        user_tags = session['tags'].split(',')
+        if session['username'] != member_username:
+            if not tags.can(user_tags, 'edit_member'):
+                return jsonify({'message': 'You do not have permission to update this member'}), 403
+            if 'password' in data:
+                if not tags.can(user_tags, 'edit_password'):
+                    return jsonify({'message': 'You do not have permission to update the password'}), 403
+
+        # Get the member ID from the username
         member_id = memberHandler.getMemberIdByUsername(member_username)
         if member_id is None:
             return jsonify({'message': 'Member not found'}), 404
-        memberHandler.updateMember(member_id, data['name'], data['username'], data['password'], data['join_date'], data['department'], data['role'], data['tags'], data['logo'])
-        return jsonify({'message': 'Member updated successfully!'})
+
+        # Define valid columns
+        valid_columns = {"istID", "memberNumber", "name", "username", "password", "entry_date", 
+                        "exit_date", "course", "description", "extra"}
+
+        # Check for invalid fields in the data
+        invalid_fields = [key for key in data.keys() if key not in valid_columns]
+        if invalid_fields:
+            return jsonify({'message': 'Invalid fields provided', 'invalid_fields': invalid_fields}), 400
+
+        # Call the editMember method and pass the valid fields that need to be updated
+        update_success = memberHandler.editMember(member_id, **data)
+
+        if update_success:
+            return jsonify({'message': 'Member updated successfully!'})
+        else:
+            return jsonify({'message': 'Failed to update member'}), 500
+
 
     @members_bp.route('/members/<string:member_username>', methods=['DELETE'])
     @login_required

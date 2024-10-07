@@ -32,7 +32,13 @@ def createProjectBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
             return jsonify({'message': 'You do not have permission to create a project'}), 403
 
         data = request.json
-        projectHandler.createProject(data['name'], data['description'], data['tags'], data['members'])
+        required_fields = ['name', 'start_date', 'state', 'description']
+
+        missing_fields = [field for field in required_fields if field not in data]
+        if missing_fields:
+            return jsonify({'message': 'Missing required fields', 'missing_fields': missing_fields}), 400
+
+        projectHandler.createProject(data['name'], data['description'], data['start_date'], data['state'], None)
         return jsonify({'message': 'Project created successfully!'})
     
     @project_bp.route('/projects/<int:project_id>', methods=['GET'])
@@ -49,9 +55,24 @@ def createProjectBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
         if not tags.can(user_tags, 'edit_project'):
             return jsonify({'message': 'You do not have permission to edit a project'}), 403
 
+        # Check if the project exists
+        project = projectHandler.exists(project_id)
+        if not project:
+            return jsonify({'message': 'Project not found'}), 404
+
+        # Define valid columns
+        valid_columns = {'name', 'start_date', 'state', 'description'}
+        # Check for invalid fields in the data
         data = request.json
-        projectHandler.updateProject(project_id, data['name'], data['description'], data['tags'], data['members'])
-        return jsonify({'message': 'Project updated successfully!'})
+        invalid_fields = [key for key in data.keys() if key not in valid_columns]
+        if invalid_fields:
+            return jsonify({'message': 'Invalid fields provided', 'invalid_fields': invalid_fields}), 400
+
+        update_success = projectHandler.editProject(project_id, **data)
+        if update_success:
+            return jsonify({'message': 'Project updated successfully!'})
+        else:
+            return jsonify({'message': 'Failed to update project'}), 500
     
     @project_bp.route('/projects/<int:project_id>', methods=['DELETE'])
     @login_required
@@ -59,6 +80,10 @@ def createProjectBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
         # Does the user have permition to delete a project
         user_tags = session['tags'].split(',')
         if not tags.can(user_tags, 'delete_project'):
+            # Check if the project exists
+            project = projectHandler.getProject(project_id)
+            if not project:
+                return jsonify({'message': 'Project not found'}), 404
             return jsonify({'message': 'You do not have permission to delete a project'}), 403
 
         projectHandler.deleteProject(project_id)

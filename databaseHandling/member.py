@@ -15,10 +15,15 @@ class MemberHandler:
                 ''', (istID, memberNumber, name, username, password, entry_date, course, description, extra, logo, ",".join(tags)))
                 conn.commit()
                 print(f"Member {name} created successfully!")
+                return True
         except sqlite3.IntegrityError as e:
             print(f"Error: {str(e)} (A member with this istID, memberNumber, or username may already exist.)")
+            return False
 
     def editMember(self, member_id, **kwargs):
+        if not kwargs:
+            print("No fields to update.")
+            return False
         try:
             with self.db_handler.get_connection() as conn:
                 cursor = conn.cursor()
@@ -29,8 +34,10 @@ class MemberHandler:
                 cursor.execute(query, values)
                 conn.commit()
                 print(f"Member with ID {member_id} updated successfully!")
+                return True
         except sqlite3.IntegrityError as e:
             print(f"Error: {str(e)} (There may be a conflict with unique values.)")
+            return False
 
     def deleteMember(self, member_id):
         with self.db_handler.get_connection() as conn:

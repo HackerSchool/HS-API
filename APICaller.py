@@ -10,7 +10,7 @@ import secrets
 SESSION_EXPIRATION_TIME = 600  # 10 minutes
 
 # Initializing Database and Login Manager
-tags = Tags("file.tags")
+tags = Tags("tags.json")
 db_handler = database_handler.DatabaseHandler('hackerschool.db')
 lm = login_manager.LoginManager(db_handler)
 

@@ -10,7 +10,8 @@
                 "delete_member" : true,
                 "create_project": true,
                 "edit_project"  : true,
-                "delete_project": true
+                "delete_project": true,
+                "edit_password": true
             }
         },
         "president": {

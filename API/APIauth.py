@@ -24,7 +24,7 @@ def login_required(f):
         session_key = session.get('session_key')
 
         if not username or not session_key or not is_session_valid(username, session_key):
-            return jsonify({"message": "Unauthorized access, please log in"}), 403
+            return jsonify({"message": "Unauthenticated access, please log in"}), 401
         return f(*args, **kwargs)
     return decorated_function
 

@@ -35,8 +35,10 @@ class ProjectHandler:
                 cursor.execute(query, values)
                 conn.commit()
                 print(f"Project with ID {project_id} updated successfully!")
+                return True
         except sqlite3.IntegrityError as e:
             print(f"Error: {str(e)} (There may be a conflict with unique values.)")
+            return False
 
     def deleteProject(self, project_id):
         with self.db_handler.get_connection() as conn:
@@ -90,3 +92,12 @@ class ProjectHandler:
             result = cursor.fetchone()
         
         return result if result else None      # Return the project information
+
+    def exists(self, proj_id):
+        query = "SELECT * FROM Projects WHERE ID = ?"
+        
+        with self.db_handler.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, (proj_id,))
+            result = cursor.fetchone()
+        return result is not None

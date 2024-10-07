@@ -7,7 +7,7 @@ class Tags:
 
         # Recieves a tags.json file, with a field called tags, which is a list of tags
         # Example of a Tag:
-        # {"member": {
+        # "member": {
         #     "name": "Member",
         #     "description": "The person who is a member of the company.",
         #     "color": "#FFFFFF",
@@ -18,7 +18,7 @@ class Tags:
         #         "create_delete": false,
         #         "delete_delete": false
         #     }
-        # }}
+        # }
         try:
             with open(tagsFilename, "r") as file:
                 self.tags = json.load(file)["tags"]
