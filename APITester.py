@@ -91,6 +91,7 @@ print(request_members(cookies))
 create_user(cookies, "ist123", "69", "João Pinheiros de Sá", "jpinhas", "123", "7/10/2024", "LEFT", "they/them", "mail@mail.mail")
 edit_user(cookies, "44", "Filipe Correia")
 # Make another request to test if cookies still work
+input("Press a key to continue...")
 print(request_members(cookies))
 
 create_project(cookies, "Test Project", "ahahahah", "Almost", "7/10/2024")
