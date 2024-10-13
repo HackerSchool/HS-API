@@ -3,10 +3,6 @@ from flask import Blueprint, request, jsonify, session
 from API import handlers
 from Tags import Tags
 
-# TODO: Implement the return messages for the API calls
-# TODO: Implement the tags for the API calls
-# TODO: Change/Return logo image for the member
-
 ############# Members #############
 def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Tags):
     members_bp = Blueprint('members', __name__)
@@ -37,9 +33,11 @@ def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
             return jsonify({'message': 'Missing required fields', 'missing_fields': missing_fields}), 400
 
         # Proceed if all required fields are present
-        memberHandler.createMember(data['istID'], data['memberNumber'], data['name'], data['username'], 
+        ret = memberHandler.createMember(data['istID'], data['memberNumber'], data['name'], data['username'], 
                                 data['password'], data['join_date'], data['course'], 
                                 data['description'], data['mail'], '{}', None, 'member')
+        if not ret[0]:
+            return jsonify({'message': ret[1]}), 400
         return jsonify({'message': 'Member created successfully!'})
 
     @members_bp.route('/members/<string:member_username>', methods=['GET'])
@@ -82,10 +80,10 @@ def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
         # Call the editMember method and pass the valid fields that need to be updated
         update_success = memberHandler.editMember(member_id, **data)
 
-        if update_success:
+        if update_success[0]:
             return jsonify({'message': 'Member updated successfully!'})
         else:
-            return jsonify({'message': 'Failed to update member'}), 500
+            return jsonify({'message': update_success[1]}), 500
 
 
     @members_bp.route('/members/<string:member_username>', methods=['DELETE'])
@@ -111,4 +109,76 @@ def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
         projects = memberProjectHandler.getMemberProjects(member_id)
         return jsonify(projects)
     
+    ############# Tags #############
+    @members_bp.route('/members/<string:member_username>/tags', methods=['GET'])
+    @login_required
+    def get_member_tags(member_username):
+        member_id = memberHandler.getMemberIdByUsername(member_username)
+        if member_id is None:
+            return jsonify({'message': 'Member not found'}), 404
+        tags = memberHandler.getMemberTags(member_username)
+        return jsonify(tags)
+    
+    @members_bp.route('/members/<string:member_username>/tags', methods=['POST'])
+    @login_required
+    def add_member_tag(member_username):        
+        # Get the request data
+        data = request.json
+        if not data:
+            return jsonify({'message': 'No data provided for tag addition'}), 400
+        if 'tag' not in data:
+            return jsonify({'message': 'No tag provided for addition'}), 400
+        
+        # Does the user have permission to add a tag to the member?
+        user_tags = session['tags'].split(',')
+        if not tags.can(user_tags, 'add_tag', tagToAdd=data['tag']):
+            return jsonify({'message': 'You do not have permission to add that tag'}), 403
+
+        # Get the member ID from the username
+        member_id = memberHandler.getMemberIdByUsername(member_username)
+        if member_id is None:
+            return jsonify({'message': 'Member not found'}), 404
+
+        # Check if the tag is already associated with the member
+        tags = memberHandler.getTags(member_username)
+        if data['tag'] in tags:
+            return jsonify({'message': 'Tag already associated with member'})
+
+        # Add the tag to the member
+        ret = memberHandler.addTag(member_id, data['tag'])
+        if not ret[0]:
+            return jsonify({'message': ret[1]}), 500
+        return jsonify({'message': 'Tag added successfully!'})
+    
+    @members_bp.route('/members/<string:member_username>/tags', methods=['DELETE'])
+    @login_required
+    def remove_member_tag(member_username):
+        # Get the request data
+        data = request.json
+        if not data:
+            return jsonify({'message': 'No data provided for tag removal'}), 400
+        if 'tag' not in data:
+            return jsonify({'message': 'No tag provided for removal'}), 400
+        
+        # Does the user have permission to remove a tag from the member?
+        user_tags = session['tags'].split(',')
+        if not tags.can(user_tags, 'add_tag', tagToAdd=data['tag']):
+            return jsonify({'message': 'You do not have permission to remove that tag'}), 403
+
+        # Get the member ID from the username
+        member_id = memberHandler.getMemberIdByUsername(member_username)
+        if member_id is None:
+            return jsonify({'message': 'Member not found'}), 404
+
+        # Check if the tag is associated with the member
+        tags = memberHandler.getTags(member_username)
+        if data['tag'] not in tags:
+            return jsonify({'message': 'Tag not associated with member'})
+
+        # Remove the tag from the member
+        ret = memberHandler.removeTag(member_id, data['tag'])
+        if not ret[0]:
+            return jsonify({'message': ret[1]}), 500
+        return jsonify({'message': 'Tag removed successfully!'})
+
     return members_bp

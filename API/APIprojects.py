@@ -3,10 +3,7 @@ from flask import Blueprint, request, jsonify, session
 from API import handlers
 from Tags import Tags
 
-# TODO: Implement the return messages for the API calls
 # TODO: Change the routs to work with the project name and not the project id
-# TODO: Associate the members with the projects
-# TODO: Change/Return logo image for the project
 
 ############# Projects #############
 def createProjectBlueprint(handlers: handlers.Handlers, login_required, tags: Tags):
@@ -36,7 +33,9 @@ def createProjectBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
         if missing_fields:
             return jsonify({'message': 'Missing required fields', 'missing_fields': missing_fields}), 400
 
-        projectHandler.createProject(data['name'], data['description'], data['start_date'], data['state'], None)
+        ret = projectHandler.createProject(data['name'], data['description'], data['start_date'], data['state'], None)
+        if not ret[0]:
+            return jsonify({'message': ret[1]}), 500
         return jsonify({'message': 'Project created successfully!'})
     
     @project_bp.route('/projects/<int:project_id>', methods=['GET'])
@@ -67,10 +66,10 @@ def createProjectBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
             return jsonify({'message': 'Invalid fields provided', 'invalid_fields': invalid_fields}), 400
 
         update_success = projectHandler.editProject(project_id, **data)
-        if update_success:
+        if update_success[0]:
             return jsonify({'message': 'Project updated successfully!'})
         else:
-            return jsonify({'message': 'Failed to update project'}), 500
+            return jsonify({'message': update_success[1]}), 500
     
     @project_bp.route('/projects/<int:project_id>', methods=['DELETE'])
     @login_required

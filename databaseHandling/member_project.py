@@ -5,45 +5,51 @@ class MemberProjectHandler:
     def __init__(self, db_handler):
         self.db_handler = db_handler
 
-    def validate_request(cursor, member_id, project_id):
+    def validate_request(self, cursor, member_id, project_id):
         cursor.execute('SELECT * FROM Members WHERE ID = ?', (member_id,))
         if not cursor.fetchone():
             print(f"Member {member_id} does not exist.")
-            return False
+            return (False, 'Member does not exist.')
         cursor.execute('SELECT * FROM Projects WHERE ID = ?', (project_id,))
         if not cursor.fetchone():
             print(f"Project {project_id} does not exist.")
-            return False
-        return True
+            return (False, 'Project does not exist.')
+        return (True,)
 
     def associateMemberWithProject(self, member_id, project_id, entry_date, contributions, exit_date=None):
         with self.db_handler.get_connection() as conn:
             cursor = conn.cursor()
 
             # If member or project does not exist, return
-            if not self.validate_request(cursor, member_id, project_id):
-                return
+            valid = self.validate_request(cursor, member_id, project_id)
+            if not valid[0]:
+                return (False, valid[1])
             # If member-project relationship already exists, return
             cursor.execute('SELECT * FROM MemberProject WHERE MemberID = ? AND ProjectID = ?', (member_id, project_id))
             if cursor.fetchone():
                 print(f"Member {member_id} is already associated with project {project_id}.")
-                return
+                return (True, 'Member is already associated with project.')
             cursor.execute('''
                 INSERT INTO MemberProject (MemberID, ProjectID, Entry_date, Contributions, Exit_date)
                 VALUES (?, ?, ?, ?, ?)
             ''', (member_id, project_id, entry_date, contributions, exit_date))
             conn.commit()
             print(f"Member {member_id} associated with project {project_id} successfully!")
+            return (True, 'Member associated with project successfully!')
 
     def editMemberProjectRelation(self, member_id, project_id, **kwargs):
         with self.db_handler.get_connection() as conn:
             cursor = conn.cursor()
 
+            valid = self.validate_request(cursor, member_id, project_id)
+            if not valid[0]:
+                return (False, valid[1])
+
             # If member-project relationship does not exist, return
             cursor.execute('SELECT * FROM MemberProject WHERE MemberID = ? AND ProjectID = ?', (member_id, project_id))
             if not cursor.fetchone():
                 print(f"Member {member_id} is not associated with project {project_id}.")
-                return
+                return (False, 'Member is not associated with project.')
             columns = ', '.join(f"{key} = ?" for key in kwargs.keys())
             values = list(kwargs.values())
             values.append(member_id)
@@ -52,6 +58,7 @@ class MemberProjectHandler:
             cursor.execute(query, values)
             conn.commit()
             print(f"Member-Project relationship for MemberID {member_id} and ProjectID {project_id} updated successfully!")
+            return (True, 'Member-Project relationship updated successfully!')
 
     # Function to list all projects a member is in, ordered by entry date
     def listProjectsForMember(self, member_id):
@@ -86,3 +93,15 @@ class MemberProjectHandler:
             members = cursor.fetchall()
 
         return members  # Return the list of members in the project
+    
+    def deleteMemberProjectRelation(self, member_id, project_id):
+        with self.db_handler.get_connection() as conn:
+            cursor = conn.cursor()
+
+            valid = self.validate_request(cursor, member_id, project_id)
+            if not valid[0]:
+                return (False, valid[1])
+            cursor.execute('DELETE FROM MemberProject WHERE MemberID = ? AND ProjectID = ?', (member_id, project_id))
+            conn.commit()
+            print(f"Member-Project relationship for MemberID {member_id} and ProjectID {project_id} deleted successfully!")
+            return (True, 'Member-Project relationship deleted successfully!')

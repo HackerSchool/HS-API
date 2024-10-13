@@ -24,15 +24,15 @@ class MemberHandler:
                 ''', (istID, memberNumber, name, username, hash, entry_date, course, description, mail, extra, logo, ",".join(tags)))
                 conn.commit()
                 print(f"Member {name} created successfully!")
-                return True
+                return (True,)
         except sqlite3.IntegrityError as e:
             print(f"Error: {str(e)} (A member with this istID, memberNumber, or username may already exist.)")
-            return False
+            return (False, "A member with this istID, memberNumber, or username may already exist.")
 
     def editMember(self, member_id, **kwargs):
         if not kwargs:
             print("No fields to update.")
-            return False
+            return (False, "No fields to update.")
         try:
             with self.db_handler.get_connection() as conn:
                 # Hash the password if it is being updated
@@ -46,10 +46,10 @@ class MemberHandler:
                 cursor.execute(query, values)
                 conn.commit()
                 print(f"Member with ID {member_id} updated successfully!")
-                return True
+                return (True, f"Member with ID {member_id} updated successfully!")
         except sqlite3.IntegrityError as e:
             print(f"Error: {str(e)} (There may be a conflict with unique values.)")
-            return False
+            return (False, "There may be a conflict with unique values.")
 
     def deleteMember(self, member_id):
         with self.db_handler.get_connection() as conn:
@@ -63,8 +63,11 @@ class MemberHandler:
             conn.commit()
 
             print(f"Member with ID {member_id} and their relations have been deleted.")
+            return (True, f"Member with ID {member_id} and their relations have been deleted.")
 
     def addTag(self, member_id, tag):
+        return_message = ""
+
         with self.db_handler.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute('SELECT Tags FROM Members WHERE ID = ?', (member_id,))
@@ -74,10 +77,15 @@ class MemberHandler:
                 cursor.execute('UPDATE Members SET Tags = ? WHERE ID = ?', (",".join(tags), member_id))
                 conn.commit()
                 print(f"Tag '{tag}' added to member {member_id}.")
+                return_message = f"Tag '{tag}' added to member {member_id}."
             else:
                 print(f"Tag '{tag}' already exists for member {member_id}.")
+                return_message = f"Tag '{tag}' already exists for member {member_id}."
+            return (True, return_message)
 
     def removeTag(self, member_id, tag):
+        return_message = ""
+
         with self.db_handler.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute('SELECT Tags FROM Members WHERE ID = ?', (member_id,))
@@ -87,8 +95,11 @@ class MemberHandler:
                 cursor.execute('UPDATE Members SET Tags = ? WHERE ID = ?', (",".join(tags), member_id))
                 conn.commit()
                 print(f"Tag '{tag}' removed from member {member_id}.")
+                return_message = f"Tag '{tag}' removed from member {member_id}."
             else:
                 print(f"Tag '{tag}' not found for member {member_id}.")
+                return_message = f"Tag '{tag}' not found for member {member_id}."
+            return (True, return_message)
 
     def getTags(self, member_username):
         query = "SELECT Tags FROM Members WHERE Username = ?"
@@ -150,3 +161,24 @@ class MemberHandler:
             result = cursor.fetchone()
         
         return result if result else None  # Return the member info if found, otherwise None
+    
+    def getLogo(self, username):
+        query = "SELECT Logo FROM Members WHERE Username = ?"
+        
+        with self.db_handler.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, (username,))
+            result = cursor.fetchone()
+        
+        return result[0] if result else None  # Return the logo if found, otherwise None
+    
+    def setLogo(self, username, logo):
+        query = "UPDATE Members SET Logo = ? WHERE Username = ?"
+        
+        with self.db_handler.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, (logo, username))
+            conn.commit()
+        
+        print(f"Logo for member {username} updated successfully!")
+        return True

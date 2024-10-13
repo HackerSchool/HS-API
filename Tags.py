@@ -43,8 +43,22 @@ class Tags:
             return self.tags[tag]["permissions"][request]
         return False
     
-    def can(self, tag_list: list, request: str):
+    def can(self, tag_list: list, request: str, tagToAdd: str = None):
         can = False
+
+        # Can we modify this tag? If it has an higher level than our highest tag, return False
+        if tagToAdd is not None:
+            # Check if the tagToAdd exists
+            if tagToAdd not in self.tags:
+                print(f"Tag {tagToAdd} not found")
+                return False
+            targetTag_value = self.tags[tagToAdd]["level"]
+            myHieghest = self.tags[self.getHighiest(tag_list)]["level"]
+            if myHieghest < targetTag_value:
+                return False
+            else:
+                return True
+
         for tag in tag_list:
             if self.canSingle(tag, request):
                 can = True

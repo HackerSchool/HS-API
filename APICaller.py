@@ -3,7 +3,7 @@ from flask_session import Session
 import os
 
 from databaseHandling import database_handler, login_manager
-from API import APImembers, APIauth, APIprojects, handlers
+from API import APImembers, APIauth, APIprojects, handlers, APIlogos, APImemberproject
 from Tags import Tags
 from datetime import timedelta
 import secrets
@@ -16,7 +16,7 @@ tags = Tags("tags.json")
 db_handler = database_handler.DatabaseHandler('hackerschool.db')
 lm = login_manager.LoginManager(db_handler)
 
-handlers = handlers.Handlers(db_handler)
+handlers = handlers.Handlers(db_handler, "images")
 
 # Initializing Flask App and configuring
 app = Flask(__name__)
@@ -46,6 +46,14 @@ app.register_blueprint(APImembers.createMembersBlueprint(handlers, APIauth.login
     # Requires db_handler to be passed as an argument, so that we can interact with the database
     # Requires login_required to be passed as an argument, so that we can validate if the user is logged in
 app.register_blueprint(APIprojects.createProjectBlueprint(handlers, APIauth.login_required, tags))
+############# Logos #############
+    # Requires handlers to be passed as an argument, so that we can interact with the database
+    # Requires login_required to be passed as an argument, so that we can validate if the user is logged in
+app.register_blueprint(APIlogos.createLogosBlueprint(handlers, APIauth.login_required, tags))
+############# MemberProject #############
+    # Requires handlers to be passed as an argument, so that we can interact with the database
+    # Requires login_required to be passed as an argument, so that we can validate if the user is logged in
+app.register_blueprint(APImemberproject.createMemberProjectBlueprint(handlers, APIauth.login_required, tags))
 
 
 if __name__ == '__main__':

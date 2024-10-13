@@ -1,4 +1,5 @@
 import requests  # Use the 'requests' library to make HTTP requests
+from base64 import b64encode, b64decode
 
 BASE_URL = 'http://0.0.0.0:5100'  # Base URL for the API
 
@@ -82,6 +83,51 @@ def delete_project(cookies, proj_id):
     response = requests.delete(f'{BASE_URL}/projects/{proj_id}', cookies=cookies)
     print(response.json())
 
+def send_image(cookies, username, image_file):
+    with open(image_file, 'rb') as file:
+        image_data = file.read()
+        image_data = b64encode(image_data).decode('utf-8')
+    image_url = f'{BASE_URL}/projects/{username}/logo'
+    data = {
+        "image": image_data
+    }
+    response = requests.post(image_url, json=data, cookies=cookies)
+    print(response.json())
+
+def recieve_image(cookies, username):
+    image_url = f'{BASE_URL}/projects/{username}/logo'
+    response = requests.get(image_url, cookies=cookies)
+    if 'image' in response.json():
+        image_data = response.json()['image']
+        image_data = b64decode(image_data)
+        with open(f'returned-{username}.png', 'wb') as file:
+            file.write(image_data)
+    else:
+        print(response.json())
+
+def link_member_project(cookies, username, proj_id, entry_date, contributions, exit_date):
+    link_url = f'{BASE_URL}/link/{username}/{proj_id}'
+    data = {
+        "entry_date": entry_date,
+        "contributions": contributions,
+        "exit_date": exit_date
+    }
+    response = requests.post(link_url, json=data, cookies=cookies)
+    print(response.json())
+
+def edit_member_project(cookies, username, proj_id, entry_date, contributions, exit_date):
+    link_url = f'{BASE_URL}/link/{username}/{proj_id}'
+    data = {
+        "contributions": contributions,
+    }
+    response = requests.put(link_url, json=data, cookies=cookies)
+    print(response.json())
+
+def delete_member_project(cookies, username, proj_id):
+    link_url = f'{BASE_URL}/link/{username}/{proj_id}'
+    response = requests.delete(link_url, cookies=cookies)
+    print(response.json())
+
 # Trying the request without cookies
 print(request_members())
 cookies = login('fpicarras', 'password')
@@ -103,3 +149,12 @@ delete_project(cookies, 3)
 delete_user(cookies, "jpinhas")
 print(request_members(cookies))
 request_projects(cookies)
+
+send_image(cookies, "1", "img_teste.png")
+recieve_image(cookies, "1")
+
+link_member_project(cookies, "fpicarras", 1, "7/10/2024", "All", "7/10/2025")
+input("Press a key to continue...")
+edit_member_project(cookies, "fpicarras", 1, "7/10/2024", "None, this sucker did nothing", "7/10/2025")
+delete_member_project(cookies, "fpicarras", 1)
+edit_member_project(cookies, "fpicarras", 1, "7/10/2024", "This should not work, link does not exist", "7/10/2025")

@@ -14,15 +14,17 @@ class ProjectHandler:
                 cursor.execute('SELECT * FROM Projects WHERE Name = ?', (name,))
                 if cursor.fetchone():
                     print(f"Project with the name \"{name}\" already exists.")
-                    return
+                    return (False, "Project with the same name already exists.")
                 cursor.execute('''
                     INSERT INTO Projects (Name, Description, Start_date, State, Logo)
                     VALUES (?, ?, ?, ?, ?)
                 ''', (name, description, start_date, state, logo))
                 conn.commit()
                 print(f"Project {name} created successfully!")
+                return (True,)
         except sqlite3.IntegrityError as e:
             print(f"Error: {str(e)} (Can't open Database)")
+            return (False, "Can't open Database")
 
     def editProject(self, project_id, **kwargs):
         try:
@@ -35,10 +37,10 @@ class ProjectHandler:
                 cursor.execute(query, values)
                 conn.commit()
                 print(f"Project with ID {project_id} updated successfully!")
-                return True
+                return (True,)
         except sqlite3.IntegrityError as e:
             print(f"Error: {str(e)} (There may be a conflict with unique values.)")
-            return False
+            return (False, "There may be a conflict with unique values.")
 
     def deleteProject(self, project_id):
         with self.db_handler.get_connection() as conn:
@@ -101,3 +103,21 @@ class ProjectHandler:
             cursor.execute(query, (proj_id,))
             result = cursor.fetchone()
         return result is not None
+    
+    def getLogo(self, proj_id):
+        query = "SELECT Logo FROM Projects WHERE ID = ?"
+        
+        with self.db_handler.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, (proj_id,))
+            result = cursor.fetchone()
+        
+        return result[0] if result else None  # Return the logo if found, otherwise None
+    
+    def setLogo(self, proj_id, logo):
+        query = "UPDATE Projects SET Logo = ? WHERE ID = ?"
+        
+        with self.db_handler.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, (logo, proj_id))
+            conn.commit()

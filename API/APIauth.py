@@ -20,9 +20,6 @@ def createAuthBlueprint(login_manager):
     @auth_bp.route('/login', methods=['POST'])
     def login():
         data = request.json
-        # TODO: Implement encryption
-        # This data should arrive encrypted to the system, so that a man in the middle attack is not possible
-        # on the login request to the server
         username = data.get('username')
         password = data.get('password')
 
@@ -44,9 +41,6 @@ def createAuthBlueprint(login_manager):
     def logout():
         username = session.pop('username', None)
         session.pop('tags', None)
-
-        if username in user_sessions:
-            user_sessions.pop(username)
 
         return jsonify({"message": "Logged out successfully"})
 
