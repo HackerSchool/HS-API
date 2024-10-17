@@ -5,20 +5,68 @@ from Tags import Tags
 
 ############# Members #############
 def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Tags):
+    """
+    Create a Blueprint for the members, generating the routes for the members management
+
+    Args:
+    :param handlers: Handlers: The handlers object, contains the handlers for the database
+    :param login_required: function: The login_required function, validates if a user is logged in depending on it's session data
+    :param tags: Tags: The tags object, contains the functions and data to validate the user's permissions
+
+    Returns:
+    :return: Blueprint: The Blueprint object with the routes for the members management
+    """
+
     members_bp = Blueprint('members', __name__)
 
     memberHandler = handlers.memberHandler
     memberProjectHandler = handlers.memberProjectHandler
 
+    # List all memberss
     @members_bp.route('/members', methods=['GET'])
     @login_required
     def get_members():
+        """
+        Returns all the members in the database in a list of lists,
+        each list contains the information of a member
+
+        The returned information is in the following format:
+        [{
+            "istID": "istID",
+            "memberNumber": "memberNumber",
+            "name": "name",
+            "username": "username",
+            "entry_date": "entry_date",
+            "course": "course",
+            "description": "description",
+            "mail": "mail",
+            "extra": "extra",
+        }, ...]
+        """
         members = memberHandler.listMembers()
         return jsonify(members)
 
     @members_bp.route('/members', methods=['POST'])
     @login_required
     def create_member():
+        """
+        Creates a member in the database with the information provided in the request
+        Only users with the permission to create a member can create a member
+        An error is returned if the required fields are not provided, the member already exists or the user does not have permission
+
+        The format is the folowing:
+        {
+            "istID": "istID",
+            "memberNumber": "memberNumber",
+            "name": "name",
+            "username": "username",
+            "password": "password",
+            "join_date": "join_date",
+            "course": "course",
+            "description": "description",
+            "mail": "mail"
+        }
+        """
         # Does the user have permission to create a member?
         user_tags = session['tags'].split(',')
         if not tags.can(user_tags, 'create_member'):
@@ -43,12 +91,54 @@ def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
     @members_bp.route('/members/<string:member_username>', methods=['GET'])
     @login_required
     def get_member(member_username):
+        """
+        Given a member username, returns the information of the member
+        In case the member does not exist, a 404 error is returned
+
+        The returned information is in the following format:
+        {
+            "istID": "istID",
+            "memberNumber": "memberNumber",
+            "name": "name",
+            "username": "username",
+            "entry_date": "entry_date",
+            "course": "course",
+            "description": "description",
+            "mail": "mail",
+            "extra": "extra",
+        }
+        """
         member_data = memberHandler.getMemberInfo(member_username)
+
+        # If the member does not exist
+        if not member_data:
+            return jsonify({'message': 'No member with that username!'}), 404
         return jsonify(member_data)
 
     @members_bp.route('/members/<string:member_username>', methods=['PUT'])
     @login_required
     def update_member(member_username):
+        """
+        Edits the information of a member with the username provided in the url
+        Only users with the permission to edit a member can update a member
+        An error is returned if the member does not exist, the user does not have permission or the data provided is invalid
+
+        The format is the folowing:
+        {
+            "istID": "istID",
+            "memberNumber": "memberNumber",
+            "name": "name",
+            "username": "username",
+            "password": "password",
+            "entry_date": "entry_date",
+            "course": "course",
+            "description": "description",
+            "mail": "mail",
+            "extra": "extra"
+        }
+        You don't need to send all the fields, only the ones you want to update
+        If unkonwn fields are provided, a 400 error is returned
+        """
         # Get the request data
         data = request.json
         if not data:
@@ -89,6 +179,11 @@ def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
     @members_bp.route('/members/<string:member_username>', methods=['DELETE'])
     @login_required
     def delete_member(member_username):
+        """
+        Deletes a member with the username provided in the url
+        Only users with the permission to delete a member can delete a member
+        An error is returned if the member does not exist or the user does not have permission
+        """
         # Does the user have permission to delete the member?
         user_tags = session['tags'].split(',')
         if not tags.can(user_tags, 'delete_member'):
@@ -106,13 +201,22 @@ def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
         member_id = memberHandler.getMemberIdByUsername(member_username)
         if member_id is None:
             return jsonify({'message': 'Member not found'}), 404
-        projects = memberProjectHandler.getMemberProjects(member_id)
+        projects = memberProjectHandler.listProjectsForMember(member_id)
         return jsonify(projects)
     
     ############# Tags #############
     @members_bp.route('/members/<string:member_username>/tags', methods=['GET'])
     @login_required
     def get_member_tags(member_username):
+        """
+        Given a member username, returns the tags associated with the member
+        In case the member does not exist, a 404 error is returned
+
+        The returned information is in the following format:
+        {
+            "tags": "tag1,tag2,..."
+        }
+        """
         member_id = memberHandler.getMemberIdByUsername(member_username)
         if member_id is None:
             return jsonify({'message': 'Member not found'}), 404
@@ -121,7 +225,18 @@ def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
     
     @members_bp.route('/members/<string:member_username>/tags', methods=['POST'])
     @login_required
-    def add_member_tag(member_username):        
+    def add_member_tag(member_username): 
+        """
+        Attempt to add a tag to a member
+        Only users with the permission to add a tag can add a tag
+        An error is returned if the member does not exist, the tag is already associated with the member or the user does not have permission
+        You cannot add a tag with an highier permission level than your own
+
+        The format is the folowing:
+        {
+            "tag": "tag"
+        }
+        """       
         # Get the request data
         data = request.json
         if not data:
@@ -153,6 +268,16 @@ def createMembersBlueprint(handlers: handlers.Handlers, login_required, tags: Ta
     @members_bp.route('/members/<string:member_username>/tags', methods=['DELETE'])
     @login_required
     def remove_member_tag(member_username):
+        """
+        Attempts to remove a tag from a member
+        Only users with the permission to remove a tag can remove a tag
+        An error is returned if the member does not exist, the tag is not associated with the member or the user does not have permission
+        
+        The format is the folowing:
+        {
+            "tag": "tag"
+        }
+        """
         # Get the request data
         data = request.json
         if not data:

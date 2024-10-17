@@ -9,6 +9,20 @@ def hash_password(password):
     hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hashed.decode('utf-8')
 
+def convertToDictionary(member: list):
+    return {
+        "ID": member[0],
+        "istID": member[1],
+        "memberNumber": member[2],
+        "Name": member[3],
+        "Username": member[4],
+        "Entry_date": member[6],
+        "Course": member[7],
+        "Description": member[8],
+        "Mail": member[9],
+        "Extra": member[10],
+    }
+
 class MemberHandler:
     def __init__(self, db_handler):
         self.db_handler = db_handler
@@ -130,7 +144,10 @@ class MemberHandler:
             cursor.execute(query, values)
             members = cursor.fetchall()
 
-        return members  # Return the list of members
+        # If no members are found, return None
+        if not members:
+            return None
+        return [convertToDictionary(member) for member in members]  # Return the list of members
 
     def getMemberIdByName(self, member_name):
         query = "SELECT ID FROM Members WHERE Name = ?"
@@ -159,8 +176,9 @@ class MemberHandler:
             cursor = conn.cursor()
             cursor.execute(query, (username,))
             result = cursor.fetchone()
-        
-        return result if result else None  # Return the member info if found, otherwise None
+
+        # If no member is found, return None
+        return convertToDictionary(result) if result else None
     
     def getLogo(self, username):
         query = "SELECT Logo FROM Members WHERE Username = ?"

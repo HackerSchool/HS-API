@@ -6,6 +6,7 @@ BASE_URL = 'http://0.0.0.0:5100'  # Base URL for the API
 def request_members(cookies=None):
     try:
         response = requests.get(f'{BASE_URL}/members', cookies=cookies)
+        print(response)
         return response.json()
     except requests.exceptions.RequestException as e:
         return {"error": str(e)}

@@ -61,7 +61,7 @@ class MemberProjectHandler:
             return (True, 'Member-Project relationship updated successfully!')
 
     # Function to list all projects a member is in, ordered by entry date
-    def listProjectsForMember(self, member_id):
+    def listProjectsForMember(self, member_id: int):
         query = """
         SELECT p.ID, p.Name, p.Description, p.Start_date, p.State, p.Logo, mp.Entry_date, mp.Exit_date
         FROM MemberProject mp
@@ -78,7 +78,7 @@ class MemberProjectHandler:
         return projects  # Return the list of projects for the member
 
     # Function to list all members in a project, ordered by entry date
-    def listMembersForProject(self, project_id):
+    def listMembersForProject(self, project_id: int):
         query = """
         SELECT m.ID, m.Name, m.Username, mp.Entry_date, mp.Exit_date
         FROM MemberProject mp
@@ -94,7 +94,7 @@ class MemberProjectHandler:
 
         return members  # Return the list of members in the project
     
-    def deleteMemberProjectRelation(self, member_id, project_id):
+    def deleteMemberProjectRelation(self, member_id: int, project_id: int):
         with self.db_handler.get_connection() as conn:
             cursor = conn.cursor()
 

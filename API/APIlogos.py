@@ -14,6 +14,17 @@ def isALink(link):
 
 ############# Logos #############
 def createLogosBlueprint(handlers: handlers.Handlers, login_required, tags: Tags):
+    """
+    Create a Blueprint for the logos, generating the routes for the logos management
+
+    Args:
+    :param handlers: handlers.Handlers: The handlers object, contains the handlers for the database
+    :param login_required: function: The login_required function, validates if a user is logged in depending on it's session data
+    :param tags: Tags: The tags object, contains the functions and data to validate the user's permissions
+
+    Returns:
+    :return: Blueprint: The Blueprint object with the routes for the logos management
+    """
     logo_bp = Blueprint('logos', __name__)
 
     memberHandler = handlers.memberHandler
@@ -25,6 +36,17 @@ def createLogosBlueprint(handlers: handlers.Handlers, login_required, tags: Tags
     @logo_bp.route('/members/<string:username>/logo', methods=['GET'])
     @login_required
     def getMemberLogo(username):
+        """
+        Given a username, returns the logo of the member
+
+        Return format:
+        {
+            "link": "url"  # If the logo is a link
+        }
+        or
+        {
+            "image": base64 format  # If the logo is in the file system
+        """
         if not memberHandler.getMemberIdByUsername(username):
             return jsonify({"error": "Member not found"}), 404
 
@@ -48,6 +70,17 @@ def createLogosBlueprint(handlers: handlers.Handlers, login_required, tags: Tags
     @logo_bp.route('/members/<string:username>/logo', methods=['POST'])
     @login_required
     def setMemberLogo(username):
+        """
+        Sets the logo of a member given a username
+
+        The format is the following:
+        {
+            "link": "url"  # If the logo is a link
+        }
+        or
+        {
+            "image": base64 format # If the logo is in the file system
+        """
         if not memberHandler.getMemberIdByUsername(username):
             return jsonify({"error": "Member not found"}), 404
         
@@ -86,6 +119,18 @@ def createLogosBlueprint(handlers: handlers.Handlers, login_required, tags: Tags
     @logo_bp.route('/projects/<int:proj_id>/logo', methods=['GET'])
     @login_required
     def getProjectLogo(proj_id):
+        """
+        Given a project id, returns the logo of the project
+
+        Return format:
+        {
+            "link": "url"  # If the logo is a link
+        }
+        or
+        {
+            "image": base64 format # If the logo is in the file system
+        }
+        """
         if not projectHandler.exists(proj_id):
             return jsonify({"error": "Project not found"}), 404
 
@@ -108,6 +153,18 @@ def createLogosBlueprint(handlers: handlers.Handlers, login_required, tags: Tags
     @logo_bp.route('/projects/<int:proj_id>/logo', methods=['POST'])
     @login_required
     def setProjectLogo(proj_id):
+        """
+        Sets the logo of a project given a project id
+
+        The format is the following:
+        {
+            "link": "url"  # If the logo is a link
+        }
+        or
+        {
+            "image": base64 format # If the logo is in the file system
+        }
+        """
         if not projectHandler.exists(proj_id):
             return jsonify({"error": "Project not found"}), 404
         
