@@ -1,9 +1,11 @@
 # database_handler.py
 import sqlite3
 
-def setup_database():
+from flask import Flask
+
+def setup_database(db_name: str) -> None:
     # Create a connection to the SQLite database
-    conn = sqlite3.connect('hackerschool.db', check_same_thread=False)
+    conn = sqlite3.connect(db_name, check_same_thread=False)
     
     # Create a cursor object
     cursor = conn.cursor()
@@ -59,17 +61,20 @@ def setup_database():
     conn.close()
 
 class DatabaseHandler:
-    def __init__(self, db_name):
-        self.db_name = db_name
+    def __init__(self):
+        self.db_name = None 
         self.db_setup = False
 
-    def get_connection(self):
+    def init_app(self, app: Flask) -> None:
+        self.db_name = app.config['DATABASE_PATH']
+
+    def get_connection(self) -> sqlite3.Connection:
         try:
             if not self.db_setup:
-                setup_database()
+                setup_database(self.db_name)
                 self.db_setup = True
             conn = sqlite3.connect(self.db_name)
         except sqlite3.OperationalError:
-            print("Error: Database not found or could not be opened.")
+            print(f"Error: Database '%s' not found or could not be opened.", self.db_name)
             return None
         return conn

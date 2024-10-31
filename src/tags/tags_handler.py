@@ -1,26 +1,22 @@
 import json
 
-class Tags:
-    def __init__(self, tagsFilename: str):
-        self.tags = None
-        self.tagsFilename = tagsFilename
+from flask import Flask
 
-        # Recieves a tags.json file, with a field called tags, which is a list of tags
-        # Example of a Tag:
-        # "member": {
-        #     "name": "Member",
-        #     "description": "The person who is a member of the company.",
-        #     "color": "#FFFFFF",
-        #     "level": 4,
-        #     "permissions": {
-        #         "create_member": false,
-        #         "delete_member": false,
-        #         "create_delete": false,
-        #         "delete_delete": false
-        #     }
-        # }
+_TAGS_ERR_MESSAGES = {
+    "edit_member": "You don't have permission to edit this member",
+}
+
+class TagsHandler:
+    def __init__(self):
+        self.tags = None
+    
+    @staticmethod
+    def get_tag_err_message(tag: str) -> str:
+        return _TAGS_ERR_MESSAGES[tag]
+   
+    def init_app(self, app: Flask) -> None:
         try:
-            with open(tagsFilename, "r") as file:
+            with open(app.config["TAGS_PATH"], "r") as file:
                 self.tags = json.load(file)["tags"]
                 allTagNames = self.tags.keys()
                 print("Detecting tags:")
@@ -44,8 +40,7 @@ class Tags:
         return False
     
     def can(self, tag_list: list, request: str, tagToAdd: str = None):
-        can = False
-
+        # can = False
         # Can we modify this tag? If it has an higher level than our highest tag, return False
         if tagToAdd is not None:
             # Check if the tagToAdd exists
@@ -61,9 +56,11 @@ class Tags:
 
         for tag in tag_list:
             if self.canSingle(tag, request):
-                can = True
-                break
-        return can
+                return True
+                # can = True
+                # break
+        # return can
+        return False
     
     def getHighiest(self, tags_list: list):
         highiest = 10000
@@ -77,8 +74,3 @@ class Tags:
         if highiest_tag == "":
             return None
         return highiest_tag
-
-
-if __name__ == "__main__":
-    tags = Tags("tags.json")
-    print(tags.can("sysadmin", "create_member"))
