@@ -1,8 +1,8 @@
 from flask import session, request, jsonify
 
-from api.projects import bp
-from api.decorators import login_required
-from api.extensions import project_service, member_project_service, tags_handler
+from app.api.projects import bp
+from app.api.decorators import login_required
+from app.api.extensions import project_service, member_project_service, tags_handler
 
 @bp.route('/projects', methods=['GET'])
 @login_required
@@ -55,7 +55,7 @@ def get_project(project_id):
     Returns a project with the id provided in the url
     In case the project does not exist, a 404 error is returned
     """
-    project_data = project_service.getProject(project_id)
+    project_data = project_service.getProjectInfo(project_id)
     if not project_data:
         return jsonify({'message': 'Project not found'}), 404
     return jsonify(project_data)

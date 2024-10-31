@@ -1,7 +1,7 @@
 from flask import request, jsonify, session
 
-from api.auth import bp
-from api.extensions import login_manager
+from app.api.auth import bp
+from app.api.extensions import login_manager
 
 @bp.route('/login', methods=['POST'])
 def login():

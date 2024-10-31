@@ -1,8 +1,8 @@
 from flask import request, jsonify
 
-from api.member_projects import bp
-from api.decorators import login_required
-from api.extensions import member_service, member_project_service
+from app.api.member_projects import bp
+from app.api.decorators import login_required
+from app.api.extensions import member_service, member_project_service
 
 @bp.route('/link/<string:username>/<int:proj_id>', methods=['POST'])
 @login_required

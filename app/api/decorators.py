@@ -2,7 +2,7 @@ from functools import wraps
 
 from flask import session, jsonify
 
-from api.extensions import tags_handler
+from app.api.extensions import tags_handler
 
 def login_required(f):
     @wraps(f)

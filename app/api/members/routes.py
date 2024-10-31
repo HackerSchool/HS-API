@@ -1,8 +1,31 @@
 from flask import session, jsonify, request
 
-from api.members import bp
-from api.decorators import login_required
-from api.extensions import member_service, member_project_service, tags_handler
+from app.api.members import bp
+from app.api.decorators import login_required
+from app.api.extensions import member_service, member_project_service, tags_handler
+
+@bp.route('/members', methods=['GET'])
+@login_required
+def get_members():
+    """
+    Returns all the members in the database in a list of lists,
+    each list contains the information of a member
+
+    The returned information is in the following format:
+    [{
+        "istID": "istID",
+        "memberNumber": "memberNumber",
+        "name": "name",
+        "username": "username",
+        "entry_date": "entry_date",
+        "course": "course",
+        "description": "description",
+        "mail": "mail",
+        "extra": "extra",
+    }, ...]
+    """
+    members = member_service.listMembers()
+    return jsonify(members)
 
 @bp.route('/members', methods=['POST'])
 @login_required
