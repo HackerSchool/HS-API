@@ -2,7 +2,7 @@
 .venv/
 **/.git/
 
-logos/
+logos_dir/
 flask-session/
 
 requirements.txt

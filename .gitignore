@@ -2,6 +2,6 @@ __pycache__/
 .venv/
 
 flask_session/
-logos/
+logos_dir/
 
 .env
