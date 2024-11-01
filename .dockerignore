@@ -2,8 +2,7 @@
 .venv/
 **/.git/
 
-logos_dir/
-flask-session/
+data/*
 
 requirements.txt
 .env.example
@@ -12,3 +11,4 @@ requirements.txt
 *.png
 README.md
 *.db
+*.sqlite3

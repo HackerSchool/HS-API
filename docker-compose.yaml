@@ -4,6 +4,6 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ${DB_PATH}:/app/${DB_PATH}
+      - ${DATABASE_PATH}:/app/${DATABASE_PATH}
       - ${TAGS_PATH}:/app/${TAGS_PATH}
       - ${LOGOS_PATH}:/app/${LOGOS_PATH}
