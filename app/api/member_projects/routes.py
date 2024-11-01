@@ -4,7 +4,7 @@ from app.api.member_projects import bp
 from app.api.decorators import login_required
 from app.api.extensions import member_service, member_project_service
 
-@bp.route('/link/<string:username>/<int:proj_id>', methods=['POST'])
+@bp.route('/<string:username>/<int:proj_id>', methods=['POST'])
 @login_required
 def linkMemberProject(username, proj_id):
     user_id = member_service.getMemberIdByUsername(username)
@@ -31,7 +31,7 @@ def linkMemberProject(username, proj_id):
         return jsonify({"error": ret[1]}), 400
     return jsonify({"success": ret[1]}), 200
 
-@bp.route('/link/<string:username>/<int:proj_id>', methods=['PUT'])
+@bp.route('/<string:username>/<int:proj_id>', methods=['PUT'])
 @login_required
 def editMemberProject(username, proj_id):
     user_id = member_service.getMemberIdByUsername(username)
@@ -53,7 +53,7 @@ def editMemberProject(username, proj_id):
         return jsonify({"error": ret[1]}), 400
     return jsonify({"success": ret[1]}), 200
 
-@bp.route('/link/<string:username>/<int:proj_id>', methods=['DELETE'])
+@bp.route('/<string:username>/<int:proj_id>', methods=['DELETE'])
 @login_required
 def unlinkMemberProject(username, proj_id):
     user_id = member_service.getMemberIdByUsername(username)

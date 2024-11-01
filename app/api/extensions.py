@@ -1,3 +1,4 @@
+from flask_session import Session
 from app.database.database_handler import DatabaseHandler
 from app.tags.tags_handler import TagsHandler
 from app.logos.logos_handler import LogosHandler
@@ -7,6 +8,7 @@ from app.services.member import MemberHandler
 from app.services.project import ProjectHandler
 from app.services.member_project import MemberProjectHandler
 
+session = Session()
 db_handler = DatabaseHandler()
 tags_handler = TagsHandler() 
 logos_handler = LogosHandler() 

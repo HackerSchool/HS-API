@@ -4,7 +4,7 @@ from app.api.projects import bp
 from app.api.decorators import login_required
 from app.api.extensions import project_service, member_project_service, tags_handler
 
-@bp.route('/projects', methods=['GET'])
+@bp.route('', methods=['GET'])
 @login_required
 def get_projects():
     """
@@ -14,7 +14,7 @@ def get_projects():
     return jsonify(projects)
 
 # Create a project
-@bp.route('/projects', methods=['POST'])
+@bp.route('', methods=['POST'])
 @login_required
 def create_project():
     """
@@ -48,7 +48,7 @@ def create_project():
     return jsonify({'message': 'Project created successfully!'})
 
 # Get the data of a specific project
-@bp.route('/projects/<int:project_id>', methods=['GET'])
+@bp.route('/<int:project_id>', methods=['GET'])
 @login_required
 def get_project(project_id):
     """
@@ -60,7 +60,7 @@ def get_project(project_id):
         return jsonify({'message': 'Project not found'}), 404
     return jsonify(project_data)
 
-@bp.route('/projects/<int:project_id>', methods=['PUT'])
+@bp.route('/<int:project_id>', methods=['PUT'])
 @login_required
 def update_project(project_id):
     """
@@ -102,7 +102,7 @@ def update_project(project_id):
     else:
         return jsonify({'message': update_success[1]}), 500
 
-@bp.route('/projects/<int:project_id>', methods=['DELETE'])
+@bp.route('/<int:project_id>', methods=['DELETE'])
 @login_required
 def delete_project(project_id):
     """
@@ -122,7 +122,7 @@ def delete_project(project_id):
     project_service.deleteProject(project_id)
     return jsonify({'message': 'Project deleted successfully!'})
 
-@bp.route('/projects/<int:project_id>/members', methods=['GET'])
+@bp.route('/<int:project_id>/members', methods=['GET'])
 @login_required
 def get_project_members(project_id):
     members = member_project_service.listMembersForProject(project_id)

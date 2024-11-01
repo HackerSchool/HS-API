@@ -4,7 +4,7 @@ from app.api.members import bp
 from app.api.decorators import login_required
 from app.api.extensions import member_service, member_project_service, tags_handler
 
-@bp.route('/members', methods=['GET'])
+@bp.route('', methods=['GET'])
 @login_required
 def get_members():
     """
@@ -27,7 +27,7 @@ def get_members():
     members = member_service.listMembers()
     return jsonify(members)
 
-@bp.route('/members', methods=['POST'])
+@bp.route('', methods=['POST'])
 @login_required
 def create_member():
     """
@@ -69,7 +69,7 @@ def create_member():
         return jsonify({'message': ret[1]}), 400
     return jsonify({'message': 'Member created successfully!'})
 
-@bp.route('/members/<string:member_username>', methods=['GET'])
+@bp.route('/<string:member_username>', methods=['GET'])
 @login_required
 def get_member(member_username):
     """
@@ -96,7 +96,7 @@ def get_member(member_username):
         return jsonify({'message': 'No member with that username!'}), 404
     return jsonify(member_data)
 
-@bp.route('/members/<string:member_username>', methods=['PUT'])
+@bp.route('/<string:member_username>', methods=['PUT'])
 @login_required
 def update_member(member_username):
     """
@@ -157,7 +157,7 @@ def update_member(member_username):
         return jsonify({'message': update_success[1]}), 500
 
 
-@bp.route('/members/<string:member_username>', methods=['DELETE'])
+@bp.route('/<string:member_username>', methods=['DELETE'])
 @login_required
 def delete_member(member_username):
     """
@@ -176,7 +176,7 @@ def delete_member(member_username):
     member_service.deleteMember(member_id)
     return jsonify({'message': 'Member deleted successfully!'})
 
-@bp.route('/members/<string:member_username>/projects', methods=['GET'])
+@bp.route('/<string:member_username>/projects', methods=['GET'])
 @login_required
 def get_member_projects(member_username):
     member_id = member_service.getMemberIdByUsername(member_username)
@@ -186,7 +186,7 @@ def get_member_projects(member_username):
     return jsonify(projects)
 
 ############# Tags #############
-@bp.route('/members/<string:member_username>/tags', methods=['GET'])
+@bp.route('/<string:member_username>/tags', methods=['GET'])
 @login_required
 def get_member_tags(member_username):
     """
@@ -204,7 +204,7 @@ def get_member_tags(member_username):
     tags = member_service.getMemberTags(member_username)
     return jsonify(tags)
 
-@bp.route('/members/<string:member_username>/tags', methods=['POST'])
+@bp.route('/<string:member_username>/tags', methods=['POST'])
 @login_required
 def add_member_tag(member_username): 
     """
@@ -246,7 +246,7 @@ def add_member_tag(member_username):
         return jsonify({'message': ret[1]}), 500
     return jsonify({'message': 'Tag added successfully!'})
 
-@bp.route('/members/<string:member_username>/tags', methods=['DELETE'])
+@bp.route('/<string:member_username>/tags', methods=['DELETE'])
 @login_required
 def remove_member_tag(member_username):
     """
