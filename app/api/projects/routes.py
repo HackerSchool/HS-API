@@ -1,7 +1,8 @@
 from flask import session, request, jsonify
+from http import HTTPStatus
 
 from app.api.projects import bp
-from app.api.decorators import login_required
+from app.api.decorators import login_required, required_permission
 from app.api.extensions import project_service, member_project_service, tags_handler
 
 @bp.route('', methods=['GET'])
@@ -16,6 +17,7 @@ def get_projects():
 # Create a project
 @bp.route('', methods=['POST'])
 @login_required
+@required_permission('create_project')
 def create_project():
     """
     Creates a project in the database with the information provided in the request body
@@ -30,17 +32,12 @@ def create_project():
         "description": "description"
     }
     """
-    # Does the user have permition to create a project
-    user_tags = session['tags'].split(',')
-    if not tags_handler.can(user_tags, 'create_project'):
-        return jsonify({'message': 'You do not have permission to create a project'}), 403
-
     data = request.json
     required_fields = ['name', 'start_date', 'state', 'description']
 
     missing_fields = [field for field in required_fields if field not in data]
     if missing_fields:
-        return jsonify({'message': 'Missing required fields', 'missing_fields': missing_fields}), 400
+        return jsonify({'message': 'Missing required fields', 'missing_fields': missing_fields}), HTTPStatus.BAD_REQUEST
 
     ret = project_service.createProject(data['name'], data['description'], data['start_date'], data['state'], None)
     if not ret[0]:
@@ -57,11 +54,12 @@ def get_project(project_id):
     """
     project_data = project_service.getProjectInfo(project_id)
     if not project_data:
-        return jsonify({'message': 'Project not found'}), 404
+        return jsonify({'message': 'Project not found'}), HTTPStatus.NOT_FOUND
     return jsonify(project_data)
 
 @bp.route('/<int:project_id>', methods=['PUT'])
 @login_required
+@required_permission('edit_project')
 def update_project(project_id):
     """
     Updates the information of a project with the id provided in the url
@@ -78,15 +76,10 @@ def update_project(project_id):
     You don't need to send all the fields, only the ones you want to update
     If unkonwn fields are provided, a 400 error is returned
     """
-    # Does the user have permition to update a project
-    user_tags = session['tags'].split(',')
-    if not tags_handler.can(user_tags, 'edit_project'):
-        return jsonify({'message': 'You do not have permission to edit a project'}), 403
-
     # Check if the project exists
     project = project_service.exists(project_id)
     if not project:
-        return jsonify({'message': 'Project not found'}), 404
+        return jsonify({'message': 'Project not found'}), HTTPStatus.NOT_FOUND
 
     # Define valid columns
     valid_columns = {'name', 'start_date', 'state', 'description'}
@@ -94,33 +87,29 @@ def update_project(project_id):
     data = request.json
     invalid_fields = [key for key in data.keys() if key not in valid_columns]
     if invalid_fields:
-        return jsonify({'message': 'Invalid fields provided', 'invalid_fields': invalid_fields}), 400
+        return jsonify({'message': 'Invalid fields provided', 'invalid_fields': invalid_fields}), HTTPStatus.BAD_REQUEST 
 
     update_success = project_service.editProject(project_id, **data)
-    if update_success[0]:
-        return jsonify({'message': 'Project updated successfully!'})
-    else:
-        return jsonify({'message': update_success[1]}), 500
+    if not update_success[0]:
+        return jsonify({'message': update_success[1]}), HTTPStatus.INTERNAL_SERVER_ERROR
+
+    return jsonify({'message': 'Project updated successfully!'}), HTTPStatus.OK
 
 @bp.route('/<int:project_id>', methods=['DELETE'])
 @login_required
+@required_permission('delete_project')
 def delete_project(project_id):
     """
     Deletes a project with the id provided in the url and removes the associations with the members
     Only users with the permission to delete a project can delete a project
     An error is returned if the project does not exist or the user does not have permission
     """
-    # Does the user have permition to delete a project
-    user_tags = session['tags'].split(',')
-    if not tags_handler.can(user_tags, 'delete_project'):
-        # Check if the project exists
-        project = project_service.getProject(project_id)
-        if not project:
-            return jsonify({'message': 'Project not found'}), 404
-        return jsonify({'message': 'You do not have permission to delete a project'}), 403
+    project = project_service.getProject(project_id)
+    if not project:
+        return jsonify({'message': 'Project not found'}), HTTPStatus.NOT_FOUND
 
     project_service.deleteProject(project_id)
-    return jsonify({'message': 'Project deleted successfully!'})
+    return jsonify({'message': 'Project deleted successfully!'}), HTTPStatus.OK
 
 @bp.route('/<int:project_id>/members', methods=['GET'])
 @login_required
