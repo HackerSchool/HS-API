@@ -2,8 +2,13 @@ import json
 
 from flask import Flask
 
-_TAGS_ERR_MESSAGES = {
-    "edit_member": "You don't have permission to edit this member",
+_PERMISSIONS_ERR_MESSAGES = {
+    "create_member": "You don't have permission to create members",
+    "delete_member": "You don't have permission to delete members",
+    "edit_member": "You don't have permission to edit members",
+    "create_project": "You don't have permission to create projects",
+    "delete_project": "You don't have permission to delete projects",
+    "edit_project": "You don't have permission to edit projects",
 }
 
 class TagsHandler:
@@ -11,8 +16,8 @@ class TagsHandler:
         self.tags = None
     
     @staticmethod
-    def get_tag_err_message(tag: str) -> str:
-        return _TAGS_ERR_MESSAGES[tag]
+    def get_permission_err_message(tag: str) -> str:
+        return _PERMISSIONS_ERR_MESSAGES.get(tag)
    
     def init_app(self, app: Flask) -> None:
         try:
