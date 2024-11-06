@@ -6,28 +6,54 @@ The HackerSchool API is an integrated database that accepts requests from the In
 ## Usage
 The API will work on the hackerschool.dev/api endpoint, requiring member login to access the database. The endpoint is not yet set.
 
+### Auth
+```txt
+Endpoints:
+- POST /login  Login
+- GET  /logout Logout
+```
+
 ### Members
-> You will be able to execute the following member-related actions:
-- **GET /members**: Retrieve a list of all members.
-- **GET /members/{username}**: Retrieve details of a specific member by their ID.
-- **POST /members**: Add a new member to the database.
-- **PUT /members/{username}**: Update the details of an existing member by their ID.
-- **DELETE /members/{username}**: Remove a member from the database by their ID.
-- **GET /members/{username}/projects**: Get the projects a member is in.
+```txt
+Endpoints:
+- GET    /members                          Get all members
+- POST   /members                          Create member
+- GET    /members/{username}               Get member
+- PUT    /members/{username}               Update member
+- DELETE /members/{username}               Delete member
+- PUT    /members/{username}/edit_password Change password 
+- POST   /members/{username}/{proj_name}   Add project to member
+- DELETE /members/{username}/{proj_name}   Remove project from member
+- GET    /members/{username}/projects      Get member projects
+- GET    /members/{username}/logo          Get member logo
+- PUT    /members/{username}/logo          Upload member logo
+- DELETE /members/{username}/logo          Delete member logo
+- GET    /members/{username}/tags          Get member tags
+- PUT    /members/{username}/tags          Add member tags
+- DELETE /members/{username}/tags          Delete member tags
+```
 
 ### Projects
-> You will be able to execute the following project-related actions:
-- **GET /projects**: Retrieve a list of all projects.
-- **POST /projects**: Create a new project.
-- **GET /projects/{project_id}**: Retrieve details of a specific project by its ID.
-- **PUT /projects/{project_id}**: Update an existing project by its ID.
-- **DELETE /projects/{project_id}**: Delete a specific project by its ID.
-- **GET /projects/{project_id}/members**: Retrieve a list of members for a specific project by its ID.
-
+```txt
+Endpoints:
+- GET    /projects                        Get all projects
+- POST   /projects                        Create project
+- GET    /projects/{proj_name}            Get project
+- PUT    /projects/{proj_name}            Update project
+- DELETE /projects/{proj_name}            Delete project
+- POST   /projects/{proj_name}/{username} Add project to member
+- DELETE /projects/{proj_name}/{username} Remove project from member
+- GET    /projects/{proj_name}/members    Get project members
+- GET    /projects/{proj_name}/logo       Get project logo
+- PUT    /projects/{proj_name}/logo       Upload project logo
+- DELETE /projects/{proj_name}/logo       Delete project logo
+```
 ### Login
-To access anything in the API, you need to login, there is a session limit for your activities - I have made an example code `APItester.py` for you to see.
+The authentication is session based. To login and get a session use the `/login` endpoint.
+
 ***
 ## What now?
 I will continue to work on this project and optimize it's feattures, if anyone wants to join I would much appreciate developing a *WebApp* to wrap the API command and give a GUI to the users.
-### Soon...
-I would very much like to add a command line application to wrap the API calls... HackerSchool should be managed bu a CLI...
+
+## CLI
+A CLI for the API is available [here](https://github.com/HackerSchool/hs-cli).
