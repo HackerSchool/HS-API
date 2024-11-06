@@ -2,6 +2,7 @@ __pycache__/
 .venv/
 
 data/flask_sessions/
-data/logos/
+data/photos/
+data/logs/
 
 .env
