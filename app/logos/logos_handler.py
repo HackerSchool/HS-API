@@ -1,4 +1,4 @@
-# Description: This file contains the class that handles the logos of the companies.
+# Description: This file contains the class that handles users and projects.
 import os
 
 from flask import Flask
@@ -31,7 +31,7 @@ class LogosHandler:
             os.makedirs(self.projects_path)
  
     def _get_logo_directory(self, logo_type: str) -> str:
-        if logo_type == 'members':
+        if logo_type == 'member':
             return self.members_path
         elif logo_type == 'project':
             return self.projects_path
@@ -87,4 +87,13 @@ class LogosHandler:
             if os.path.isfile(path):
                 return path, content_type
         raise LogoNotFoundError(resource_id)
+    
+    def remove_logo(self, resource_id: str, logo_type: str):
+        for content_type in _VALID_CONTENT_TYPE:
+            path = f"{self._get_logo_directory(logo_type)}/{resource_id}.{content_type.split('/')[1]}"
+            if os.path.isfile(path):
+                os.remove(path)
+                return resource_id
+ 
+        return None
     
