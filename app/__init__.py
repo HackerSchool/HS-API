@@ -1,3 +1,6 @@
+import os
+import logging
+
 from flask import Flask
 
 from app.config import Config
@@ -16,36 +19,62 @@ def create_app(config_class=Config):
     tags_handler.init_app(flask_app)
     logos_handler.init_app(flask_app)
 
-    # Register blueprints
+    register_blueprints(flask_app)
+    register_error_handlers(flask_app)
+
+    setup_logger(flask_app)
+
+    return flask_app
+
+def register_blueprints(app: Flask):
     from app.api.auth import bp as auth_bp
-    flask_app.register_blueprint(auth_bp)
+    app.register_blueprint(auth_bp)
 
     from app.api.members import bp as members_bp
-    flask_app.register_blueprint(members_bp, url_prefix="/members")
+    app.register_blueprint(members_bp, url_prefix="/members")
 
     from app.api.projects import bp as projects_bp
-    flask_app.register_blueprint(projects_bp, url_prefix="/projects")
+    app.register_blueprint(projects_bp, url_prefix="/projects")
 
     from app.api.logos import bp as logos_bp
-    flask_app.register_blueprint(logos_bp)
+    app.register_blueprint(logos_bp)
 
-    from app.api.errors import handle_exception
+def register_error_handlers(app: Flask):
+    from app.api.errors import handle_http_exception
     from werkzeug.exceptions import HTTPException
-    flask_app.register_error_handler(HTTPException, handle_exception)
+    app.register_error_handler(HTTPException, handle_http_exception)
 
     # Register error handlers
     from app.api.errors import handle_api_error, APIError
-    flask_app.register_error_handler(APIError, handle_api_error)
+    app.register_error_handler(APIError, handle_api_error)
 
     # TODO: Should custom exceptions be prefered to ValueError? 
     from app.api.errors import handle_invalid_input
-    flask_app.register_error_handler(ValueError, handle_invalid_input)
+    app.register_error_handler(ValueError, handle_invalid_input)
 
     from sqlalchemy import exc
     from app.api.errors import handle_db_integrity_exception, handle_db_exceptions
-    flask_app.register_error_handler(exc.IntegrityError, handle_db_integrity_exception)
-    flask_app.register_error_handler(exc.SQLAlchemyError, handle_db_exceptions)
+    app.register_error_handler(exc.IntegrityError, handle_db_integrity_exception)
+    app.register_error_handler(exc.SQLAlchemyError, handle_db_exceptions)
 
-    return flask_app
+def setup_logger(app: Flask):
+    if app.debug: # don't set logger in debug
+        return
+
+    levels = {"DEBUG": logging.DEBUG, "INFO": logging.INFO, "WARNING": logging.WARNING}
+    app.logger.setLevel(levels[app.config["LOG_LEVEL"]])
+
+    log_file = app.config["LOG_FILE"]
+    if log_file is not None:
+        log_dir = os.path.dirname(log_file)
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
+        handler = logging.FileHandler(log_file)
+        BASIC_FORMAT = "[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s"  
+        handler.setFormatter(logging.Formatter(BASIC_FORMAT))
+        app.logger.addHandler(handler)
+
+        logging.getLogger("werkzeug").addHandler(handler)  # Root logger for all logs
+
 
 entry = create_app()
