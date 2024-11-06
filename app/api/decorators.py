@@ -76,7 +76,7 @@ def required_permission(*permissions: str, allow_self_action : bool = False):
             tags = session.get('tags')
             for perm in permissions:
                 if not tags_handler.can(tags, perm):
-                    return jsonify({"error": tags_handler.get_permission_err_message(perm)}), HTTPStatus.FORBIDDEN
+                    throw_api_error(HTTPStatus.FORBIDDEN, {"error": tags_handler.get_permission_err_message(perm)})
             return f(*args, **kwargs)
 
         return wrapper

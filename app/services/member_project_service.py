@@ -10,7 +10,7 @@ def create_member_project(
         project: Project,
         entry_date: str,
         contributions: str = "",
-):
+) -> MemberProjects:
     new_assoc = MemberProjects(
         entry_date=entry_date,
         contributions=contributions,
@@ -18,7 +18,7 @@ def create_member_project(
     new_assoc.member = member
     project.members.append(new_assoc)
     db.session.commit()
-    return new_assoc.to_dict()
+    return new_assoc
 
 def delete_member_project(
         member: Member,
@@ -33,9 +33,21 @@ def delete_member_project(
 
     return project.id
 
+def delete_project_member(
+        project: Project,
+        username: str,
+) -> int | None:
+    member = Member.query.filter_by(username=username).first()
+    if not member or project not in member.projects:
+        return None
+
+    project.members.remove(member)
+    db.session.commit()
+
+    return member.id
 
 def get_member_projects(member: Member) -> List[Project]:
-    return [assoc.project.to_dict() for assoc in member.projects if assoc.project]
+    return [assoc.project for assoc in member.projects if assoc.project]
 
 def get_project_members(project: Project) -> List[Member]:
-    return [assoc.member.to_dict() for assoc in project.members if assoc.member]
+    return [assoc.member for assoc in project.members if assoc.member]

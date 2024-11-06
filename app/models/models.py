@@ -102,10 +102,9 @@ class Member(db.Model):
             raise ValueError("'extra' must be a string.")
         
         # tags
-        if not isinstance(self.tags, str):
-            raise ValueError("'tags' must be a string.")
+        if not isinstance(self.tags, str) or self.tags == "":
+            raise ValueError("Member must have at least 1 tag")
         tags = self.tags.split(",") if "," in self.tags else [self.tags,]
-        print(tags_handler.tags.keys())
         for tag in tags:
             if tag not in tags_handler.tags.keys():
                 raise ValueError(f"Unknown tag '{tag}'")

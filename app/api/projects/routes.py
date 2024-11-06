@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 from flask import request, jsonify
 
-from app.services import project_service, member_project_service
+from app.services import project_service, member_project_service, member_service
 
 from app.api.projects import bp
 from app.api.errors import throw_api_error
@@ -82,11 +82,11 @@ def update_project(name):
     except ValidationError as e:
         throw_api_error((HTTPStatus.BAD_REQUEST, {"error": e.message}))
     
-    project = project_service.edit_member_by_username(name=name, **json_data)
+    project = project_service.get_project_by_name(name=name)
     if project is None:
         throw_api_error((HTTPStatus.NOT_FOUND, {"error": "Project not found"}))
 
-    return project.to_dict()
+    return project_service.edit_project(name=name, **json_data).to_dict()
 
 @bp.route('/<string:name>', methods=['DELETE'])
 @login_required
@@ -96,10 +96,11 @@ def delete_project(name):
     Deletes a member with provided name.
     An error is returned if the project does not exist.
     """
-    p_id = project_service.delete_project_by_name(name)
-    if p_id is None:
+    project = project_service.get_project_by_name(name=name)
+    if project is None:
         throw_api_error((HTTPStatus.NOT_FOUND, {"error": "Project not found"}))
 
+    p_id = project_service.delete_project(project)
     return jsonify({"message": "Project deleted successfully!", "id": p_id})
 
 
@@ -115,13 +116,46 @@ def get_project_members(name):
 
     return member_project_service.get_project_members(project) 
 
-@bp.route('/<string:name>/members', methods=['GET'])
-def add_project_member(name):
-    # TODO
-    pass
+@bp.route('/<string:name>/<string:username>', methods=['POST'])
+@login_required
+@required_permission('edit_project')
+def add_project_member(proj_name, username):
+    mandatory_schema = {
+        "type": "object",
+        "properties": {
+            "entry_date": {"type": "string"},
+            "contributions": {"type": "number"},
+        },
+        "required": ["entry_date"],
+        "additionalProperties": False
+    }
+    json_data = request.json
+    try:
+        validate(json_data, mandatory_schema)
+    except ValidationError as e:
+        throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
 
-@bp.route('/<string:name>/members', methods=['DELETE'])
-def delete_project_member(name):
-    # TODO
-    pass
+    member = member_service.get_member_by_username(username)
+    if member is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
+
+    project = project_service.get_project_by_name(proj_name)
+    if project is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Project not found"})
+    
+    return member_project_service.create_member_project(member, project, **json_data)
+
+@bp.route('/<string:name>/<string:username>', methods=['DELETE'])
+@login_required
+@required_permission('edit_project')
+def delete_project_member(proj_name, username):
+    project = member_service.get_project_by_username(username)
+    if project is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Project not found"})
+    
+    m_id = member_project_service.delete_project_member(project, username)
+    if m_id is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member is not associated with the project"})
+
+    return jsonify({"message": "Member no longer associated with project", "member_id": m_id})
 

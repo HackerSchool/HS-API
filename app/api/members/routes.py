@@ -20,7 +20,7 @@ def get_members():
 
 @bp.route('', methods=['POST'])
 @login_required
-@required_permission("create_member")
+@required_permission('create_member')
 def create_member():
     """
     Creates a member in the database with the information provided in the request body.
@@ -120,6 +120,8 @@ def delete_member(username):
     return jsonify({"message": "Member deleted successfully!", "member_id": m_id})
 
 @bp.route('/<string:username>/edit_password', methods=['PUT'])
+@login_required
+@required_permission('edit_member', 'edit_password', allow_self_action=True)
 def edit_password(username):
     schema = {
         "type": "object",
@@ -139,7 +141,8 @@ def edit_password(username):
     if member is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
 
-    return member_service.edit_member(member, **json_data) 
+    return member_service.edit_member_password(member, **json_data).to_dict()
+
 
 ################################################################################
 ############################### Member Projects ################################
@@ -150,10 +153,11 @@ def get_member_projects(username):
     if member is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
 
-    return member_project_service.get_member_projects(member)
+    return [p.to_dict() for p in member_project_service.get_member_projects(member)]
 
 # @login_required
 @bp.route('/<string:username>/<string:proj_name>', methods=['POST'])
+@required_permission('edit_project')
 def add_member_project(username, proj_name):
     mandatory_schema = {
         "type": "object",
@@ -178,25 +182,28 @@ def add_member_project(username, proj_name):
     if project is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Project not found"})
     
-    return member_project_service.create_member_project(member, project, **json_data)
+    return member_project_service.create_member_project(member, project, **json_data).to_dict()
 
 @bp.route('/<string:username>/<string:proj_name>', methods=['DELETE'])
+@login_required
+@required_permission('edit_project')
 def delete_member_project(username, proj_name):
     member = member_service.get_member_by_username(username)
     if member is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
     
-    p_id = member_project_service.remove_member_project(member, proj_name)
+    p_id = member_project_service.delete_member_project(member, proj_name)
     if p_id is None:
-        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "User is not associated with the project"})
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member is not associated with the project"})
 
     return jsonify({"message": "Member not longer associated with project", "project_id": p_id})
+
 
 ################################################################################
 ##################################### Tags #####################################
 ################################################################################
 @bp.route('/<string:username>/tags', methods=['GET'])
-# @login_required
+@login_required
 def get_member_tags(username):
     """
     Given a member username, returns the tags associated with the member
@@ -233,18 +240,22 @@ def add_member_tag(username):
     except ValidationError as e:
         throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
     
-    # FIXME
     # Does the user have permission to add a tag to the member?
-    # user_tags = session['tags'].split(',')
-    # if not tags_handler.can(user_tags, 'add_tag', tag_to_add=json_data['tag']):
-    #     return jsonify({'message': 'You do not have permission to add that tag'}), HTTPStatus.FORBIDDEN
+    user_tags = session['tags']
+    if not tags_handler.can(user_tags, 'add_tag', tag_to_add=json_data['tag']):
+        throw_api_error(HTTPStatus.FORBIDDEN, {"error": "You don't have permission to add that tag"})
 
     # Get the member ID from the username
     member = member_service.get_member_by_username(username)
     if member is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
 
-    return member_service.add_member_tag(member, **json_data)
+    tags = member_service.add_member_tag(member, **json_data)
+    if tags is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "User already has this tag"})
+    session['tags'] = tags
+
+    return tags
 
 @bp.route('/<string:username>/tags', methods=['DELETE'])
 @login_required
@@ -268,19 +279,18 @@ def remove_member_tag(username):
     except ValidationError as e:
         throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
 
-    # FIXME
     # Does the user have permission to remove a tag from the member?
-    # user_tags = session.get('tags').split(',')
-    # if not tags_handler.can(user_tags, 'add_tag', tag_to_add=json_data['tag']):
-    #     return jsonify({'error': 'You do not have permission to remove that tag'}), HTTPStatus.FORBIDDEN
+    user_tags = session.get('tags')
+    if not tags_handler.can(user_tags, 'add_tag', tag_to_add=json_data['tag']):
+        throw_api_error(HTTPStatus.FORBIDDEN, {"error": "You don't have permission to remove that tag"})
 
     member = member_service.get_member_by_username(username)
     if member is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
-        # return jsonify({'error': 'Member not found'}), HTTPStatus.NOT_FOUND 
 
-    tags = member_service.remove_member_tag(username, **json_data)
+    tags = member_service.remove_member_tag(member, **json_data)
     if tags is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "User does not have this tag"})
+    session['tags'] = tags
 
-    return member_service.remove_member_tag(username, **json_data)
+    return tags

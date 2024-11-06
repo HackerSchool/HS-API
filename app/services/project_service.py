@@ -28,19 +28,12 @@ def get_project_by_name(name: str) -> Project:
     project = Project.query.filter_by(name=name).first()
     return project if project else None
 
-def delete_project_by_name(name: str) -> int | None:
-    project = Project.query.filter_by(name=name).first()
-    if project is None:
-        return None
+def delete_project(project: Project) -> int:
     db.session.delete(project)
     db.session.commit()
     return project.id
 
-def edit_project_by_name(name: str, **kwargs) -> Project | None:
-    project = Project.query.filter_by(name=name).first()
-    if project is None:
-        return None
-    # updating the fields 
+def edit_project(project: Project, **kwargs) -> Project:
     for field, val in kwargs.items():
         setattr(project, field, val)
     project.check_invariants() # this will fail if the fields are invalid

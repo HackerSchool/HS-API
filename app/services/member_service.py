@@ -27,7 +27,7 @@ def create_member(
     exit_date: str = "",
     description: str = "", 
     extra: str = "",
-) -> dict :
+) -> Member :
     hashed_password = _hash_password(password)
     new_member = Member(
         ist_id=ist_id,
@@ -49,7 +49,7 @@ def create_member(
 
 
 def get_all_members() -> List[Member]:
-    return [member for member in Member.query.all()]
+    return Member.query.all()
 
 def get_member_by_username(username: str) -> Member | None:
     return Member.query.filter_by(username=username).first()
@@ -76,24 +76,31 @@ def edit_member_password(member: Member, password: str) -> Member:
 def get_member_tags(member: Member) -> List[str]:
     return [member.tags,] if "," not in member.tags else member.tags.split(",") 
 
-def add_member_tag(member: Member, tag: str) -> List[str]:
+def add_member_tag(member: Member, tag: str) -> List[str] | None:
+    tags = [member.tags,] if "," not in member.tags else member.tags.split(",") 
     # already has tag
-    if tag in member.tags:
-        return [member.tags,] if "," not in member.tags else member.tags.split(",") 
-    member.tags += f",{tag}"
+    if tag in tags:
+        return None 
+
+    tags += [tag,]
+    print(tags)
+    member.tags = ",".join(tags)
+
     member.check_invariants() # this will fail if the fields are invalid
     db.session.commit()
-    return [member.tags,] if "," not in member.tags else member.tags.split(",") 
+    return tags
  
-def remove_member_tag(member: Member, target_tag: str) -> List[str]:
+def remove_member_tag(member: Member, tag: str) -> List[str] | None:
     tags = member.tags.split(",") if len(member.tags) > 1 else [member.tags,]
-    if target_tag not in tags:
+    # does not have tag
+    if tag not in tags:
         return None
 
-    tags = ",".join(list(filter(lambda x: x != target_tag, tags))) # remove tag and recreate tags string
+    # filter tag
+    tags = [t for t in tags if t != tag] 
+    member.tags = ",".join(tags)
 
-    member.tags = tags
     member.check_invariants()
     db.session.commit()
-    return member.tags if "," not in member.tags else member.tags.split(",") 
+    return tags 
     
