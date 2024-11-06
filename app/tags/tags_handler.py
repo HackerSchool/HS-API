@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 import json
 
 from flask import Flask
@@ -6,7 +8,6 @@ _PERMISSIONS_ERR_MESSAGES = {
     "create_member": "You don't have permission to create members",
     "delete_member": "You don't have permission to delete members",
     "edit_member": "You don't have permission to edit members",
-    "edit_password": "You don't have permission to edit passwords",
     "edit_password": "You don't have permission to edit passwords",
     "create_project": "You don't have permission to create projects",
     "delete_project": "You don't have permission to delete projects",
@@ -33,47 +34,51 @@ class TagsHandler:
             print("File not found")
             return None
         
-    def can_single(self, tag: str, request: str):
-        # If the tag does not exist in the tags, return False
-        if tag not in self.tags:
-            print(f"Tag {tag} not found")
-            return False
-        if request not in self.tags[tag]["permissions"]:
-            print(f"Request \"{request}\" not found in tag {tag}")
-            return False
-        if tag in self.tags:
-            return self.tags[tag]["permissions"][request]
-        return False
-    
-    def can(self, tag_list: list, request: str, tag_to_add: str = None):
-        # Can we modify this tag? If it has an higher level than our highest tag, return False
-        if tag_to_add is not None:
-            # Check if the tagToAdd exists
-            if tag_to_add not in self.tags:
-                print(f"Tag {tag_to_add} not found")
-                return False
-            target_tag_value = self.tags[tag_to_add]["level"]
-            my_highest = self.tags[self.get_highest(tag_list)]["level"]
-            if my_highest < target_tag_value:
-                return False
-            else:
-                return True
+    def can(self, tag_list: List[str], permission: str, tag_to_add: str = None):
+        """" 
+        Check whether `tag_list` can execute `permission`. 
+        If `tag_to_add` is provided, checks whether `tag_list` highest is higher than `tag_to_add`.
+        """
+        if tag_to_add is None:
+            for tag in tag_list:
+                if self._can_single(tag, permission):
+                    return True
 
-        for tag in tag_list:
-            if self.can_single(tag, request):
-                return True
+        if tag_to_add not in self.tags:
+            return False
 
-        return False
+        _, highest_lvl = self._get_highest(tag_list)
+        if highest_lvl == 0: # 0 is the highest level with all permission 
+            return True
+
+        if highest_lvl < self._get_tag_level(tag_to_add): # < instead of <= means we cannot add "horizontally"
+            return True 
+
+        return False 
     
-    def get_highest(self, tags_list: list):
-        highest = 10000
+    def _get_tag_level(self, tag: str) -> int:
+        """ Returns level of given tag or 99 if tag does not exist. """
+        return self.tags.get(tag, {}).get("level", 99)
+
+    def _get_highest(self, tags_list: list) -> Tuple[str, int]:
+        """ Returns highest tag and level in `tags_list` """
+        highest_lvl = 99 
         highest_tag = ""
         for tag in tags_list:
-            if tag not in self.tags:
-                continue
-            if self.tags[tag]["level"] < highest:
-                highest = self.tags[tag]["level"]
+            tag_lvl = self._get_tag_level(tag)
+            if tag_lvl < highest_lvl:
+                highest_lvl = tag_lvl 
                 highest_tag = tag
-        if highest_tag == "":
-            return None
-        return highest_tag
+
+        return highest_tag, highest_lvl
+
+    def _can_single(self, tag: str, permission: str):
+        """ Check whether `tag` can execute `permission` """
+        if tag not in self.tags: # tag doesn't exist
+            return False
+        if permission not in self.tags[tag]["permissions"]: # permission doesn't exist in tag
+            return False
+
+        return self.tags[tag]["permissions"][permission]
+    
+ 
