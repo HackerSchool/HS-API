@@ -45,13 +45,11 @@ def create_member():
         "required": ["ist_id", "member_number", "name", "username", "password", "join_date", "course", "email"],
         "additionalProperties": False
     }
-    # Validate request 
     json_data = request.json
     try:
         validate(json_data, mandatory_schema)
     except ValidationError as e:
         throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
-        # return jsonify({"error": e.message}), HTTPStatus.BAD_REQUEST
 
     return member_service.create_member(**json_data).to_dict()
 
@@ -65,7 +63,6 @@ def get_member(username):
     member = member_service.get_member_by_username(username)
     if member is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
-        # return jsonify({"error": "Member does not exist"}), HTTPStatus.NOT_FOUND
 
     return member.to_dict()
 
@@ -94,18 +91,15 @@ def update_member(username):
     }
     json_data = request.json
     if json_data is None:
-        # return jsonify({'error': 'No data provided for update'}), HTTPStatus.BAD_REQUEST
         throw_api_error(HTTPStatus.BAD_REQUEST, {"error": "Missing data in body"})
     try:
         validate(json_data, schema)
     except ValidationError as e:
         throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
-        # return jsonify({"error": e.message}), HTTPStatus.BAD_REQUEST
     
     member = member_service.get_member_by_username(username)
     if member is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
-        # return jsonify({"error": "Member does not exist"}), HTTPStatus.NOT_FOUND
 
     return member_service.edit_member(member=member, **json_data).to_dict()
  
@@ -121,7 +115,6 @@ def delete_member(username):
     member = member_service.get_member_by_username(username)
     if member is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
-        # return jsonify({"error": "Member does not exist"}), HTTPStatus.NOT_FOUND
 
     m_id = member_service.delete_member(member)
     return jsonify({"message": "Member deleted successfully!", "member_id": m_id})
@@ -141,12 +134,10 @@ def edit_password(username):
         validate(json_data, schema)
     except ValidationError as e:
         throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
-        # return jsonify({"error": e.message}), HTTPStatus.BAD_REQUEST
 
     member = member_service.get_member_by_username(username)
     if member is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
-        # return jsonify({"error": "Member does not exist"}), HTTPStatus.NOT_FOUND
 
     return member_service.edit_member(member, **json_data) 
 
@@ -158,7 +149,6 @@ def get_member_projects(username):
     member = member_service.get_member_by_username(username)
     if member is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
-        # return jsonify({"error": "User doesn't exist"}), HTTPStatus.NOT_FOUND 
 
     return member_project_service.get_member_projects(member)
 
@@ -179,17 +169,14 @@ def add_member_project(username, proj_name):
         validate(json_data, mandatory_schema)
     except ValidationError as e:
         throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
-        # return jsonify({"error": e.message}), HTTPStatus.BAD_REQUEST
 
     member = member_service.get_member_by_username(username)
     if member is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
-        # return jsonify({"error": "User does not exist"}), HTTPStatus.NOT_FOUND 
 
     project = project_service.get_project_by_name(proj_name)
     if project is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Project not found"})
-        # return jsonify({"error": "Project not found"}), HTTPStatus.NOT_FOUND 
     
     return member_project_service.create_member_project(member, project, **json_data)
 
@@ -198,7 +185,6 @@ def delete_member_project(username, proj_name):
     member = member_service.get_member_by_username(username)
     if member is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
-        # return jsonify({"error": "User does not exist"}), HTTPStatus.NOT_FOUND 
     
     p_id = member_project_service.remove_member_project(member, proj_name)
     if p_id is None:
@@ -247,6 +233,7 @@ def add_member_tag(username):
     except ValidationError as e:
         throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
     
+    # FIXME
     # Does the user have permission to add a tag to the member?
     # user_tags = session['tags'].split(',')
     # if not tags_handler.can(user_tags, 'add_tag', tag_to_add=json_data['tag']):
@@ -256,7 +243,6 @@ def add_member_tag(username):
     member = member_service.get_member_by_username(username)
     if member is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
-        # return jsonify({'error': 'Member does not found'}), HTTPStatus.NOT_FOUND
 
     return member_service.add_member_tag(member, **json_data)
 
@@ -281,9 +267,8 @@ def remove_member_tag(username):
         validate(json_data, mandatory_schema)
     except ValidationError as e:
         throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
-        # return jsonify({"error": e.message}), HTTPStatus.BAD_REQUEST
-    # Get the request data
 
+    # FIXME
     # Does the user have permission to remove a tag from the member?
     # user_tags = session.get('tags').split(',')
     # if not tags_handler.can(user_tags, 'add_tag', tag_to_add=json_data['tag']):
@@ -297,6 +282,5 @@ def remove_member_tag(username):
     tags = member_service.remove_member_tag(username, **json_data)
     if tags is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "User does not have this tag"})
-        # return jsonify({"error": "User does not have this tag"}), HTTPStatus.NOT_FOUND
 
     return member_service.remove_member_tag(username, **json_data)
