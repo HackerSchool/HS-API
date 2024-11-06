@@ -3,20 +3,21 @@ from http import HTTPStatus
 
 from flask import request, jsonify
 
-from app.api.projects import bp
-from app.api.decorators import login_required, required_permission
-
 from app.services import project_service, member_project_service
 
+from app.api.projects import bp
+from app.api.errors import throw_api_error
+from app.api.decorators import login_required, required_permission
+
 @bp.route('', methods=['GET'])
-# @login_required
+@login_required
 def get_projects():
     """ Returns a list of all projects in a list of json project objects """
     return [p.to_dict() for p in project_service.get_all_projects()]
 
 @bp.route('', methods=['POST'])
-# @login_required
-# @required_permission('create_project')
+@login_required
+@required_permission('create_project')
 def create_project():
     """
     Creates a project in the database with the information provided in the request body.
@@ -38,12 +39,12 @@ def create_project():
     try:
         validate(json_data, mandatory_schema)
     except ValidationError as e:
-        return jsonify({"error": e.message}), HTTPStatus.BAD_REQUEST
+        throw_api_error((HTTPStatus.BAD_REQUEST, {"error": e.message}))
 
     return project_service.create_project(**json_data).to_dict()
 
 @bp.route('/<string:name>', methods=['GET'])
-# @login_required
+@login_required
 def get_project(name):
     """
     Given a project name, returns the JSON project object.
@@ -51,13 +52,13 @@ def get_project(name):
     """
     project = project_service.get_project_by_name(name)
     if not project:
-        return jsonify({'error': 'Project not found'}), HTTPStatus.NOT_FOUND
+        throw_api_error((HTTPStatus.NOT_FOUND, {"error": "Project not found"}))
 
     return project.to_dict()
 
 @bp.route('/<string:name>', methods=['PUT'])
-# @login_required
-# @required_permission('edit_project')
+@login_required
+@required_permission('edit_project')
 def update_project(name):
     """
     Edits the information of a project with the name provided.
@@ -75,21 +76,21 @@ def update_project(name):
     }
     json_data = request.json
     if not json_data:
-        return jsonify({'message': 'No data provided for update'}), HTTPStatus.BAD_REQUEST
+        throw_api_error(HTTPStatus.BAD_REQUEST, {"error": "Missing data in body"})
     try:
         validate(json_data, schema)
     except ValidationError as e:
-        return jsonify({"error": e.message}), HTTPStatus.BAD_REQUEST
+        throw_api_error((HTTPStatus.BAD_REQUEST, {"error": e.message}))
     
     project = project_service.edit_member_by_username(name=name, **json_data)
     if project is None:
-        return jsonify({"error": "Project not found"}), HTTPStatus.NOT_FOUND
+        throw_api_error((HTTPStatus.NOT_FOUND, {"error": "Project not found"}))
 
     return project.to_dict()
 
 @bp.route('/<string:name>', methods=['DELETE'])
-# @login_required
-# @required_permission('delete_project')
+@login_required
+@required_permission('delete_project')
 def delete_project(name):
     """
     Deletes a member with provided name.
@@ -97,7 +98,7 @@ def delete_project(name):
     """
     p_id = project_service.delete_project_by_name(name)
     if p_id is None:
-        return jsonify({'error': 'Project not found'}), HTTPStatus.NOT_FOUND
+        throw_api_error((HTTPStatus.NOT_FOUND, {"error": "Project not found"}))
 
     return jsonify({"message": "Project deleted successfully!", "id": p_id})
 
@@ -106,19 +107,21 @@ def delete_project(name):
 ##################################### Project Members #####################################
 ################################################################################
 @bp.route('/<string:name>/members', methods=['GET'])
-# @login_required
+@login_required
 def get_project_members(name):
     project = project_service.get_project_by_name(name)
     if project is None:
-        return jsonify({"error": "Project not found"}), HTTPStatus.NOT_FOUND
+        throw_api_error((HTTPStatus.NOT_FOUND, {"error": "Project not found"}))
 
     return member_project_service.get_project_members(project) 
 
 @bp.route('/<string:name>/members', methods=['GET'])
 def add_project_member(name):
+    # TODO
     pass
 
 @bp.route('/<string:name>/members', methods=['DELETE'])
 def delete_project_member(name):
+    # TODO
     pass
 

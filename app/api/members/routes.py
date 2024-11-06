@@ -4,23 +4,23 @@ from jsonschema import validate, ValidationError
 from flask import jsonify, request, session
 from http import HTTPStatus
 
-from app.api.errors import throw_api_error
+from app.extensions import tags_handler
 
 from app.services import member_service, project_service, member_project_service
 
 from app.api.members import bp
+from app.api.errors import throw_api_error
 from app.api.decorators import login_required, required_permission
-from app.extensions import tags_handler
 
 @bp.route('', methods=['GET'])
-# @login_required
+@login_required
 def get_members():
     """ Returns all the members in the database in a list of JSON member objects. """
     return [m.to_dict() for m in member_service.get_all_members()]
 
 @bp.route('', methods=['POST'])
-# @login_required
-# @required_permission("create_member")
+@login_required
+@required_permission("create_member")
 def create_member():
     """
     Creates a member in the database with the information provided in the request body.
@@ -54,7 +54,7 @@ def create_member():
     return member_service.create_member(**json_data).to_dict()
 
 @bp.route('/<string:username>', methods=['GET'])
-# @login_required
+@login_required
 def get_member(username):
     """
     Given a member username, returns the JSON member object.
@@ -67,8 +67,8 @@ def get_member(username):
     return member.to_dict()
 
 @bp.route('/<string:username>', methods=['PUT'])
-# @login_required
-# @required_permission('edit_member', allow_self_action=True)
+@login_required
+@required_permission('edit_member', allow_self_action=True)
 def update_member(username):
     """
     Edits the information of a member with the username provided.
@@ -104,8 +104,8 @@ def update_member(username):
     return member_service.edit_member(member=member, **json_data).to_dict()
  
 @bp.route('/<string:username>', methods=['DELETE'])
-# @login_required
-# @required_permission('delete_member', allow_self_action=True)
+@login_required
+@required_permission('delete_member', allow_self_action=True)
 def delete_member(username):
     """
     Deletes a member with provided username.
@@ -211,7 +211,7 @@ def get_member_tags(username):
     return {"tags": tags}
 
 @bp.route('/<string:username>/tags', methods=['PUT'])
-# @login_required
+@login_required
 def add_member_tag(username): 
     """
     Attempt to add a tag to a member
@@ -247,7 +247,7 @@ def add_member_tag(username):
     return member_service.add_member_tag(member, **json_data)
 
 @bp.route('/<string:username>/tags', methods=['DELETE'])
-# @login_required
+@login_required
 def remove_member_tag(username):
     """
     Attempts to remove a tag from a member.
