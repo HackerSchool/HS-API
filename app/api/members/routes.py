@@ -1,282 +1,302 @@
-from flask import session, jsonify, request
+from typing import List
+from jsonschema import validate, ValidationError
+
+from flask import jsonify, request, session
 from http import HTTPStatus
+
+from app.api.errors import throw_api_error
+
+from app.services import member_service, project_service, member_project_service
 
 from app.api.members import bp
 from app.api.decorators import login_required, required_permission
-from app.api.extensions import member_service, member_project_service, tags_handler
+from app.extensions import tags_handler
 
 @bp.route('', methods=['GET'])
-@login_required
+# @login_required
 def get_members():
-    """
-    Returns all the members in the database in a list of lists,
-    each list contains the information of a member
-
-    The returned information is in the following format:
-    [{
-        "istID": "istID",
-        "memberNumber": "memberNumber",
-        "name": "name",
-        "username": "username",
-        "entry_date": "entry_date",
-        "course": "course",
-        "description": "description",
-        "mail": "mail",
-        "extra": "extra",
-    }, ...]
-    """
-    members = member_service.listMembers()
-    return jsonify(members), HTTPStatus.OK
+    """ Returns all the members in the database in a list of JSON member objects. """
+    return [m.to_dict() for m in member_service.get_all_members()]
 
 @bp.route('', methods=['POST'])
-@login_required
-@required_permission('create_member')
+# @login_required
+# @required_permission("create_member")
 def create_member():
     """
-    Creates a member in the database with the information provided in the request
-        Only users with the permission to create a member can create a member
-        An error is returned if the required fields are not provided, the member already exists or the user does not have permission
+    Creates a member in the database with the information provided in the request body.
+    Only users with the permission to create a member can create a member.
+    An error is returned if the required fields are not provided.
+    """
+    mandatory_schema = {
+        "type": "object",
+        "properties": {
+            "ist_id": {"type": "string"},
+            "member_number": {"type": "number"},
+            "name": {"type": "string"},
+            "username": {"type": "string"},
+            "password": {"type": "string"},
+            "join_date": {"type": "string"},
+            "course": {"type": "string"},
+            "email": {"type": "string"},
+            "exit_date": {"type": "string"},
+            "extra": {"type": "string"},
+            "description": {"type": "string"},
+        },
+        "required": ["ist_id", "member_number", "name", "username", "password", "join_date", "course", "email"],
+        "additionalProperties": False
+    }
+    # Validate request 
+    json_data = request.json
+    try:
+        validate(json_data, mandatory_schema)
+    except ValidationError as e:
+        throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
+        # return jsonify({"error": e.message}), HTTPStatus.BAD_REQUEST
 
-        The format is the folowing:
-        {
-            "istID": "istID",
-            "memberNumber": "memberNumber",
-            "name": "name",
-            "username": "username",
-            "password": "password",
-            "entry_date": "entry_date",
-            "course": "course",
-            "description": "description",
-            "mail": "mail"
-        }
-        """
-    # Validate request data
-    data = request.json
-    required_fields = ['istID', 'memberNumber', 'name', 'username', 'password', 'entry_date', 'course', 'description', 'mail']
-
-    missing_fields = [field for field in required_fields if field not in data]
-    if missing_fields:
-        return jsonify({'message': 'Missing required fields', 'missing_fields': missing_fields}), HTTPStatus.BAD_REQUEST 
-
-    # Proceed if all required fields are present
-    ret = member_service.createMember(data['istID'], data['memberNumber'], data['name'], data['username'], 
-                            data['password'], data['entry_date'], data['course'], 
-                            data['description'], data['mail'], '{}', None, 'member')
-    if not ret[0]:
-        return jsonify({'message': ret[1]}), 400
-    return jsonify({'message': 'Member created successfully!'})
+    return member_service.create_member(**json_data).to_dict()
 
 @bp.route('/<string:username>', methods=['GET'])
-@login_required
+# @login_required
 def get_member(username):
     """
-    Given a member username, returns the information of the member
-    In case the member does not exist, a 404 error is returned
-
-    The returned information is in the following format:
-    {
-        "istID": "istID",
-        "memberNumber": "memberNumber",
-        "name": "name",
-        "username": "username",
-        "entry_date": "entry_date",
-        "course": "course",
-        "description": "description",
-        "mail": "mail",
-        "extra": "extra",
-    }
+    Given a member username, returns the JSON member object.
+    An error is returned if the member does not exist.
     """
-    member_data = member_service.getMemberInfo(username)
-    # If the member does not exist
-    if not member_data:
-        return jsonify({'message': 'No member with that username!'}), HTTPStatus.NOT_FOUND
-    return jsonify(member_data), HTTPStatus.OK
+    member = member_service.get_member_by_username(username)
+    if member is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
+        # return jsonify({"error": "Member does not exist"}), HTTPStatus.NOT_FOUND
+
+    return member.to_dict()
 
 @bp.route('/<string:username>', methods=['PUT'])
-@login_required
-@required_permission('edit_member', allow_self_action=True)
+# @login_required
+# @required_permission('edit_member', allow_self_action=True)
 def update_member(username):
     """
-    Edits the information of a member with the username provided in the url
-    Only users with the permission to edit a member can update a member
-    An error is returned if the member does not exist, the user does not have permission or the data provided is invalid
-
-    The format is the folowing:
-    {
-        "istID": "istID",
-        "memberNumber": "memberNumber",
-        "name": "name",
-        "username": "username",
-        "password": "password",
-        "entry_date": "entry_date",
-        "course": "course",
-        "description": "description",
-        "mail": "mail",
-        "extra": "extra"
-    }
-    You don't need to send all the fields, only the ones you want to update
-    If unkonwn fields are provided, a 400 error is returned
+    Edits the information of a member with the username provided.
+    An error is returned if the member does not exist or the required fields are not provided.
     """
-    # Get the request data
-    data = request.json
-    if not data:
-        return jsonify({'message': 'No data provided for update'}), HTTPStatus.BAD_REQUEST
+    schema = {
+        "type": "object",
+        "properties": {
+            "ist_id": {"type": "string"},
+            "member_number": {"type": "number"},
+            "name": {"type": "string"},
+            "join_date": {"type": "string"},
+            "course": {"type": "string"},
+            "email": {"type": "string"},
+            "exit_date": {"type": "string"},
+            "extra": {"type": "string"},
+            "description": {"type": "string"},
+        },
+        "additionalProperties": False
+    }
+    json_data = request.json
+    if json_data is None:
+        # return jsonify({'error': 'No data provided for update'}), HTTPStatus.BAD_REQUEST
+        throw_api_error(HTTPStatus.BAD_REQUEST, {"error": "Missing data in body"})
+    try:
+        validate(json_data, schema)
+    except ValidationError as e:
+        throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
+        # return jsonify({"error": e.message}), HTTPStatus.BAD_REQUEST
+    
+    member = member_service.get_member_by_username(username)
+    if member is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
+        # return jsonify({"error": "Member does not exist"}), HTTPStatus.NOT_FOUND
 
-    # Check if the user has permission to update the member
-    user_tags = session['tags'].split(',')
-    if session['username'] != username:
-        if not tags_handler.can(user_tags, 'edit_member'):
-            return jsonify({'message': 'You do not have permission to update this member'}), HTTPStatus.FORBIDDEN
-        if 'password' in data:
-            if not tags_handler.can(user_tags, 'edit_password'):
-                return jsonify({'message': 'You do not have permission to update the password'}), HTTPStatus.FORBIDDEN
-
-    # Get the member ID from the username
-    member_id = member_service.getMemberIdByUsername(username)
-    if member_id is None:
-        return jsonify({'message': 'Member not found'}), HTTPStatus.NOT_FOUND
-
-    # Define valid columns
-    valid_columns = {"istID", "memberNumber", "name", "username", "password", "entry_date", 
-                    "exit_date", "course", "description", "mail", "extra"}
-
-    # Check for invalid fields in the data
-    invalid_fields = [key for key in data.keys() if key not in valid_columns]
-    if invalid_fields:
-        return jsonify({'message': 'Invalid fields provided', 'invalid_fields': invalid_fields}), HTTPStatus.NOT_FOUND
-
-    # Call the editMember method and pass the valid fields that need to be updated
-    update_success = member_service.editMember(member_id, **data)
-
-    if not update_success[0]:
-        return jsonify({'message': update_success[1]}), HTTPStatus.INTERNAL_SERVER_ERROR
-
-    return jsonify({'message': 'Member updated successfully!'}), HTTPStatus.OK
-
-
+    return member_service.edit_member(member=member, **json_data).to_dict()
+ 
 @bp.route('/<string:username>', methods=['DELETE'])
-@login_required
-@required_permission('delete_member', allow_self_action=True)
+# @login_required
+# @required_permission('delete_member', allow_self_action=True)
 def delete_member(username):
     """
-    Deletes a member with the username provided in the url
-    Only users with the permission to delete a member can delete a member
-    An error is returned if the member does not exist or the user does not have permission
+    Deletes a member with provided username.
+    Only users with the permission to delete a member can delete a member.
+    An error is returned if the member does not exist.
     """
-    # Does the user have permission to delete the member?
-    member_id = member_service.getMemberIdByUsername(username)
-    if member_id is None:
-        return jsonify({'message': 'Member not found'}), HTTPStatus.NOT_FOUND 
-    member_service.deleteMember(member_id)
-    return jsonify({'message': 'Member deleted successfully!'}), HTTPStatus.OK
+    member = member_service.get_member_by_username(username)
+    if member is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
+        # return jsonify({"error": "Member does not exist"}), HTTPStatus.NOT_FOUND
 
+    m_id = member_service.delete_member(member)
+    return jsonify({"message": "Member deleted successfully!", "member_id": m_id})
+
+@bp.route('/<string:username>/edit_password', methods=['PUT'])
+def edit_password(username):
+    schema = {
+        "type": "object",
+        "properties": {
+            "password": {"type": "string"},
+        },
+        "required": ["password"],
+        "additionalProperties": False
+    }
+    json_data = request.json
+    try:
+        validate(json_data, schema)
+    except ValidationError as e:
+        throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
+        # return jsonify({"error": e.message}), HTTPStatus.BAD_REQUEST
+
+    member = member_service.get_member_by_username(username)
+    if member is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
+        # return jsonify({"error": "Member does not exist"}), HTTPStatus.NOT_FOUND
+
+    return member_service.edit_member(member, **json_data) 
+
+################################################################################
+############################### Member Projects ################################
+################################################################################
 @bp.route('/<string:username>/projects', methods=['GET'])
-@login_required
 def get_member_projects(username):
-    member_id = member_service.getMemberIdByUsername(username)
-    if member_id is None:
-        return jsonify({'message': 'Member not found'}), HTTPStatus.NOT_FOUND
-    projects = member_project_service.listProjectsForMember(member_id)
-    return jsonify(projects), HTTPStatus.OK
+    member = member_service.get_member_by_username(username)
+    if member is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
+        # return jsonify({"error": "User doesn't exist"}), HTTPStatus.NOT_FOUND 
 
-############# Tags #############
+    return member_project_service.get_member_projects(member)
+
+# @login_required
+@bp.route('/<string:username>/<string:proj_name>', methods=['POST'])
+def add_member_project(username, proj_name):
+    mandatory_schema = {
+        "type": "object",
+        "properties": {
+            "entry_date": {"type": "string"},
+            "contributions": {"type": "number"},
+        },
+        "required": ["entry_date"],
+        "additionalProperties": False
+    }
+    json_data = request.json
+    try:
+        validate(json_data, mandatory_schema)
+    except ValidationError as e:
+        throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
+        # return jsonify({"error": e.message}), HTTPStatus.BAD_REQUEST
+
+    member = member_service.get_member_by_username(username)
+    if member is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
+        # return jsonify({"error": "User does not exist"}), HTTPStatus.NOT_FOUND 
+
+    project = project_service.get_project_by_name(proj_name)
+    if project is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Project not found"})
+        # return jsonify({"error": "Project not found"}), HTTPStatus.NOT_FOUND 
+    
+    return member_project_service.create_member_project(member, project, **json_data)
+
+@bp.route('/<string:username>/<string:proj_name>', methods=['DELETE'])
+def delete_member_project(username, proj_name):
+    member = member_service.get_member_by_username(username)
+    if member is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
+        # return jsonify({"error": "User does not exist"}), HTTPStatus.NOT_FOUND 
+    
+    p_id = member_project_service.remove_member_project(member, proj_name)
+    if p_id is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "User is not associated with the project"})
+
+    return jsonify({"message": "Member not longer associated with project", "project_id": p_id})
+
+################################################################################
+##################################### Tags #####################################
+################################################################################
 @bp.route('/<string:username>/tags', methods=['GET'])
-@login_required
+# @login_required
 def get_member_tags(username):
     """
     Given a member username, returns the tags associated with the member
     In case the member does not exist, a 404 error is returned
-
-    The returned information is in the following format:
-    {
-        "tags": "tag1,tag2,..."
-    }
     """
-    member_id = member_service.getMemberIdByUsername(username)
-    if member_id is None:
-        return jsonify({'message': 'Member not found'}), HTTPStatus.NOT_FOUND 
-    tags = member_service.getMemberTags(username)
-    return jsonify(tags), HTTPStatus.OK
+    member = member_service.get_member_by_username(username)
+    if member is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
+    
+    # if only one tag, don't split string
+    tags: List[str] = [member.tags,] if "," not in member.tags else member.tags.split(",")
+    return {"tags": tags}
 
-@bp.route('/<string:username>/tags', methods=['POST'])
-@login_required
+@bp.route('/<string:username>/tags', methods=['PUT'])
+# @login_required
 def add_member_tag(username): 
     """
     Attempt to add a tag to a member
     Only users with the permission to add a tag can add a tag
     An error is returned if the member does not exist, the tag is already associated with the member or the user does not have permission
     You cannot add a tag with an highier permission level than your own
-
-    The format is the folowing:
-    {
-        "tag": "tag"
-    }
     """       
-    # Get the request data
-    data = request.json
-    if not data:
-        return jsonify({'message': 'No data provided for tag addition'}), HTTPStatus.BAD_REQUEST
-    if 'tag' not in data:
-        return jsonify({'message': 'No tag provided for addition'}), HTTPStatus.BAD_REQUEST
+    mandatory_schema = {
+        "type": "object",
+        "properties": {
+            "tag": {"type": "string"},
+        },
+        "required": ["tag"],
+        "additionalProperties": False
+    }
+    json_data = request.json
+    try:
+        validate(json_data, mandatory_schema)
+    except ValidationError as e:
+        throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
     
     # Does the user have permission to add a tag to the member?
-    user_tags = session['tags'].split(',')
-    if not tags.can(user_tags, 'add_tag', tagToAdd=data['tag']):
-        return jsonify({'message': 'You do not have permission to add that tag'}), HTTPStatus.FORBIDDEN
+    # user_tags = session['tags'].split(',')
+    # if not tags_handler.can(user_tags, 'add_tag', tag_to_add=json_data['tag']):
+    #     return jsonify({'message': 'You do not have permission to add that tag'}), HTTPStatus.FORBIDDEN
 
     # Get the member ID from the username
-    member_id = member_service.getMemberIdByUsername(username)
-    if member_id is None:
-        return jsonify({'message': 'Member not found'}), HTTPStatus.NOT_FOUND
+    member = member_service.get_member_by_username(username)
+    if member is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
+        # return jsonify({'error': 'Member does not found'}), HTTPStatus.NOT_FOUND
 
-    # Check if the tag is already associated with the member
-    tags = member_service.getTags(username)
-    if data['tag'] in tags:
-        return jsonify({'message': 'Tag already associated with member'})
-
-    # Add the tag to the member
-    ret = member_service.addTag(member_id, data['tag'])
-    if not ret[0]:
-        return jsonify({'message': ret[1]}), HTTPStatus.INTERNAL_SERVER_ERROR 
-    return jsonify({'message': 'Tag added successfully!'}), HTTPStatus.OK
+    return member_service.add_member_tag(member, **json_data)
 
 @bp.route('/<string:username>/tags', methods=['DELETE'])
-@login_required
+# @login_required
 def remove_member_tag(username):
     """
-    Attempts to remove a tag from a member
-    Only users with the permission to remove a tag can remove a tag
+    Attempts to remove a tag from a member.
+    Only users with the permission to remove a tag can remove a tag.
     An error is returned if the member does not exist, the tag is not associated with the member or the user does not have permission
-    
-    The format is the folowing:
-    {
-        "tag": "tag"
-    }
     """
+    mandatory_schema = {
+        "type": "object",
+        "properties": {
+            "tag": {"type": "string"},
+        },
+        "required": ["tag"],
+        "additionalProperties": False
+    }
+    json_data = request.json
+    try:
+        validate(json_data, mandatory_schema)
+    except ValidationError as e:
+        throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
+        # return jsonify({"error": e.message}), HTTPStatus.BAD_REQUEST
     # Get the request data
-    data = request.json
-    if not data:
-        return jsonify({'message': 'No data provided for tag removal'}), HTTPStatus.BAD_REQUEST
-    if 'tag' not in data:
-        return jsonify({'message': 'No tag provided for removal'}), HTTPStatus.BAD_REQUEST
-    
+
     # Does the user have permission to remove a tag from the member?
-    user_tags = session['tags'].split(',')
-    if not tags.can(user_tags, 'add_tag', tagToAdd=data['tag']):
-        return jsonify({'message': 'You do not have permission to remove that tag'}), HTTPStatus.FORBIDDEN
+    # user_tags = session.get('tags').split(',')
+    # if not tags_handler.can(user_tags, 'add_tag', tag_to_add=json_data['tag']):
+    #     return jsonify({'error': 'You do not have permission to remove that tag'}), HTTPStatus.FORBIDDEN
 
-    # Get the member ID from the username
-    member_id = member_service.getMemberIdByUsername(username)
-    if member_id is None:
-        return jsonify({'message': 'Member not found'}), HTTPStatus.NOT_FOUND 
+    member = member_service.get_member_by_username(username)
+    if member is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
+        # return jsonify({'error': 'Member not found'}), HTTPStatus.NOT_FOUND 
 
-    # Check if the tag is associated with the member
-    tags = member_service.getTags(username)
-    if data['tag'] not in tags:
-        return jsonify({'message': 'Tag not associated with member'})
+    tags = member_service.remove_member_tag(username, **json_data)
+    if tags is None:
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "User does not have this tag"})
+        # return jsonify({"error": "User does not have this tag"}), HTTPStatus.NOT_FOUND
 
-    # Remove the tag from the member
-    ret = member_service.removeTag(member_id, data['tag'])
-    if not ret[0]:
-        return jsonify({'message': ret[1]}), HTTPStatus.INTERNAL_SERVER_ERROR
-    return jsonify({'message': 'Tag removed successfully!'})
+    return member_service.remove_member_tag(username, **json_data)

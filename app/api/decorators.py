@@ -3,14 +3,15 @@ from functools import wraps
 from flask import session, jsonify
 from http import HTTPStatus
 
-from app.api.extensions import tags_handler
+from app.extensions import tags_handler
+from app.api.errors import throw_api_error
 
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         username = session.get('username', '')
         if not username:
-            return jsonify({"message": "Unauthenticated access, please log in"}), 401
+            throw_api_error(HTTPStatus.UNAUTHORIZED, {"error": "Unauthenticated, please log in"})
         return f(*args, **kwargs)
     return decorated_function
 
@@ -20,7 +21,7 @@ class InvalidPermissionError(Exception):
         """ Exception for unknown permission """
         super().__init__(f"Unkown permission {permission}")
 
-def required_permission(permission: str, *, allow_self_action : bool = False):
+def required_permission(*permissions: str, allow_self_action : bool = False):
     """
     Decorator to enforce permission requirements for endpoints.
 
@@ -59,8 +60,9 @@ def required_permission(permission: str, *, allow_self_action : bool = False):
         - This decorator is intended to be used on endpoints where 
           permission checks are necessary based on user roles and actions.
     """
-    if tags_handler.get_permission_err_message(permission) is None:
-        raise InvalidPermissionError(permission)
+    for perm in permissions:
+        if tags_handler.get_permission_err_message(perm) is None:
+            raise InvalidPermissionError(perm)
 
     def decorator(f):
         @wraps(f)
@@ -71,9 +73,10 @@ def required_permission(permission: str, *, allow_self_action : bool = False):
                 if session.get("username") == member_username:
                     return f(*args, **kwargs)
             # Validate external users
-            tags = session.get('tags').split(',')
-            if not tags_handler.can(tags, permission):
-                return jsonify({"error": tags_handler.get_permission_err_message(permission)}), HTTPStatus.FORBIDDEN
+            tags = session.get('tags')
+            for perm in permissions:
+                if not tags_handler.can(tags, perm):
+                    return jsonify({"error": tags_handler.get_permission_err_message(perm)}), HTTPStatus.FORBIDDEN
             return f(*args, **kwargs)
 
         return wrapper

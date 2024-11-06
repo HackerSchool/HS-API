@@ -1,8 +1,15 @@
+from typing import List
+
 from flask import request, jsonify, session
 from http import HTTPStatus
 
 from app.api.auth import bp
-from app.api.extensions import login_manager
+from app.api.decorators import login_required
+
+from app.api.errors import throw_api_error
+
+from app.services import login_service
+from app.services.login_service import exceptions as login_exceptions
 
 @bp.route('/login', methods=['POST'])
 def login():
@@ -10,17 +17,21 @@ def login():
     username = data.get('username')
     password = data.get('password')
     # This call returns the list of tags a user has in the format: 'tag1,tag2,...'
-    if (tags := login_manager.login(username, password)) is None:
-        return jsonify({"error": "Invalid credentials"}), HTTPStatus.UNAUTHORIZED
+    tags : List[str] 
+    try:
+        tags = login_service.login(username, password)
+    except login_exceptions.AuthError as e:
+        throw_api_error(HTTPStatus.UNAUTHORIZED, {"error": "Invalid credentials"})
 
     # Save session key and username in Flask session
     session.clear()
     session['username'] = username
-    session['tags'] = tags
+    session['tags'] = [tags,] if "," not in tags else tags.split(",")
     return jsonify({"message": f"Welcome {username}!"}), HTTPStatus.OK
 
     # Route to log out users
 @bp.route('/logout')
+@login_required
 def logout():
     session.clear()
     return jsonify({"message": "Logged out successfully"}), HTTPStatus.OK
