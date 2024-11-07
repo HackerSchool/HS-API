@@ -31,7 +31,7 @@ class Config:
     SESSION_FILE_DIR = os.path.join(basedir, _get_env_or_default("SESSION_DIR",   'data/flask_session')).rstrip("/")
     DATABASE_PATH    = os.path.join(basedir, _get_env_or_default("DATABASE_PATH", 'data/hackerschool.sqlite3')).rstrip("/")
     TAGS_PATH        = os.path.join(basedir, _get_env_or_default("TAGS_PATH",     'data/tags.json')).rstrip("/")
-    PHOTOS_PATH      = os.path.join(basedir, _get_env_or_default("PHOTOS_DIR",    'data/photos/')).rstrip("/")
+    PHOTOS_DIR       = os.path.join(basedir, _get_env_or_default("PHOTOS_DIR",    'data/photos/')).rstrip("/")
     LOGS_PATH        = os.path.join(basedir, _get_env_or_default("LOGS_PATH", "data/logs/app.log")).rstrip("/")
     LOG_LEVEL        = _get_env_or_default("LOG_LEVEL", "WARNING")
 
