@@ -14,6 +14,7 @@ from app.api.decorators import login_required, required_permission
 
 @bp.route('', methods=['GET'])
 @login_required
+@required_permission('read_member')
 def get_members():
     """ Returns all the members in the database in a list of JSON member objects. """
     return [m.to_dict() for m in member_service.get_all_members()]
