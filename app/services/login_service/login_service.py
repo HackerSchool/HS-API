@@ -17,4 +17,4 @@ def login(username, password):
     member = Member.query.filter_by(username=username).first()
     if not member or not _check_password(member.password, password):
         raise exceptions.AuthError("Invalid credentials")
-    return member.tags 
+    return [member.tags,] if "," not in member.tags else member.tags.split(",")

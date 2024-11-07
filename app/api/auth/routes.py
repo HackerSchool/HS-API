@@ -26,10 +26,9 @@ def login():
     # Save session key and username in Flask session
     session.clear()
     session['username'] = username
-    session['tags'] = [tags,] if "," not in tags else tags.split(",")
+    session['tags'] = tags 
     return jsonify({"message": f"Welcome {username}!"}), HTTPStatus.OK
 
-    # Route to log out users
 @bp.route('/logout')
 @login_required
 def logout():

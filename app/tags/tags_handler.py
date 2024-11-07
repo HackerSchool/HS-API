@@ -5,13 +5,15 @@ import json
 from flask import Flask
 
 _PERMISSIONS_ERR_MESSAGES = {
+    "read_member": "You don't have permission to read members",
     "create_member": "You don't have permission to create members",
     "delete_member": "You don't have permission to delete members",
     "edit_member": "You don't have permission to edit members",
-    "edit_password": "You don't have permission to edit passwords",
+    "read_project": "You don't have permission to read projects",
     "create_project": "You don't have permission to create projects",
     "delete_project": "You don't have permission to delete projects",
     "edit_project": "You don't have permission to edit projects",
+    "edit_password": "You don't have permission to edit passwords",
 }
 
 class TagsHandler:

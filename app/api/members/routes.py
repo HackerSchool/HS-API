@@ -55,6 +55,7 @@ def create_member():
 
 @bp.route('/<string:username>', methods=['GET'])
 @login_required
+@required_permission('read_member', allow_self_action=True)
 def get_member(username):
     """
     Given a member username, returns the JSON member object.
@@ -148,6 +149,8 @@ def edit_password(username):
 ############################### Member Projects ################################
 ################################################################################
 @bp.route('/<string:username>/projects', methods=['GET'])
+@login_required
+@required_permission('read_member', allow_self_action=True)
 def get_member_projects(username):
     member = member_service.get_member_by_username(username)
     if member is None:
@@ -155,8 +158,8 @@ def get_member_projects(username):
 
     return [p.to_dict() for p in member_project_service.get_member_projects(member)]
 
-# @login_required
 @bp.route('/<string:username>/<string:proj_name>', methods=['POST'])
+@login_required
 @required_permission('edit_project')
 def add_member_project(username, proj_name):
     mandatory_schema = {
@@ -204,6 +207,7 @@ def delete_member_project(username, proj_name):
 ################################################################################
 @bp.route('/<string:username>/tags', methods=['GET'])
 @login_required
+@required_permission('read_member')
 def get_member_tags(username):
     """
     Given a member username, returns the tags associated with the member
@@ -219,6 +223,7 @@ def get_member_tags(username):
 
 @bp.route('/<string:username>/tags', methods=['PUT'])
 @login_required
+@required_permission('edit_member')
 def add_member_tag(username): 
     """
     Attempt to add a tag to a member
@@ -259,6 +264,7 @@ def add_member_tag(username):
 
 @bp.route('/<string:username>/tags', methods=['DELETE'])
 @login_required
+@required_permission('edit_member')
 def remove_member_tag(username):
     """
     Attempts to remove a tag from a member.

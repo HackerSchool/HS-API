@@ -23,7 +23,7 @@ class Config:
     SESSION_KEY_PREFIX = _get_env_or_default("SESSION_KEY_PREFIX", 'my_session_') # Prefix for session files
     session_expiration = 30
     try:
-        session_expiration = _get_env_or_default("PERMANENTE_SESSION_LIFETIME", 30, int)
+        session_expiration = _get_env_or_default("SESSION_LIFETIME", 30, int)
     except ValueError:
         pass
     PERMANENT_SESSION_LIFETIME = session_expiration 
@@ -31,8 +31,8 @@ class Config:
     SESSION_FILE_DIR = os.path.join(basedir, _get_env_or_default("SESSION_DIR",   'data/flask_session')).rstrip("/")
     DATABASE_PATH    = os.path.join(basedir, _get_env_or_default("DATABASE_PATH", 'data/hackerschool.sqlite3')).rstrip("/")
     TAGS_PATH        = os.path.join(basedir, _get_env_or_default("TAGS_PATH",     'data/tags.json')).rstrip("/")
-    LOGOS_PATH       = os.path.join(basedir, _get_env_or_default("LOGOS_PATH",    'data/logos/')).rstrip("/")
-    LOG_FILE         = os.path.join(basedir, _get_env_or_default("LOG_FILE", "data/logs/app.log")).rstrip("/")
+    PHOTOS_PATH      = os.path.join(basedir, _get_env_or_default("PHOTOS_DIR",    'data/photos/')).rstrip("/")
+    LOGS_PATH        = os.path.join(basedir, _get_env_or_default("LOGS_PATH", "data/logs/app.log")).rstrip("/")
     LOG_LEVEL        = _get_env_or_default("LOG_LEVEL", "WARNING")
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE_PATH

@@ -5,13 +5,15 @@
             "color": "#FF0000",
             "level": 0,
             "permissions": {
+                "read_member"   : true,
                 "create_member" : true,
                 "edit_member"   : true,
+                "read_project"  : true,
                 "delete_member" : true,
                 "create_project": true,
                 "edit_project"  : true,
                 "delete_project": true,
-                "edit_password": true
+                "edit_password" : true
             }
         },
         "president": {
@@ -20,8 +22,10 @@
             "color": "#00FF00",
             "level": 1,
             "permissions": {
+                "read_member"  : true,
                 "create_member" : true,
                 "edit_member"   : true,
+                "read_project"  : true,
                 "delete_member" : true,
                 "create_project": true,
                 "edit_project"  : true,
@@ -35,13 +39,15 @@
             "color": "#0000FF",
             "level": 2,
             "permissions": {
+                "read_member"   : true,
                 "create_member" : true,
                 "edit_member"   : true,
                 "delete_member" : true,
+                "read_project"  : true,
                 "create_project": true,
                 "edit_project"  : true,
                 "delete_project": true,
-                "edit_password": true
+                "edit_password" : true
             }
         },
         "dev": {
@@ -50,13 +56,15 @@
             "color": "#00FF00",
             "level": 2,
             "permissions": {
+                "read_member"   : true,
                 "create_member" : true,
                 "edit_member"   : true,
                 "delete_member" : true,
+                "read_project"  : true,
                 "create_project": true,
                 "edit_project"  : true,
                 "delete_project": true,
-                "edit_password": true
+                "edit_password" : true
             }
         },
         "rh": {
@@ -65,13 +73,15 @@
             "color": "#FFFF00",
             "level": 3,
             "permissions": {
+                "read_member"   : true,
                 "create_member" : true,
                 "edit_member"   : true,
                 "delete_member" : true,
+                "read_project"  : true,
                 "create_project": true,
                 "edit_project"  : true,
                 "delete_project": true,
-                "edit_password": true
+                "edit_password" : true
             }
         },
         "market": {
@@ -80,13 +90,15 @@
             "color": "#00FFFF",
             "level": 3,
             "permissions": {
+                "read_member"   : true,
                 "create_member" : false,
                 "edit_member"   : false,
                 "delete_member" : false,
+                "read_project"  : true,
                 "create_project": true,
                 "edit_project"  : true,
                 "delete_project": false,
-                "edit_password": true
+                "edit_password" : false
             }
         },
         "lab": {
@@ -95,13 +107,15 @@
             "color": "#FF00FF",
             "level": 3,
             "permissions": {
+                "read_member"   : true,
                 "create_member" : false,
                 "edit_member"   : false,
                 "delete_member" : false,
+                "read_project"  : true,
                 "create_project": true,
                 "edit_project"  : true,
                 "delete_project": false,
-                "edit_password": true
+                "edit_password" : false
             }
         },
         "money": {
@@ -110,13 +124,15 @@
             "color": "#000000",
             "level": 3,
             "permissions": {
+                "read_member"   : true,
                 "create_member" : false,
                 "edit_member"   : false,
                 "delete_member" : false,
+                "read_project"  : true,
                 "create_project": true,
                 "edit_project"  : true,
                 "delete_project": false,
-                "edit_password": true
+                "edit_password":  false
             }
         },
         "member": {
@@ -125,13 +141,15 @@
             "color": "#FFFFFF",
             "level": 4,
             "permissions": {
+                "read_member"   : true,
                 "create_member" : false,
                 "edit_member"   : false,
                 "delete_member" : false,
+                "read_project"  : true,
                 "create_project": false,
                 "edit_project"  : false,
                 "delete_project": false,
-                "edit_password": true
+                "edit_password" : false 
             }
         },
         "app": {
@@ -140,13 +158,15 @@
             "color": "#CCCCCC",
             "level": 4,
             "permissions": {
+                "read_member"   : false,
                 "create_member" : false,
                 "edit_member"   : false,
                 "delete_member" : false,
                 "create_project": false,
+                "read_project"  : false,
                 "edit_project"  : false,
                 "delete_project": false,
-                "edit_password": true
+                "edit_password" : false 
             }
         }
     },

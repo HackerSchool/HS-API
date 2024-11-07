@@ -11,6 +11,7 @@ from app.api.decorators import login_required, required_permission
 
 @bp.route('', methods=['GET'])
 @login_required
+@required_permission('read_project')
 def get_projects():
     """ Returns a list of all projects in a list of json project objects """
     return [p.to_dict() for p in project_service.get_all_projects()]
@@ -39,12 +40,13 @@ def create_project():
     try:
         validate(json_data, mandatory_schema)
     except ValidationError as e:
-        throw_api_error((HTTPStatus.BAD_REQUEST, {"error": e.message}))
+        throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
 
     return project_service.create_project(**json_data).to_dict()
 
 @bp.route('/<string:name>', methods=['GET'])
 @login_required
+@required_permission('read_project')
 def get_project(name):
     """
     Given a project name, returns the JSON project object.
@@ -52,7 +54,7 @@ def get_project(name):
     """
     project = project_service.get_project_by_name(name)
     if not project:
-        throw_api_error((HTTPStatus.NOT_FOUND, {"error": "Project not found"}))
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Project not found"})
 
     return project.to_dict()
 
@@ -80,11 +82,11 @@ def update_project(name):
     try:
         validate(json_data, schema)
     except ValidationError as e:
-        throw_api_error((HTTPStatus.BAD_REQUEST, {"error": e.message}))
+        throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
     
     project = project_service.get_project_by_name(name=name)
     if project is None:
-        throw_api_error((HTTPStatus.NOT_FOUND, {"error": "Project not found"}))
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Project not found"})
 
     return project_service.edit_project(name=name, **json_data).to_dict()
 
@@ -98,7 +100,7 @@ def delete_project(name):
     """
     project = project_service.get_project_by_name(name=name)
     if project is None:
-        throw_api_error((HTTPStatus.NOT_FOUND, {"error": "Project not found"}))
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Project not found"})
 
     p_id = project_service.delete_project(project)
     return jsonify({"message": "Project deleted successfully!", "id": p_id})
@@ -109,14 +111,15 @@ def delete_project(name):
 ################################################################################
 @bp.route('/<string:name>/members', methods=['GET'])
 @login_required
+@required_permission('read_project')
 def get_project_members(name):
     project = project_service.get_project_by_name(name)
     if project is None:
-        throw_api_error((HTTPStatus.NOT_FOUND, {"error": "Project not found"}))
+        throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Project not found"})
 
-    return member_project_service.get_project_members(project) 
+    return [m.to_dict() for m in member_project_service.get_project_members(project)]
 
-@bp.route('/<string:name>/<string:username>', methods=['POST'])
+@bp.route('/<string:proj_name>/<string:username>', methods=['POST'])
 @login_required
 @required_permission('edit_project')
 def add_project_member(proj_name, username):
@@ -143,13 +146,13 @@ def add_project_member(proj_name, username):
     if project is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Project not found"})
     
-    return member_project_service.create_member_project(member, project, **json_data)
+    return member_project_service.create_member_project(member, project, **json_data).to_dict()
 
-@bp.route('/<string:name>/<string:username>', methods=['DELETE'])
+@bp.route('/<string:proj_name>/<string:username>', methods=['DELETE'])
 @login_required
 @required_permission('edit_project')
 def delete_project_member(proj_name, username):
-    project = member_service.get_project_by_username(username)
+    project = member_service.get_project_by_username(proj_name)
     if project is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Project not found"})
     
