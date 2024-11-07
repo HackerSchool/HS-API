@@ -217,9 +217,7 @@ def get_member_tags(username):
     if member is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
     
-    # if only one tag, don't split string
-    tags: List[str] = [member.tags,] if "," not in member.tags else member.tags.split(",")
-    return {"tags": tags}
+    return {"tags": member.get_tags()}
 
 @bp.route('/<string:username>/tags', methods=['PUT'])
 @login_required

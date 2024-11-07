@@ -73,32 +73,28 @@ def edit_member_password(member: Member, password: str) -> Member:
     db.session.commit()
     return member
 
-def get_member_tags(member: Member) -> List[str]:
-    return [member.tags,] if "," not in member.tags else member.tags.split(",") 
-
 def add_member_tag(member: Member, tag: str) -> List[str] | None:
-    tags = [member.tags,] if "," not in member.tags else member.tags.split(",") 
+    tags = member.get_tags()
     # already has tag
     if tag in tags:
         return None 
 
     tags += [tag,]
-    print(tags)
-    member.tags = ",".join(tags)
+    member.set_tags(tags)
 
     member.check_invariants() # this will fail if the fields are invalid
     db.session.commit()
     return tags
  
 def remove_member_tag(member: Member, tag: str) -> List[str] | None:
-    tags = member.tags.split(",") if len(member.tags) > 1 else [member.tags,]
+    tags = member.get_tags() 
     # does not have tag
     if tag not in tags:
         return None
 
     # filter tag
     tags = [t for t in tags if t != tag] 
-    member.tags = ",".join(tags)
+    member.set_tags(tags)
 
     member.check_invariants()
     db.session.commit()

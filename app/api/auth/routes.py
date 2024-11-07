@@ -1,4 +1,8 @@
+import bcrypt
+
 from typing import List
+
+from jsonschema import validate, ValidationError
 
 from flask import request, jsonify, session
 from http import HTTPStatus
@@ -8,26 +12,37 @@ from app.api.decorators import login_required
 
 from app.api.errors import throw_api_error
 
-from app.services import login_service
-from app.services.login_service import exceptions as login_exceptions
+from app.services import member_service
 
 @bp.route('/login', methods=['POST'])
 def login():
-    data = request.json
-    username = data.get('username')
-    password = data.get('password')
-    # This call returns the list of tags a user has in the format: 'tag1,tag2,...'
-    tags : List[str] 
+    mandatory_schema = {
+        "type": "object",
+        "properties": {
+            "username": {"type": "string"},
+            "password": {"type": "string"},
+        },
+        "required": ["username", "password"],
+        "additionalProperties": False
+    }
+
+    json_data = request.json
     try:
-        tags = login_service.login(username, password)
-    except login_exceptions.AuthError as e:
+        validate(json_data, mandatory_schema)
+    except ValidationError as e:
+        throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
+
+    member = member_service.get_member_by_username(json_data.get("username"))
+    if member is None:
         throw_api_error(HTTPStatus.UNAUTHORIZED, {"error": "Invalid credentials"})
 
-    # Save session key and username in Flask session
+    if not bcrypt.checkpw(json_data.get("password").encode('utf-8'), member.password.encode('utf-8')):
+        throw_api_error(HTTPStatus.UNAUTHORIZED, {"error": "Invalid credentials"})
+
     session.clear()
-    session['username'] = username
-    session['tags'] = tags 
-    return jsonify({"message": f"Welcome {username}!"}), HTTPStatus.OK
+    session['username'] = member.username
+    session['tags'] = member.get_member_tags() 
+    return jsonify({"message": f"Welcome {member.username}!"}), HTTPStatus.OK
 
 @bp.route('/logout')
 @login_required

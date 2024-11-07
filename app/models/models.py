@@ -1,3 +1,5 @@
+from typing import List
+
 from datetime import date
 import re
 
@@ -60,6 +62,12 @@ class Member(db.Model):
         self.tags = tags
         self.check_invariants()
 
+    def get_tags(self) -> List[str]:
+        return [self.tags,] if "," not in self.tags else self.tags.split(",") 
+
+    def set_tags(self, tags: List[str]):
+        self.tags = ",".join(tags)
+
     def check_invariants(self):
         # ist_id
         if not isinstance(self.ist_id, str) or not self.ist_id:
@@ -104,8 +112,7 @@ class Member(db.Model):
         # tags
         if not isinstance(self.tags, str) or self.tags == "":
             raise ValueError("Member must have at least 1 tag")
-        tags = self.tags.split(",") if "," in self.tags else [self.tags,]
-        for tag in tags:
+        for tag in self.get_tags():
             if tag not in tags_handler.tags.keys():
                 raise ValueError(f"Unknown tag '{tag}'")
 
