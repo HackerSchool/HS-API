@@ -6,4 +6,5 @@ services:
     volumes:
       - ${DATABASE_PATH}:/app/${DATABASE_PATH}
       - ${TAGS_PATH}:/app/${TAGS_PATH}
-      - ${LOGOS_PATH}:/app/${LOGOS_PATH}
+      - ${PHOTOS_DIR}:/app/${PHOTOS_DIR}
+      - $(LOGS_PATH}:/app/${LOGS_PATH}

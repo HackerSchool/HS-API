@@ -64,12 +64,12 @@ def setup_logger(app: Flask):
     levels = {"DEBUG": logging.DEBUG, "INFO": logging.INFO, "WARNING": logging.WARNING}
     app.logger.setLevel(levels[app.config["LOG_LEVEL"]])
 
-    log_file = app.config["LOG_FILE"]
-    if log_file is not None:
-        log_dir = os.path.dirname(log_file)
+    logs_path = app.config["LOGS_PATH"]
+    if logs_path is not None:
+        log_dir = os.path.dirname(logs_path)
         if not os.path.exists(log_dir):
             os.makedirs(log_dir)
-        handler = logging.FileHandler(log_file)
+        handler = logging.FileHandler(logs_path)
         BASIC_FORMAT = "[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s"  
         handler.setFormatter(logging.Formatter(BASIC_FORMAT))
         app.logger.addHandler(handler)

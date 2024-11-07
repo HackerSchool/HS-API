@@ -13,18 +13,18 @@ def _is_valid_content_type(content_type: str) -> bool:
 
 class LogosHandler:
     def __init__(self):
-        self.folder_path   = None 
-        self.members_path    = None
+        self.photos_dir    = None 
+        self.members_path  = None
         self.projects_path = None
 
     def init_app(self, app: Flask) -> None:
-        self.folder_path = app.config["LOGOS_PATH"].rstrip("/")
+        self.photos_dir = app.config["PHOTOS_DIR"].rstrip("/")
 
-        self.members_path  = self.folder_path+"/members"
-        self.projects_path = self.folder_path+"/projects"
+        self.members_path  = self.photos_dir+"/members"
+        self.projects_path = self.photos_dir+"/projects"
 
-        if not os.path.exists(self.folder_path):
-            os.makedirs(self.folder_path)
+        if not os.path.exists(self.photos_dir):
+            os.makedirs(self.photos_dir)
         if not os.path.exists(self.members_path):
             os.makedirs(self.members_path)
         if not os.path.exists(self.projects_path):
@@ -58,6 +58,9 @@ class LogosHandler:
         :returns: None
         :rtype: None
         """
+        if f.content_type is None:
+            raise InvalidContentTypeError("None")
+
         content_type = f.content_type.split(";")[0] # e.g. text/plain; charset... | image/jpeg; ...
         if not _is_valid_content_type(content_type):
             raise InvalidContentTypeError(content_type)
