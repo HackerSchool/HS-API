@@ -1,12 +1,12 @@
 from functools import wraps
 
-from flask import session, jsonify
+from flask import session
 from http import HTTPStatus
 
 from app.extensions import tags_handler
 from app.api.errors import throw_api_error
 
-def login_required(f):
+def requires_login(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         username = session.get('username', '')
@@ -21,7 +21,7 @@ class InvalidPermissionError(Exception):
         """ Exception for unknown permission """
         super().__init__(f"Unkown permission {permission}")
 
-def required_permission(*permissions: str, allow_self_action : bool = False):
+def requires_permission(*permissions: str, allow_self_action : bool = False):
     """
     Decorator to enforce permission requirements for endpoints.
 
@@ -70,10 +70,10 @@ def required_permission(*permissions: str, allow_self_action : bool = False):
             member_username = kwargs.get('username', '')
             # Members can perform actions on their own user
             if allow_self_action and member_username:
-                if session.get("username") == member_username:
+                if session.get("username", "") == member_username:
                     return f(*args, **kwargs)
             # Validate external users
-            tags = session.get('tags')
+            tags = session.get('tags', '')
             for perm in permissions:
                 if not tags_handler.can(tags, perm):
                     throw_api_error(HTTPStatus.FORBIDDEN, {"error": tags_handler.get_permission_err_message(perm)})

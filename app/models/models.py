@@ -17,42 +17,49 @@ def _validate_date_string(date_string: str, field_name: str):
 class Member(db.Model):
     __tablename__ = 'members'
     
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    ist_id = db.Column(db.String, nullable=False)
+    username = db.Column(db.String, primary_key=True, unique=True, nullable=False)
+    password = db.Column(db.String, nullable=False)
+    ist_id = db.Column(db.String, nullable=False, unique=True)
     member_number = db.Column(db.Integer, unique=True, nullable=False)
     name = db.Column(db.String, nullable=False)
-    username = db.Column(db.String, unique=True, nullable=False)
-    password = db.Column(db.String, nullable=False)
     join_date = db.Column(db.String, nullable=False)
     course = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False)
     exit_date = db.Column(db.String)
     description = db.Column(db.String)
     extra = db.Column(db.String)
-    tags = db.Column(db.String)
+    _tags = db.Column(db.String)
     
-    projects = db.relationship('MemberProjects', back_populates="member", lazy="joined")
+    projects = db.relationship('MemberProjects', back_populates="member")
     
+    @property
+    def tags(self) -> List[str]:
+        return [self._tags,] if "," not in self._tags else self._tags.split(",")
+    
+    @tags.setter
+    def tags(self, tags: List[str]):
+        self._tags = ",".join(tags)
+
     def __init__(
         self,
+        username: str,
+        password: str,
         ist_id: str,
         member_number: int,
         name: str,
-        username: str,
-        password: str,
         join_date: str,
         course: str,
         email: str,
         exit_date: str = "",
         description: str = "",
         extra: str = "",
-        tags: str = "member",
+        tags: List[str] = ["member"],
     ):
+        self.username = username
+        self.password = password
         self.ist_id = ist_id
         self.member_number = member_number
         self.name = name
-        self.username = username
-        self.password = password
         self.join_date = join_date
         self.exit_date = exit_date
         self.course = course
@@ -62,25 +69,7 @@ class Member(db.Model):
         self.tags = tags
         self.check_invariants()
 
-    def get_tags(self) -> List[str]:
-        return [self.tags,] if "," not in self.tags else self.tags.split(",") 
-
-    def set_tags(self, tags: List[str]):
-        self.tags = ",".join(tags)
-
     def check_invariants(self):
-        # ist_id
-        if not isinstance(self.ist_id, str) or not self.ist_id:
-            raise ValueError("ist_id must be a non-empty string.")
-
-        # member_number
-        if not isinstance(self.member_number, int) or self.member_number <= 0:
-            raise ValueError("member_number must be a positive integer.")
-
-        # name
-        if not isinstance(self.name, str) or not self.name:
-            raise ValueError("name must be a non-empty string.")
-
         # username
         if not isinstance(self.username, str) or not self.username:
             raise ValueError("'username' must be a non-empty string.")
@@ -92,6 +81,18 @@ class Member(db.Model):
         # password
         if not isinstance(self.password, str) or not self.password:
             raise ValueError("'password' must be a non-empty string.")
+
+        # ist_id
+        if not isinstance(self.ist_id, str) or not self.ist_id:
+            raise ValueError("'ist_id' must be a non-empty string.")
+
+        # member_number
+        if not isinstance(self.member_number, int) or self.member_number <= 0:
+            raise ValueError("'member_number' must be a positive integer.")
+
+        # name
+        if not isinstance(self.name, str) or not self.name:
+            raise ValueError("'name' must be a non-empty string.")
 
         # email
         if not isinstance(self.email, str) or not self.email:
@@ -110,9 +111,9 @@ class Member(db.Model):
             raise ValueError("'extra' must be a string.")
         
         # tags
-        if not isinstance(self.tags, str) or self.tags == "":
+        if not isinstance(self.tags, list) or len(self.tags) == 0:
             raise ValueError("Member must have at least 1 tag")
-        for tag in self.get_tags():
+        for tag in self.tags:
             if tag not in tags_handler.tags.keys():
                 raise ValueError(f"Unknown tag '{tag}'")
 
@@ -129,7 +130,6 @@ class Member(db.Model):
 
     def to_dict(self):
         return {
-            "id": self.id,
             "ist_id": self.ist_id,
             "member_number": self.member_number,
             "name": self.name,
@@ -147,8 +147,7 @@ class Member(db.Model):
 class Project(db.Model):
     __tablename__ = 'projects'
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=True, nullable=False)
+    name = db.Column(db.String, primary_key=True, unique=True, nullable=False)
     start_date = db.Column(db.String, nullable=False)
     state = db.Column(db.String, nullable=False)
     description = db.Column(db.String)
@@ -197,7 +196,6 @@ class Project(db.Model):
 
     def to_dict(self):
         return {
-            "id": self.id,
             "name": self.name,
             "start_date": self.start_date,
             "state": self.state,
@@ -208,8 +206,8 @@ class Project(db.Model):
 class MemberProjects(db.Model):
     __tablename__ = 'member_projects'
 
-    member_id = db.Column(db.Integer, db.ForeignKey('members.id'), primary_key=True)
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), primary_key=True)
+    member_username = db.Column(db.String, db.ForeignKey('members.username'), primary_key=True)
+    project_name = db.Column(db.String, db.ForeignKey('projects.name'), primary_key=True)
     entry_date = db.Column(db.String, nullable=False)
     contributions = db.Column(db.String, nullable=True)
     exit_date = db.Column(db.String, nullable=True)

@@ -7,18 +7,18 @@ from app.services import project_service, member_project_service, member_service
 
 from app.api.projects import bp
 from app.api.errors import throw_api_error
-from app.api.decorators import login_required, required_permission
+from app.api.decorators import requires_login, requires_permission 
 
 @bp.route('', methods=['GET'])
-@login_required
-@required_permission('read_project')
+@requires_login
+@requires_permission('read_project')
 def get_projects():
     """ Returns a list of all projects in a list of json project objects """
     return [p.to_dict() for p in project_service.get_all_projects()]
 
 @bp.route('', methods=['POST'])
-@login_required
-@required_permission('create_project')
+@requires_login
+@requires_permission('create_project')
 def create_project():
     """
     Creates a project in the database with the information provided in the request body.
@@ -45,8 +45,8 @@ def create_project():
     return project_service.create_project(**json_data).to_dict()
 
 @bp.route('/<string:name>', methods=['GET'])
-@login_required
-@required_permission('read_project')
+@requires_login
+@requires_permission('read_project')
 def get_project(name):
     """
     Given a project name, returns the JSON project object.
@@ -59,8 +59,8 @@ def get_project(name):
     return project.to_dict()
 
 @bp.route('/<string:name>', methods=['PUT'])
-@login_required
-@required_permission('edit_project')
+@requires_login
+@requires_permission('edit_project')
 def update_project(name):
     """
     Edits the information of a project with the name provided.
@@ -91,8 +91,8 @@ def update_project(name):
     return project_service.edit_project(name=name, **json_data).to_dict()
 
 @bp.route('/<string:name>', methods=['DELETE'])
-@login_required
-@required_permission('delete_project')
+@requires_login
+@requires_permission('delete_project')
 def delete_project(name):
     """
     Deletes a member with provided name.
@@ -107,11 +107,12 @@ def delete_project(name):
 
 
 ################################################################################
-##################################### Project Members #####################################
+############################### Project Members ################################
 ################################################################################
+
 @bp.route('/<string:name>/members', methods=['GET'])
-@login_required
-@required_permission('read_project')
+@requires_login
+@requires_permission('read_project')
 def get_project_members(name):
     project = project_service.get_project_by_name(name)
     if project is None:
@@ -120,8 +121,8 @@ def get_project_members(name):
     return [m.to_dict() for m in member_project_service.get_project_members(project)]
 
 @bp.route('/<string:proj_name>/<string:username>', methods=['POST'])
-@login_required
-@required_permission('edit_project')
+@requires_login
+@requires_permission('edit_project')
 def add_project_member(proj_name, username):
     mandatory_schema = {
         "type": "object",
@@ -149,8 +150,8 @@ def add_project_member(proj_name, username):
     return member_project_service.create_member_project(member, project, **json_data).to_dict()
 
 @bp.route('/<string:proj_name>/<string:username>', methods=['DELETE'])
-@login_required
-@required_permission('edit_project')
+@requires_login
+@requires_permission('edit_project')
 def delete_project_member(proj_name, username):
     project = member_service.get_project_by_username(proj_name)
     if project is None:

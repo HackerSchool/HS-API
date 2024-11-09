@@ -41,62 +41,79 @@ def create_member(
         exit_date=exit_date,
         email=email,
         extra=extra,
-        tags="member",
     )
     db.session.add(new_member)
     db.session.commit()
     return new_member
 
-
 def get_all_members() -> List[Member]:
+    """ Returns a list of all members """
     return Member.query.all()
 
 def get_member_by_username(username: str) -> Member | None:
+    """ Returns member with given `username` or None if member doesn't exist. """
     return Member.query.filter_by(username=username).first()
 
 def delete_member(member: Member) -> int | None:
+    """ Deletes given `member` from the DB and returns member's username. """
     db.session.delete(member)
     db.session.commit()
-    return member.id
+    return member.username
 
 def edit_member(member: Member, **kwargs) -> Member:
+    """ 
+    Edit given `member` with provided information. 
+    Returns updated member.
+    """
    # updating the fields 
     for field, val in kwargs.items():
         setattr(member, field, val)
     member.check_invariants() # this will fail if the fields are invalid
+
     db.session.commit()
     return member
     
 def edit_member_password(member: Member, password: str) -> Member:
+    """ 
+    Updates given user password.
+    Returns member.
+    """
     member.password = _hash_password(password)
     member.check_invariants() # this will fail if the fields are invalid
+
     db.session.commit()
     return member
 
 def add_member_tag(member: Member, tag: str) -> List[str] | None:
-    tags = member.get_tags()
-    # already has tag
+    """ 
+    Adds given `tag` to member tags and returns the updated tags list. 
+    If the member already has the tag returns None.
+    """
+    tags = member.tags
     if tag in tags:
-        return None 
+        return None
 
     tags += [tag,]
-    member.set_tags(tags)
-
+    member.tags = tags
     member.check_invariants() # this will fail if the fields are invalid
+
     db.session.commit()
-    return tags
+    return member.tags
  
 def remove_member_tag(member: Member, tag: str) -> List[str] | None:
-    tags = member.get_tags() 
-    # does not have tag
+    """ 
+    Remove `tag` from member and returns the updated tags list.
+    If the member does not have the tag returns None.
+    """
+ 
+    tags = member.tags
     if tag not in tags:
         return None
 
-    # filter tag
-    tags = [t for t in tags if t != tag] 
-    member.set_tags(tags)
+    tags.remove(tag)
+    member.tags = tags
+    member.check_invariants() # this will fail if the fields are invalid
 
-    member.check_invariants()
     db.session.commit()
-    return tags 
+    return member.tags 
     

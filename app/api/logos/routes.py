@@ -9,7 +9,7 @@ from app.services import member_service, project_service
 
 from app.api.logos import bp
 from app.api.errors import throw_api_error
-from app.api.decorators import login_required, required_permission
+from app.api.decorators import requires_login, requires_permission
 from app.api.logos.utils import *
 
 
@@ -17,8 +17,8 @@ from app.api.logos.utils import *
 #################################### Members ###################################
 ################################################################################
 @bp.route('/members/<string:username>/logo', methods=['GET'])
-@login_required
-@required_permission('read_member')
+@requires_login
+@requires_permission('read_member')
 def get_member_logo(username):
     """ Retrieve logo of a member given its' username """
     # TODO add external reference support
@@ -39,8 +39,8 @@ def get_member_logo(username):
     return send_file(path_or_file=logo_path, mimetype=mimetype)
 
 @bp.route('/members/<string:username>/logo', methods=['POST'])
-@login_required
-@required_permission('edit_member', allow_self_action=True)
+@requires_login
+@requires_permission('edit_member', allow_self_action=True)
 def set_member_logo(username):
     """ Set the logo of a member given its' username """
     if 'file' not in request.files or request.files['file'] == '':
@@ -64,8 +64,8 @@ def set_member_logo(username):
 ################################### Projects ###################################
 ################################################################################
 @bp.route('/projects/<string:proj_name>/logo', methods=['GET'])
-@login_required
-@required_permission('read_project')
+@requires_login
+@requires_permission('read_project')
 def get_project_logo(proj_name):
     """ Retrieve logo of a project given its' ID """
     if project_service.get_project_by_name(proj_name) is None:
@@ -85,8 +85,8 @@ def get_project_logo(proj_name):
     return send_file(path_or_file=logo_path, mimetype=mimetype)
 
 @bp.route('/projects/<string:proj_name>/logo', methods=['POST'])
-@login_required
-@required_permission('edit_project')
+@requires_login
+@requires_permission('edit_project')
 def set_project_logo(proj_name):
     """ Set the logo of a project given its' ID """
     if 'file' not in request.files or request.files['file'] == '':

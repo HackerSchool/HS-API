@@ -10,18 +10,18 @@ from app.services import member_service, project_service, member_project_service
 
 from app.api.members import bp
 from app.api.errors import throw_api_error
-from app.api.decorators import login_required, required_permission
+from app.api.decorators import requires_login, requires_permission 
 
 @bp.route('', methods=['GET'])
-@login_required
-@required_permission('read_member')
+@requires_login
+@requires_permission('read_member')
 def get_members():
     """ Returns all the members in the database in a list of JSON member objects. """
     return [m.to_dict() for m in member_service.get_all_members()]
 
 @bp.route('', methods=['POST'])
-@login_required
-@required_permission('create_member')
+@requires_login
+@requires_permission('create_member')
 def create_member():
     """
     Creates a member in the database with the information provided in the request body.
@@ -55,8 +55,8 @@ def create_member():
     return member_service.create_member(**json_data).to_dict()
 
 @bp.route('/<string:username>', methods=['GET'])
-@login_required
-@required_permission('read_member', allow_self_action=True)
+@requires_login
+@requires_permission('read_member', allow_self_action=True)
 def get_member(username):
     """
     Given a member username, returns the JSON member object.
@@ -69,8 +69,8 @@ def get_member(username):
     return member.to_dict()
 
 @bp.route('/<string:username>', methods=['PUT'])
-@login_required
-@required_permission('edit_member', allow_self_action=True)
+@requires_login
+@requires_permission('edit_member', allow_self_action=True)
 def update_member(username):
     """
     Edits the information of a member with the username provided.
@@ -106,8 +106,8 @@ def update_member(username):
     return member_service.edit_member(member=member, **json_data).to_dict()
  
 @bp.route('/<string:username>', methods=['DELETE'])
-@login_required
-@required_permission('delete_member', allow_self_action=True)
+@requires_login
+@requires_permission('delete_member', allow_self_action=True)
 def delete_member(username):
     """
     Deletes a member with provided username.
@@ -122,8 +122,8 @@ def delete_member(username):
     return jsonify({"message": "Member deleted successfully!", "member_id": m_id})
 
 @bp.route('/<string:username>/edit_password', methods=['PUT'])
-@login_required
-@required_permission('edit_member', 'edit_password', allow_self_action=True)
+@requires_login
+@requires_permission('edit_member', 'edit_password', allow_self_action=True)
 def edit_password(username):
     schema = {
         "type": "object",
@@ -149,9 +149,10 @@ def edit_password(username):
 ################################################################################
 ############################### Member Projects ################################
 ################################################################################
+
 @bp.route('/<string:username>/projects', methods=['GET'])
-@login_required
-@required_permission('read_member', allow_self_action=True)
+@requires_login
+@requires_permission('read_member', allow_self_action=True)
 def get_member_projects(username):
     member = member_service.get_member_by_username(username)
     if member is None:
@@ -160,8 +161,8 @@ def get_member_projects(username):
     return [p.to_dict() for p in member_project_service.get_member_projects(member)]
 
 @bp.route('/<string:username>/<string:proj_name>', methods=['POST'])
-@login_required
-@required_permission('edit_project')
+@requires_login
+@requires_permission('edit_project')
 def add_member_project(username, proj_name):
     mandatory_schema = {
         "type": "object",
@@ -189,8 +190,8 @@ def add_member_project(username, proj_name):
     return member_project_service.create_member_project(member, project, **json_data).to_dict()
 
 @bp.route('/<string:username>/<string:proj_name>', methods=['DELETE'])
-@login_required
-@required_permission('edit_project')
+@requires_login
+@requires_permission('edit_project')
 def delete_member_project(username, proj_name):
     member = member_service.get_member_by_username(username)
     if member is None:
@@ -206,9 +207,10 @@ def delete_member_project(username, proj_name):
 ################################################################################
 ##################################### Tags #####################################
 ################################################################################
+
 @bp.route('/<string:username>/tags', methods=['GET'])
-@login_required
-@required_permission('read_member')
+@requires_login
+@requires_permission('read_member')
 def get_member_tags(username):
     """
     Given a member username, returns the tags associated with the member
@@ -218,11 +220,11 @@ def get_member_tags(username):
     if member is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
     
-    return {"tags": member.get_tags()}
+    return {"tags": member.tags}
 
 @bp.route('/<string:username>/tags', methods=['PUT'])
-@login_required
-@required_permission('edit_member')
+@requires_login
+@requires_permission('edit_member')
 def add_member_tag(username): 
     """
     Attempt to add a tag to a member
@@ -245,7 +247,7 @@ def add_member_tag(username):
         throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
     
     # Does the user have permission to add a tag to the member?
-    user_tags = session['tags']
+    user_tags = session.get('tags', [])
     if not tags_handler.can(user_tags, 'add_tag', tag_to_add=json_data['tag']):
         throw_api_error(HTTPStatus.FORBIDDEN, {"error": "You don't have permission to add that tag"})
 
@@ -262,8 +264,8 @@ def add_member_tag(username):
     return tags
 
 @bp.route('/<string:username>/tags', methods=['DELETE'])
-@login_required
-@required_permission('edit_member')
+@requires_login
+@requires_permission('edit_member')
 def remove_member_tag(username):
     """
     Attempts to remove a tag from a member.
@@ -285,7 +287,7 @@ def remove_member_tag(username):
         throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
 
     # Does the user have permission to remove a tag from the member?
-    user_tags = session.get('tags')
+    user_tags = session.get('tags', [])
     if not tags_handler.can(user_tags, 'add_tag', tag_to_add=json_data['tag']):
         throw_api_error(HTTPStatus.FORBIDDEN, {"error": "You don't have permission to remove that tag"})
 

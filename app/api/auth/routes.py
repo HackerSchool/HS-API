@@ -8,7 +8,7 @@ from flask import request, jsonify, session
 from http import HTTPStatus
 
 from app.api.auth import bp
-from app.api.decorators import login_required
+from app.api.decorators import requires_login
 
 from app.api.errors import throw_api_error
 
@@ -41,12 +41,12 @@ def login():
 
     session.clear()
     session['username'] = member.username
-    session['tags'] = member.get_member_tags() 
-    return jsonify({"message": f"Welcome {member.username}!"}), HTTPStatus.OK
+    session['tags'] = member.tags
+    return jsonify({"message": f"Welcome {member.username}!"})
 
 @bp.route('/logout')
-@login_required
+@requires_login
 def logout():
     session.clear()
-    return jsonify({"message": "Logged out successfully"}), HTTPStatus.OK
+    return jsonify({"message": "Logged out successfully"})
 

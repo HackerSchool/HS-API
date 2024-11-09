@@ -75,6 +75,3 @@ def setup_logger(app: Flask):
         app.logger.addHandler(handler)
 
         logging.getLogger("werkzeug").addHandler(handler)  # Root logger for all logs
-
-
-entry = create_app()
