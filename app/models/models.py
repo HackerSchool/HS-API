@@ -4,7 +4,7 @@ from datetime import date
 import re
 
 from app.extensions import db
-from app.extensions import tags_handler
+from app.extensions import roles_handler
 
 def _validate_date_string(date_string: str, field_name: str):
     """Validate and convert date string to datetime.date."""
@@ -28,17 +28,17 @@ class Member(db.Model):
     exit_date = db.Column(db.String)
     description = db.Column(db.String)
     extra = db.Column(db.String)
-    _tags = db.Column(db.String)
+    _roles = db.Column(db.String)
     
     projects = db.relationship('MemberProjects', back_populates="member")
     
     @property
-    def tags(self) -> List[str]:
-        return [self._tags,] if "," not in self._tags else self._tags.split(",")
+    def roles(self) -> List[str]:
+        return [self._roles,] if "," not in self._roles else self.roles.split(",")
     
-    @tags.setter
-    def tags(self, tags: List[str]):
-        self._tags = ",".join(tags)
+    @roles.setter
+    def roles(self, roles: List[str]):
+        self.roles = ",".join(roles)
 
     def __init__(
         self,
@@ -53,7 +53,7 @@ class Member(db.Model):
         exit_date: str = "",
         description: str = "",
         extra: str = "",
-        tags: List[str] = ["member"],
+        roles: List[str] = ["member"],
     ):
         self.username = username
         self.password = password
@@ -66,13 +66,13 @@ class Member(db.Model):
         self.description = description 
         self.email = email
         self.extra = extra
-        self.tags = tags
+        self.roles = roles 
         self.check_invariants()
 
     def check_invariants(self):
         # username
         if not isinstance(self.username, str) or not self.username:
-            raise ValueError("'username' must be a non-empty string.")
+            raise ValueError("Field 'username' must be a non-empty string.")
         if len(self.username) > 20 or len(self.username) < 2:
             raise ValueError("Invalid username, length must be between 2 to 20 characters")
         if not re.match(r"^[a-zA-Z0-9]+$", self.username):
@@ -80,51 +80,51 @@ class Member(db.Model):
 
         # password
         if not isinstance(self.password, str) or not self.password:
-            raise ValueError("'password' must be a non-empty string.")
+            raise ValueError("Field 'password' must be a non-empty string.")
 
         # ist_id
         if not isinstance(self.ist_id, str) or not self.ist_id:
-            raise ValueError("'ist_id' must be a non-empty string.")
+            raise ValueError("Field 'ist_id' must be a non-empty string.")
 
         # member_number
         if not isinstance(self.member_number, int) or self.member_number <= 0:
-            raise ValueError("'member_number' must be a positive integer.")
+            raise ValueError("Field 'member_number' must be a positive integer.")
 
         # name
         if not isinstance(self.name, str) or not self.name:
-            raise ValueError("'name' must be a non-empty string.")
+            raise ValueError("Field 'name' must be a non-empty string.")
 
         # email
         if not isinstance(self.email, str) or not self.email:
-            raise ValueError("'email' must be a non-empty string.")
+            raise ValueError("Field 'email' must be a non-empty string.")
 
         # course
         if not isinstance(self.course, str) or not self.course:
-            raise ValueError("'course' must be a non-empty string.")
+            raise ValueError("Field 'course' must be a non-empty string.")
 
         # description
         if not isinstance(self.description, str):
-            raise ValueError("'description' must be a string.")
+            raise ValueError("Field 'description' must be a string.")
 
         # extra
         if not isinstance(self.extra, str):
-            raise ValueError("'extra' must be a string.")
+            raise ValueError("Field 'extra' must be a string.")
         
-        # tags
-        if not isinstance(self.tags, list) or len(self.tags) == 0:
-            raise ValueError("Member must have at least 1 tag")
-        for tag in self.tags:
-            if tag not in tags_handler.tags.keys():
-                raise ValueError(f"Unknown tag '{tag}'")
+        # roles 
+        if not isinstance(self.roles, list) or len(self.roles) == 0:
+            raise ValueError("Field 'roles' must have at least 1 role")
+        for role in self.roles:
+            if role not in roles_handler.roles.keys():
+                raise ValueError(f"Unknown role '{role}'")
 
         # join_date
         if not isinstance(self.join_date, str) or not self.join_date:
-            raise ValueError("'join_date' must be a non-empty string.")
+            raise ValueError("Field 'join_date' must be a non-empty string.")
         _validate_date_string(self.join_date, "join_date")
 
         # exit_date
         if not isinstance(self.exit_date, str):
-            raise ValueError("'exit_date' must be a string.")
+            raise ValueError("Field 'exit_date' must be a string.")
         if self.exit_date != "":
             _validate_date_string(self.exit_date, "exit_date")
 
@@ -140,7 +140,7 @@ class Member(db.Model):
             "description": self.description,
             "email": self.email,
             "extra": self.extra,
-            "tags": self.tags,
+            "roles": self.roles,
         }
     
 
@@ -229,16 +229,16 @@ class MemberProjects(db.Model):
     def check_invariants(self):
         # entry_date
         if not isinstance(self.entry_date, str) or not self.entry_date:
-            raise ValueError("'entry_date' must be a non-empty string.")
+            raise ValueError("Field 'entry_date' must be a non-empty string.")
         _validate_date_string(self.entry_date, "entry_date")
 
         # contributinos
         if not isinstance(self.contributions, str):
-            raise ValueError("'contributions' must be a string.")
+            raise ValueError("Field 'contributions' must be a string.")
             
         # exit_date
         if not isinstance(self.exit_date, str):
-            raise ValueError("'exit_date' must be a string.")
+            raise ValueError("Field 'exit_date' must be a string.")
         if self.exit_date != "":
             _validate_date_string(self.exit_date, "exit_date")
 

@@ -6,7 +6,7 @@ from flask import Flask
 from app.config import Config
 from app.extensions import session
 from app.extensions import db
-from app.extensions import tags_handler
+from app.extensions import roles_handler
 from app.extensions import logos_handler
 
 def create_app(config_class=Config):
@@ -16,7 +16,7 @@ def create_app(config_class=Config):
     # Initialize extensions
     session.init_app(flask_app)
     db.init_app(flask_app)
-    tags_handler.init_app(flask_app)
+    roles_handler.init_app(flask_app)
     logos_handler.init_app(flask_app)
 
     register_blueprints(flask_app)

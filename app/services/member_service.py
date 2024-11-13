@@ -84,36 +84,35 @@ def edit_member_password(member: Member, password: str) -> Member:
     db.session.commit()
     return member
 
-def add_member_tag(member: Member, tag: str) -> List[str] | None:
+def add_member_role(member: Member, role: str) -> List[str] | None:
     """ 
-    Adds given `tag` to member tags and returns the updated tags list. 
-    If the member already has the tag returns None.
+    Adds given `role` to member roles and returns the updated roles list. 
+    If the member already has the given role returns None.
     """
-    tags = member.tags
-    if tag in tags:
+    roles = member.roles
+    if role in roles:
         return None
 
-    tags += [tag,]
-    member.tags = tags
+    roles += [role,]
+    member.roles = role
     member.check_invariants() # this will fail if the fields are invalid
 
     db.session.commit()
-    return member.tags
+    return member.roles
  
-def remove_member_tag(member: Member, tag: str) -> List[str] | None:
+def remove_member_role(member: Member, role: str) -> List[str] | None:
     """ 
-    Remove `tag` from member and returns the updated tags list.
-    If the member does not have the tag returns None.
+    Remove `role` from member and returns the updated roles list.
+    If the member does not have the given role returns None.
     """
- 
-    tags = member.tags
-    if tag not in tags:
+    roles = member.roles
+    if role not in role:
         return None
 
-    tags.remove(tag)
-    member.tags = tags
+    roles.remove(role)
+    member.roles = roles
     member.check_invariants() # this will fail if the fields are invalid
 
     db.session.commit()
-    return member.tags 
+    return member.roles
     

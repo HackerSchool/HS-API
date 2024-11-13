@@ -41,7 +41,7 @@ def login():
 
     session.clear()
     session['username'] = member.username
-    session['tags'] = member.tags
+    session['roles'] = member.roles
     return jsonify({"message": f"Welcome {member.username}!"})
 
 @bp.route('/logout')

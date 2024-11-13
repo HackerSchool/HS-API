@@ -17,27 +17,6 @@ class LogosHandler:
         self.members_path  = None
         self.projects_path = None
 
-    def init_app(self, app: Flask) -> None:
-        self.photos_dir = app.config["PHOTOS_DIR"].rstrip("/")
-
-        self.members_path  = self.photos_dir+"/members"
-        self.projects_path = self.photos_dir+"/projects"
-
-        if not os.path.exists(self.photos_dir):
-            os.makedirs(self.photos_dir)
-        if not os.path.exists(self.members_path):
-            os.makedirs(self.members_path)
-        if not os.path.exists(self.projects_path):
-            os.makedirs(self.projects_path)
- 
-    def _get_logo_directory(self, logo_type: str) -> str:
-        if logo_type == 'member':
-            return self.members_path
-        elif logo_type == 'project':
-            return self.projects_path
-        else:
-            raise InvalidLogoTypeError(logo_type)
-
     def save_logo(self, resource_id: str, f: FileStorage, logo_type: str) -> None:
         """ 
         Validates the content type of the provided file and saves it
@@ -99,4 +78,25 @@ class LogosHandler:
                 return resource_id
  
         return None
-    
+
+    def _get_logo_directory(self, logo_type: str) -> str:
+        if logo_type == 'member':
+            return self.members_path
+        elif logo_type == 'project':
+            return self.projects_path
+        else:
+            raise InvalidLogoTypeError(logo_type)
+
+    def init_app(self, app: Flask) -> None:
+        self.photos_dir = app.config["PHOTOS_DIR"].rstrip("/")
+        self.members_path  = self.photos_dir+"/members"
+        self.projects_path = self.photos_dir+"/projects"
+
+        if not os.path.exists(self.photos_dir):
+            os.makedirs(self.photos_dir)
+        if not os.path.exists(self.members_path):
+            os.makedirs(self.members_path)
+        if not os.path.exists(self.projects_path):
+            os.makedirs(self.projects_path)
+ 
+ 

@@ -18,7 +18,7 @@ from app.api.logos.utils import *
 ################################################################################
 @bp.route('/members/<string:username>/logo', methods=['GET'])
 @requires_login
-@requires_permission('read_member')
+@requires_permission('read member')
 def get_member_logo(username):
     """ Retrieve logo of a member given its' username """
     # TODO add external reference support
@@ -40,7 +40,7 @@ def get_member_logo(username):
 
 @bp.route('/members/<string:username>/logo', methods=['POST'])
 @requires_login
-@requires_permission('edit_member', allow_self_action=True)
+@requires_permission('edit member', allow_self_action=True)
 def set_member_logo(username):
     """ Set the logo of a member given its' username """
     if 'file' not in request.files or request.files['file'] == '':
@@ -65,7 +65,7 @@ def set_member_logo(username):
 ################################################################################
 @bp.route('/projects/<string:proj_name>/logo', methods=['GET'])
 @requires_login
-@requires_permission('read_project')
+@requires_permission('read project')
 def get_project_logo(proj_name):
     """ Retrieve logo of a project given its' ID """
     if project_service.get_project_by_name(proj_name) is None:
@@ -86,7 +86,7 @@ def get_project_logo(proj_name):
 
 @bp.route('/projects/<string:proj_name>/logo', methods=['POST'])
 @requires_login
-@requires_permission('edit_project')
+@requires_permission('edit project')
 def set_project_logo(proj_name):
     """ Set the logo of a project given its' ID """
     if 'file' not in request.files or request.files['file'] == '':

@@ -1,0 +1,99 @@
+{
+    "roles": [
+        {
+            "name": "sysadmin",
+            "description": "The person who manages the server, the network and the API.",
+            "level": 0,
+            "permissions": [ 
+                "read member", "create member", "edit member", "delete member", 
+                "read project", "create project", "edit project", "delete project", 
+                "edit password"
+            ]
+        },
+        {
+            "name": "president",
+            "description": "The person who manages HackerSchool.",
+            "level": 1,
+            "permissions": [ 
+                "read member", "create member", "edit member", "delete member", 
+                "read project", "create project", "edit project", "delete project", 
+                "edit password"
+            ]
+        },
+        {
+            "name": "vice",
+            "description": "The person who manages HackerSchool.",
+            "level": 2,
+            "permissions": [ 
+                "read member", "create member", "edit member", "delete member", 
+                "read project", "create project", "edit project", "delete project", 
+                "edit password"
+            ]
+        },
+        {
+            "name": "dev",
+            "description": "The person who manages the development team.",
+            "level": 2,
+            "permissions": [ 
+                "read member", "create member", "edit member", "delete member", 
+                "read project", "create project", "edit project", "delete project", 
+                "edit password"
+            ]
+        },
+        {
+            "name": "rh",
+            "description": "The person who manages human resources.",
+            "level": 3,
+            "permissions": [ 
+                "read member", "create member", "edit member", "delete member", 
+                "read project", "create project", "edit project", "delete project", 
+                "edit password"
+            ]
+        },
+        {
+            "name": "market",
+            "description": "The person who manages the marketing team.",
+            "level": 3,
+            "permissions": [ 
+                "read member", 
+                "read project", "create project", "edit project"
+            ]
+        },
+        {
+            "name": "lab",
+            "description": "The person who manages the laboratory.",
+            "level": 3,
+            "permissions": [ 
+                "read member", 
+                "read project", "create project", "edit project"
+            ]
+        },
+        {
+            "name": "money",
+            "description": "The person who manages the finance team.",
+            "level": 3,
+            "permissions": [ 
+                "read member", 
+                "read project", "create project", "edit project"
+            ]
+        },
+        {
+            "name": "member",
+            "description": "The person who is a member.",
+            "level": 4,
+            "permissions": [ 
+                "read member"
+            ]
+        },
+        {
+            "name": "application",
+            "description": "External applications with read access to the DB.",
+            "level": 5,
+            "permissions": [ 
+                "read member",
+                "read project"
+            ]
+ 
+        }
+    ]
+}
