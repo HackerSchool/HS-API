@@ -58,20 +58,18 @@ def register_error_handlers(app: Flask):
     app.register_error_handler(exc.SQLAlchemyError, handle_db_exceptions)
 
 def setup_logger(app: Flask):
-    if app.debug: # don't set logger in debug
+    if app.debug or app.config.get("LOGS_PATH", "") == "": # don't set logger in debug
         return
 
     levels = {"DEBUG": logging.DEBUG, "INFO": logging.INFO, "WARNING": logging.WARNING}
-    app.logger.setLevel(levels[app.config["LOG_LEVEL"]])
+    app.logger.setLevel(levels[app.config.get("LOG_LEVEL")])
 
-    logs_path = app.config["LOGS_PATH"]
-    if logs_path is not None:
-        log_dir = os.path.dirname(logs_path)
-        if not os.path.exists(log_dir):
-            os.makedirs(log_dir)
-        handler = logging.FileHandler(logs_path)
-        BASIC_FORMAT = "[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s"  
-        handler.setFormatter(logging.Formatter(BASIC_FORMAT))
-        app.logger.addHandler(handler)
-
-        logging.getLogger("werkzeug").addHandler(handler)  # Root logger for all logs
+    logs_path = app.config.get("LOGS_PATH")
+    log_dir = os.path.dirname(logs_path)
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+    handler = logging.FileHandler(logs_path)
+    BASIC_FORMAT = "[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s"  
+    handler.setFormatter(logging.Formatter(BASIC_FORMAT))
+    app.logger.addHandler(handler)
+    logging.getLogger("werkzeug").addHandler(handler)  # Root logger for all logs
