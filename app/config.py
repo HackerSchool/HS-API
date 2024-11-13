@@ -41,3 +41,6 @@ class Config:
 
     LOGS_PATH = os.path.join(basedir, _get_env_or_default("LOGS_PATH", ""))
     LOG_LEVEL = _get_env_or_default("LOG_LEVEL", "INFO")
+
+    ADMIN_USERNAME = _get_env_or_default("ADMIN_USERNAME", "")
+    ADMIN_PASSWORD = _get_env_or_default("ADMIN_PASSWORD", "")

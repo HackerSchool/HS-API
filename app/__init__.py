@@ -21,6 +21,7 @@ def create_app(config_class=Config):
 
     register_blueprints(flask_app)
     register_error_handlers(flask_app)
+    register_commands(flask_app)
 
     setup_logger(flask_app)
 
@@ -56,6 +57,11 @@ def register_error_handlers(app: Flask):
     from app.api.errors import handle_db_integrity_exception, handle_db_exceptions
     app.register_error_handler(exc.IntegrityError, handle_db_integrity_exception)
     app.register_error_handler(exc.SQLAlchemyError, handle_db_exceptions)
+
+def register_commands(app: Flask):
+    from app.extensions import register_create_admin_user_command, register_initialize_db_command 
+    register_initialize_db_command(app)
+    register_create_admin_user_command(app)
 
 def setup_logger(app: Flask):
     if app.debug or app.config.get("LOGS_PATH", "") == "": # don't set logger in debug

@@ -91,8 +91,6 @@ def add_member_role(member: Member, role: str) -> List[str] | None:
     If the member already has the given role returns None.
     """
     roles = member.roles
-    print("role arg service", role)
-    print("roles service", roles)
     if role in roles:
         return None
 

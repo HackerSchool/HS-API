@@ -87,7 +87,7 @@ class Member(db.Model):
             raise ValueError("Field 'ist_id' must be a non-empty string.")
 
         # member_number
-        if not isinstance(self.member_number, int) or self.member_number <= 0:
+        if not isinstance(self.member_number, int) or self.member_number < 0:
             raise ValueError("Field 'member_number' must be a positive integer.")
 
         # name
@@ -111,7 +111,6 @@ class Member(db.Model):
             raise ValueError("Field 'extra' must be a string.")
         
         # roles 
-        print("self roles", self.roles)
         if not isinstance(self.roles, list) or len(self.roles) == 0:
             raise ValueError("Field 'roles' must have at least 1 role")
         for role in self.roles:

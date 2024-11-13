@@ -11,3 +11,4 @@ roles_handler = RolesHandler()
 from app.logos.logos_handler import LogosHandler
 logos_handler = LogosHandler() 
 
+from app.commands.commands import *
