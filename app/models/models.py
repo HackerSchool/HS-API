@@ -34,11 +34,11 @@ class Member(db.Model):
     
     @property
     def roles(self) -> List[str]:
-        return [self._roles,] if "," not in self._roles else self.roles.split(",")
+        return [self._roles,] if "," not in self._roles else self._roles.split(",")
     
     @roles.setter
-    def roles(self, roles: List[str]):
-        self.roles = ",".join(roles)
+    def roles(self, roles_list: List[str]):
+        self._roles = ",".join(roles_list)
 
     def __init__(
         self,
@@ -50,10 +50,10 @@ class Member(db.Model):
         join_date: str,
         course: str,
         email: str,
-        exit_date: str = "",
-        description: str = "",
-        extra: str = "",
-        roles: List[str] = ["member"],
+        exit_date: str,
+        description: str,
+        extra: str,
+        roles: List[str],
     ):
         self.username = username
         self.password = password
@@ -111,6 +111,7 @@ class Member(db.Model):
             raise ValueError("Field 'extra' must be a string.")
         
         # roles 
+        print("self roles", self.roles)
         if not isinstance(self.roles, list) or len(self.roles) == 0:
             raise ValueError("Field 'roles' must have at least 1 role")
         for role in self.roles:

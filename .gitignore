@@ -4,7 +4,6 @@ __pycache__/
 
 data/flask_sessions/
 data/flask_session/
-data/photos/
 data/logs/
 
 .env

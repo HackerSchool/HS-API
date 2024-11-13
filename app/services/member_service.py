@@ -37,10 +37,11 @@ def create_member(
         password=hashed_password,
         join_date=join_date,
         course=course,
-        description=description,
-        exit_date=exit_date,
         email=email,
+        exit_date=exit_date,
+        description=description,
         extra=extra,
+        roles=["member"]
     )
     db.session.add(new_member)
     db.session.commit()
@@ -90,11 +91,13 @@ def add_member_role(member: Member, role: str) -> List[str] | None:
     If the member already has the given role returns None.
     """
     roles = member.roles
+    print("role arg service", role)
+    print("roles service", roles)
     if role in roles:
         return None
 
     roles += [role,]
-    member.roles = role
+    member.roles = roles
     member.check_invariants() # this will fail if the fields are invalid
 
     db.session.commit()
