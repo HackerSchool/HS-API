@@ -1,0 +1,14 @@
+**/__pycache__/
+.venv/
+**/.git/
+
+data/*
+
+requirements.txt
+.env.example
+.env
+*.json
+*.png
+README.md
+*.db
+*.sqlite3

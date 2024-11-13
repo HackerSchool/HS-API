@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ${DATABASE_PATH}:/app/${DATABASE_PATH}
+      - ${ROLES_PATH}:/app/${ROLES_PATH}
+      - ${PHOTOS_DIR}:/app/${PHOTOS_DIR}
+      - $(LOGS_PATH}:/app/${LOGS_PATH}

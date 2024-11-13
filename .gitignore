@@ -1,7 +1,10 @@
+__pycache__/
+.venv/
+.scripts/
 
-/.venv
-/__pycache__
-/API/__pycache__
-/databaseHandling/__pycache__
-/flask_session
-images/
+data/flask_sessions/
+data/flask_session/
+data/photos/
+data/logs/
+
+.env

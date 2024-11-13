@@ -1,0 +1,21 @@
+{
+    "roles": [
+        {
+            "name": "coordinator",
+            "description": "The person who is a member.",
+            "level": 0,
+            "permissions": [ 
+                "read member", "create member", "edit member", "delete member"
+            ]
+        },
+        {
+            "name": "member",
+            "description": "External applications with read access to the DB.",
+            "level": 1,
+            "permissions": [ 
+                "read member", "edit member"
+            ]
+ 
+        }
+    ]
+}
