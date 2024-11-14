@@ -4,6 +4,7 @@ __pycache__/
 
 data/flask_sessions/
 data/logs/
+data/photos/
 *.sqlite3
 
 .env
