@@ -4,7 +4,17 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ${DATABASE_PATH}:/app/${DATABASE_PATH}
-      - ${ROLES_PATH}:/app/${ROLES_PATH}
-      - ${PHOTOS_DIR}:/app/${PHOTOS_DIR}
-      - $(LOGS_PATH}:/app/${LOGS_PATH}
+      - ${DATABASE_PATH}:/hs-api/data/hackerschool.sqlite3
+      - ${ROLES_PATH}:/hs-api/data/roles.json
+      - ${SESSION_DIR}:/hs-api/data/flask_sessions/
+      - ${PHOTOS_DIR}:/hs-api/data/photos
+      - ${LOGS_PATH}:/hs-api/data/logs/log.app
+    environment:
+      - DATABASE_PATH=/hs-api/data/hackerschool.sqlite3
+      - ROLES_PATH=/hs-api/data/roles.json
+      - SESSION_DIR=/hs-api/data/flask_sessions/
+      - PHOTOS_DIR=/hs-api/data/photos/
+      - LOGS_PATH=/hs-api/data/logs/app.log
+      - LOG_LEVEL=INFO
+      - SESSION_LIFETIME=10800
+

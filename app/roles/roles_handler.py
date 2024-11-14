@@ -97,7 +97,7 @@ class RolesHandler:
             if not isinstance(level, int):
                 raise ValueError(f"Invalid 'level' key value type, expected int got {type(level)}")
             
-            app.logger.info(f"* {role["name"]}")
+            app.logger.info(f"* {role['name']}")
             rolesDict[name] = (level, set(permissions))
 
         self.roles = rolesDict

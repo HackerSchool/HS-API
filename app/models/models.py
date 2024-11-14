@@ -1,10 +1,18 @@
 from typing import List
 
-from datetime import date
 import re
+import bcrypt
+
+from datetime import date
 
 from app.extensions import db
 from app.extensions import roles_handler
+
+def _hash_password(password) -> str:
+    # Generate a salt and hash the password
+    hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    return hashed.decode('utf-8')
+
 
 def _validate_date_string(date_string: str, field_name: str):
     """Validate and convert date string to datetime.date."""
@@ -18,7 +26,7 @@ class Member(db.Model):
     __tablename__ = 'members'
     
     username = db.Column(db.String, primary_key=True, unique=True, nullable=False)
-    password = db.Column(db.String, nullable=False)
+    _password = db.Column("password", db.String, nullable=False)
     ist_id = db.Column(db.String, nullable=False, unique=True)
     member_number = db.Column(db.Integer, unique=True, nullable=False)
     name = db.Column(db.String, nullable=False)
@@ -28,7 +36,7 @@ class Member(db.Model):
     exit_date = db.Column(db.String)
     description = db.Column(db.String)
     extra = db.Column(db.String)
-    _roles = db.Column(db.String)
+    _roles = db.Column("roles", db.String)
     
     projects = db.relationship('MemberProjects', back_populates="member")
     
@@ -39,6 +47,14 @@ class Member(db.Model):
     @roles.setter
     def roles(self, roles_list: List[str]):
         self._roles = ",".join(roles_list)
+    
+    @property
+    def password(self) -> str:
+        return self._password
+
+    @password.setter
+    def password(self, password: str):
+        self._password = _hash_password(password)
 
     def __init__(
         self,

@@ -118,6 +118,10 @@ def delete_member(username):
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
 
     m_id = member_service.delete_member(member)
+
+    if member.username == session.get("username", ""):
+        session.clear() # logout member if it deleted itself
+
     return jsonify({"message": "Member deleted successfully!", "member_id": m_id})
 
 @bp.route('/<string:username>/edit_password', methods=['PUT'])

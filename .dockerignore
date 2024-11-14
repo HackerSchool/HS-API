@@ -2,13 +2,12 @@
 .venv/
 **/.git/
 
-data/*
-
+README.md
 requirements.txt
 .env.example
 .env
-*.json
-*.png
-README.md
-*.db
+
 *.sqlite3
+photos/
+logs/
+flask_sessions/
