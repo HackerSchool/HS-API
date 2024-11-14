@@ -2,8 +2,11 @@ import os
 import secrets
 
 from datetime import timedelta
+from dotenv import load_dotenv
 
 basedir = os.path.abspath(os.path.dirname(__file__)) + "/.." # the repository folder 
+
+load_dotenv(os.path.join(basedir, ".env"))
 
 def _get_env_or_default(env: str, default: str, cast=None):
     val = os.environ.get(env, "")
