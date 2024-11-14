@@ -15,6 +15,8 @@ services:
       - SESSION_DIR=/hs-api/data/flask_sessions/
       - PHOTOS_DIR=/hs-api/data/photos/
       - LOGS_PATH=/hs-api/data/logs/app.log
-      - LOG_LEVEL=INFO
-      - SESSION_LIFETIME=10800
+      - LOG_LEVEL=${LOG_LEVEL}
+      - SESSION_LIFETIME=${SESSION_LIFETIME}
+      - MAX_FILE_UPLOAD_LENGTH=${MAX_FILE_UPLOAD_LENGTH}
+      - FRONTEND_URI=${FRONTEND_URI}
 

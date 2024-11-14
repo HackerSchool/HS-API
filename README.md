@@ -52,6 +52,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 4. **Setup environment variables**: Create a `.env` file and add any necessary environment variables (see [Environment Variables](#environment-variables) section).
+
 5. **Setup the database and create an admin user**:
 ```bash
 flask init-db
@@ -64,7 +65,9 @@ flask run --debug
 
 
 ### Docker Setup (Optional)
-1. **Create all application-data folders**: `docker compose` will mount the database and required folders into the container. For this you need to initialize the database, please refer to the [installation steps 1 to 5](#installation) to set this up.
+1. **Create all application-data folders**: 
+`docker compose` will mount the database and required folders into the container. For this you need to initialize the database, please refer to the [installation steps 1 to 5](#installation) to set this up.
+
 1. **Build the docker image**:
 ```bash
 docker compose build
