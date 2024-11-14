@@ -11,7 +11,6 @@ class RolesTest(unittest.TestCase):
         self.instance.init_app(mock_app)
 
     def test_init_app(self):
-        print(self.instance.roles)
         self.assertEqual(self.instance.roles, {
             "coordinator": (0, {"read member", "create member", "edit member", "delete member"}),
             "member":      (1, {"read member", "edit member"})

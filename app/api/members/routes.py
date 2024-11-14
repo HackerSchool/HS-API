@@ -118,11 +118,15 @@ def delete_member(username):
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})
 
     m_id = member_service.delete_member(member)
+
+    if member.username == session.get("username", ""):
+        session.clear() # logout member if it deleted itself
+
     return jsonify({"message": "Member deleted successfully!", "member_id": m_id})
 
 @bp.route('/<string:username>/edit_password', methods=['PUT'])
 @requires_login
-@requires_permission('edit member', 'edit_password', allow_self_action=True)
+@requires_permission('edit member', 'edit password', allow_self_action=True)
 def edit_password(username):
     schema = {
         "type": "object",
@@ -249,7 +253,6 @@ def add_member_role(username):
     if not roles_handler.has_higher_level(user_roles, role=json_data["role"]):
         throw_api_error(HTTPStatus.FORBIDDEN, {"error": "You don't have permission to add that role"})
 
-    # Get the member ID from the username
     member = member_service.get_member_by_username(username)
     if member is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "Member does not exist"})

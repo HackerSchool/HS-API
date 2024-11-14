@@ -6,6 +6,36 @@ The HackerSchool API is an integrated database that accepts requests from the In
 ## Usage
 The API will work on the hackerschool.dev/api endpoint, requiring member login to access the database. The endpoint is not yet set.
 
+## Running 
+
+Before you can use the container you'll need to set up the sqlite database and create some directories. If you already have all directories related to data created and `.env` properly set up you can skip to step 2.
+
+### Step 1
+You'll need Flask to create the database and related storage directories that will be mounted onto the container.
+Tweak and source the `.env` to point to where you want to store the application information in your host and to contain the admin user credentials (if you don't you won't have access to any endpoint, you can create a new user later and delete the admin one).
+```
+python -m .venv venv
+source .venv/bin/activate
+source .env
+pip install -r requirements.txt
+flask db-init
+flask create-admin
+```
+
+### Step 2
+If you are not going to develop you can get rid of Flask, you won't need it anymore! 
+To get the container running simply run `docker compose up`.
+
+## Development
+For development user the Flask built in development server in a virtual environment. Don't forget to also source `.env` on development mode!
+```sh
+cp .env.example .env
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+flask run --debug
+```
+
 ### Auth
 ```txt
 Endpoints:
@@ -28,9 +58,9 @@ Endpoints:
 - GET    /members/{username}/logo          Get member logo
 - PUT    /members/{username}/logo          Upload member logo
 - DELETE /members/{username}/logo          Delete member logo
-- GET    /members/{username}/tags          Get member tags
-- PUT    /members/{username}/tags          Add member tags
-- DELETE /members/{username}/tags          Delete member tags
+- GET    /members/{username}/roles         Get member roles 
+- PUT    /members/{username}/roles         Add member roles 
+- DELETE /members/{username}/roles         Delete member roles 
 ```
 
 ### Projects

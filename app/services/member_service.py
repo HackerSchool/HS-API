@@ -9,12 +9,6 @@ from app.extensions import db
 
 from app.models import Member
 
-def _hash_password(password):
-    # Generate a salt and hash the password
-    salt = bcrypt.gensalt()
-    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
-    return hashed.decode('utf-8')
-
 def create_member(
     ist_id: str,
     member_number: int, 
@@ -28,19 +22,19 @@ def create_member(
     description: str = "", 
     extra: str = "",
 ) -> Member :
-    hashed_password = _hash_password(password)
     new_member = Member(
         ist_id=ist_id,
         member_number=member_number,
         name=name,
         username=username,
-        password=hashed_password,
+        password=password,
         join_date=join_date,
         course=course,
-        description=description,
-        exit_date=exit_date,
         email=email,
+        exit_date=exit_date,
+        description=description,
         extra=extra,
+        roles=["member"]
     )
     db.session.add(new_member)
     db.session.commit()
@@ -78,7 +72,7 @@ def edit_member_password(member: Member, password: str) -> Member:
     Updates given user password.
     Returns member.
     """
-    member.password = _hash_password(password)
+    member.password = password
     member.check_invariants() # this will fail if the fields are invalid
 
     db.session.commit()
@@ -94,7 +88,7 @@ def add_member_role(member: Member, role: str) -> List[str] | None:
         return None
 
     roles += [role,]
-    member.roles = role
+    member.roles = roles
     member.check_invariants() # this will fail if the fields are invalid
 
     db.session.commit()
