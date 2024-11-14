@@ -10,11 +10,11 @@ from app.extensions import db
 from app.models import Member
 
 def create_member(
+    username: str, 
+    password: str, 
     ist_id: str,
     member_number: int, 
     name: str, 
-    username: str, 
-    password: str, 
     join_date: str, 
     course: str, 
     email: str, 
@@ -23,11 +23,11 @@ def create_member(
     extra: str = "",
 ) -> Member :
     new_member = Member(
+        username=username,
+        password=password,
         ist_id=ist_id,
         member_number=member_number,
         name=name,
-        username=username,
-        password=password,
         join_date=join_date,
         course=course,
         email=email,

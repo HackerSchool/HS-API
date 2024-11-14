@@ -77,10 +77,10 @@ class Member(db.Model):
         self.member_number = member_number
         self.name = name
         self.join_date = join_date
-        self.exit_date = exit_date
         self.course = course
-        self.description = description 
         self.email = email
+        self.exit_date = exit_date
+        self.description = description 
         self.extra = extra
         self.roles = roles 
         self.check_invariants()
@@ -110,15 +110,26 @@ class Member(db.Model):
         if not isinstance(self.name, str) or not self.name:
             raise ValueError("Field 'name' must be a non-empty string.")
 
-        # email
-        if not isinstance(self.email, str) or not self.email:
-            raise ValueError("Field 'email' must be a non-empty string.")
+        # join_date
+        if not isinstance(self.join_date, str) or not self.join_date:
+            raise ValueError("Field 'join_date' must be a non-empty string.")
+        _validate_date_string(self.join_date, "join_date")
 
         # course
         if not isinstance(self.course, str) or not self.course:
             raise ValueError("Field 'course' must be a non-empty string.")
+ 
+        # email
+        if not isinstance(self.email, str) or not self.email:
+            raise ValueError("Field 'email' must be a non-empty string.")
 
-        # description
+        # exit_date
+        if not isinstance(self.exit_date, str):
+            raise ValueError("Field 'exit_date' must be a string.")
+        if self.exit_date != "":
+            _validate_date_string(self.exit_date, "exit_date")
+  
+       # description
         if not isinstance(self.description, str):
             raise ValueError("Field 'description' must be a string.")
 
@@ -126,23 +137,12 @@ class Member(db.Model):
         if not isinstance(self.extra, str):
             raise ValueError("Field 'extra' must be a string.")
         
-        # roles 
-        if not isinstance(self.roles, list) or len(self.roles) == 0:
+       # roles 
+        if not isinstance(self.roles, list) or (len(self.roles) == 1 and self.roles[0] == ""):
             raise ValueError("Field 'roles' must have at least 1 role")
         for role in self.roles:
-            if role not in roles_handler.roles.keys():
+            if not roles_handler.exists_role(role):
                 raise ValueError(f"Unknown role '{role}'")
-
-        # join_date
-        if not isinstance(self.join_date, str) or not self.join_date:
-            raise ValueError("Field 'join_date' must be a non-empty string.")
-        _validate_date_string(self.join_date, "join_date")
-
-        # exit_date
-        if not isinstance(self.exit_date, str):
-            raise ValueError("Field 'exit_date' must be a string.")
-        if self.exit_date != "":
-            _validate_date_string(self.exit_date, "exit_date")
 
     def to_dict(self):
         return {

@@ -36,9 +36,7 @@ class Config:
     PHOTOS_DIR         = os.path.join(basedir, _get_env_or_default("PHOTOS_DIR", "data/photos/")).rstrip("/")
     MAX_CONTENT_LENGTH = _get_int_env_or_default("MAX_PHOTO_SIZE", 16 * 1000 * 1000) ## max pohto size
 
-    print(_get_env_or_default("LOGS_PATH", ""))
     LOGS_PATH = os.path.join(basedir, _get_env_or_default("LOGS_PATH", ""))
-    print(LOGS_PATH)
     LOG_LEVEL = _get_env_or_default("LOG_LEVEL", "INFO")
 
     ADMIN_USERNAME = _get_env_or_default("ADMIN_USERNAME", "")
