@@ -27,8 +27,8 @@ The HackerSchool API is an integrated database that accepts requests from the In
 - Web App Framework - [Flask](https://github.com/pallets/flask)
 - Session management - [Flask-Session](https://github.com/pallets-eco/flask-session/)
 - ORM - [Flask-SQLAlchemy](https://github.com/pallets-eco/flask-sqlalchemy/)
+- CORS - [Flask-Cors](https://github.com/corydolphin/flask-cors)
 - Database - [sqlite3](https://docs.python.org/3/library/sqlite3.html)
-<!-- - CORS - [Flask-Cors]() -->
 
 ## Setup 
 ### Prerequisites
@@ -77,6 +77,7 @@ docker compose up
 ## Environment Variables
 **TLDR**: You can just `cp .env.example .env` to get all default environment variables ready.
 
+
 - `SESSION_DIR`: Where to store session files (defaults to `data/flask_sessions/`)
 - `SESSION_LIFETIME`: How long a session should last in seconds (defaults to 3 hours)
 
@@ -88,15 +89,15 @@ docker compose up
 - `LOGS_PATH`      Path to logs file (deault to stdout)
 
 These will only be necessary if you'll be using the `flask create-admin` command
-- `ADMIN_USERNAME`  Admin username
-- `ADMIN_PASSWORD`  Admin password
+- `ADMIN_USERNAME`:  Admin username
+- `ADMIN_PASSWORD`:  Admin password
 
 
 **Note**: If you use `docker compose` you will either need the `.env` file or environment variables set (no default values will be used) because `docker compose` will use use them to mount the correct volumes.
 
 ## Project Structure
 The project follows a layered architecture with a controller, service and models layer. 
-```txt
+```
 +-------------+
 |  Controller |
 +-------------+
@@ -193,7 +194,7 @@ python -m unittests -s discover
 | `POST`   | `/projects/{proj_name}/{username}`      |`json`        | Add a member to the project                         |
 | `DELETE` | `/projects/{proj_name}/{username}`      |`-`           | Remove a member from the project                    |
 | `GET`    | `/projects/{proj_name}/members`         |`json`        | Get a list of all members associated with a project |
-| `GET`    | `/projects/{proj_name}/logo`            |`json`        | Get project logo                                    |
+| `GET`    | `/projects/{proj_name}/logo`            |`image/*`     | Get project logo                                    |
 | `PUT`    | `/projects/{proj_name}/logo`            |`multipart/form-data` | Upload or update project logo               |
 | `DELETE` | `/projects/{proj_name}/logo`            |`-`           | Delete project logo                                 |
 
