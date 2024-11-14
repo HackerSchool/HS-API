@@ -7,7 +7,4 @@ requirements.txt
 .env.example
 .env
 
-*.sqlite3
-photos/
-logs/
-flask_sessions/
+data/

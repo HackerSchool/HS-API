@@ -3,7 +3,7 @@ __pycache__/
 .scripts/
 
 data/flask_sessions/
-data/flask_session/
 data/logs/
+*.sqlite3
 
 .env
