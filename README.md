@@ -1,20 +1,17 @@
 # HS-API
 
 ## Intro
-The HackerSchool API is an integrated database that accepts requests from the Internet via Flask framework. Its purpose is to ease the resource management process for the development teams and Human Resources. This system allows fetching member data, their projects, contributions, and other HackerSchool assets.
+The HackerSchool API is an integrated database that accepts requests from the Internet via the Flask framework. Its purpose is to ease the resource management process for development teams and Human Resources. This system allows the retrieval member data, their projects, contributions, and other HackerSchool assets.
 ***
-## Usage
-The API will work on the hackerschool.dev/api endpoint, requiring member login to access the database. The endpoint is not yet set.
 
 ## Running 
-
-Before you can use the container you'll need to set up the sqlite database and create some directories. If you already have all directories related to data created and `.env` properly set up you can skip to step 2.
+Before you can use the container, you'll need to set up the SQLite database and create some directories. If you already have all application-related directories created and `.env` properly set up, you can skip to Step 2.
 
 ### Step 1
 You'll need Flask to create the database and related storage directories that will be mounted onto the container.
-Tweak and source the `.env` to point to where you want to store the application information in your host and to contain the admin user credentials (if you don't you won't have access to any endpoint, you can create a new user later and delete the admin one).
-```
-python -m .venv venv
+Adjust and source the `.env` to specify where you want to store application data on your host, and to include the admin user credentials (if you don't you won't have access to any endpoint, you can create a new user later and delete the admin one).
+```sh
+python -m venv .venv
 source .venv/bin/activate
 source .env
 pip install -r requirements.txt
@@ -23,11 +20,11 @@ flask create-admin
 ```
 
 ### Step 2
-If you are not going to develop you can get rid of Flask, you won't need it anymore! 
-To get the container running simply run `docker compose up`.
+If you are not planning to develop, you can get rid of Flask, you won't need it anymore! 
+To start the container simply run `docker compose up`.
 
 ## Development
-For development user the Flask built in development server in a virtual environment. Don't forget to also source `.env` on development mode!
+For development use the Flask built in development server in a virtual environment. Don't forget to also source `.env` and initiailze the db if necessary on development mode!
 ```sh
 cp .env.example .env
 python -m venv .venv
@@ -36,6 +33,8 @@ pip install -r requirements.txt
 flask run --debug
 ```
 
+---
+## Endpoints
 ### Auth
 ```txt
 Endpoints:
@@ -79,11 +78,16 @@ Endpoints:
 - DELETE /projects/{proj_name}/logo       Delete project logo
 ```
 ### Login
-The authentication is session based. To login and get a session use the `/login` endpoint.
+Authentication is session based. To login and start a session, use the `/login` endpoint.
 
-***
+---
 ## What now?
-I will continue to work on this project and optimize it's feattures, if anyone wants to join I would much appreciate developing a *WebApp* to wrap the API command and give a GUI to the users.
+The next step is creating a frontend.
+
+Known issues can be found [here](https://github.com/HackerSchool/HS-API/issues/5), and a TODO list [here](https://github.com/HackerSchool/HS-API/issues/7).
+
+Contributions are welcomed!
+
 
 ## CLI
 A CLI for the API is available [here](https://github.com/HackerSchool/hs-cli).
