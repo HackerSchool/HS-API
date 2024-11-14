@@ -42,6 +42,11 @@ class RolesHandler:
     def has_higher_level(self, roles_list: List[str], role: str):
         """" Checks whether any role in `roles_list` has higher level than `role`. """
         _, highest_lvl = self._get_highest(roles_list)
+        print(highest_lvl)
+        print(role)
+        print(self._get_role_level(role))
+        if highest_lvl == 0:
+            return True # level 0 has all permissions
         return highest_lvl < self._get_role_level(role) # < instead of <= means we cannot add "horizontally"
     
     def init_app(self, app: Flask) -> None:

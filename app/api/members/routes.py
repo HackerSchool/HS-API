@@ -260,7 +260,9 @@ def add_member_role(username):
     roles = member_service.add_member_role(member, **json_data)
     if roles is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "User already has this role"})
-    session['roles'] = roles
+    
+    if session.get('username', '') == member.username:
+        session['roles'] = roles
 
     return roles
 
@@ -299,6 +301,8 @@ def remove_member_role(username):
     roles = member_service.remove_member_role(member, **json_data)
     if roles is None:
         throw_api_error(HTTPStatus.NOT_FOUND, {"error": "User does not have this role"})
-    session['roles'] = roles 
+
+    if session.get('username', '') == member.username:
+        session['roles'] = roles
 
     return roles
