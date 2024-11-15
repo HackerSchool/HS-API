@@ -23,11 +23,12 @@ The HackerSchool API is an integrated database that accepts requests from the In
 - CRUD operations for members and projects
 - Members and projects photos fetch and upload
 
-## Technologies 
+## Technologies & Extensions
 - Web App Framework - [Flask](https://github.com/pallets/flask)
 - Session management - [Flask-Session](https://github.com/pallets-eco/flask-session/)
 - ORM - [Flask-SQLAlchemy](https://github.com/pallets-eco/flask-sqlalchemy/)
 - CORS - [Flask-Cors](https://github.com/corydolphin/flask-cors)
+- Migrations - [Flask-Migrate](https://github.com/miguelgrinberg/flask-migrate)
 - Database - [sqlite3](https://docs.python.org/3/library/sqlite3.html)
 
 ## Setup 
@@ -55,7 +56,7 @@ pip install -r requirements.txt
 
 5. **Setup the database and create an admin user**:
 ```bash
-flask init-db
+flask db upgrade 
 flask create-admin
 ```
 6. **Run the application**:

@@ -5,6 +5,7 @@ from flask import Flask
 
 from app.extensions import db
 
+# DEPRECATED please us use migrations
 def register_initialize_db_command(app: Flask):
     @app.cli.command('init-db')
     def initialize_db():
