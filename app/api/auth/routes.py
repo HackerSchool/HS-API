@@ -105,4 +105,4 @@ def oauth_callback():
     session.clear()
     session['username'] = member.username
     session['roles'] = member.roles
-    return jsonify({"message": f"Welcome {member.username}!"})
+    return redirect(current_app.config.get('FRONTEND_URI'))
