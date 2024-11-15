@@ -7,6 +7,7 @@ from flask_cors import CORS
 from app.config import Config
 from app.extensions import session
 from app.extensions import db
+from app.extensions import migrate
 from app.extensions import roles_handler
 from app.extensions import logos_handler
 
@@ -17,6 +18,8 @@ def create_app(config_class=Config):
     # Initialize extensions
     session.init_app(flask_app)
     db.init_app(flask_app)
+    migrate.init_app(flask_app, db)
+
     roles_handler.init_app(flask_app)
     logos_handler.init_app(flask_app)
 
