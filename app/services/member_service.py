@@ -48,6 +48,10 @@ def get_member_by_username(username: str) -> Member | None:
     """ Returns member with given `username` or None if member doesn't exist. """
     return Member.query.filter_by(username=username).first()
 
+def get_member_by_ist_id(ist_id: str) -> Member | None:
+    """ Retunrs member with given `ist_id` or None if member doesn't exist """
+    return Member.query.filter_by(ist_id=ist_id).first()
+
 def delete_member(member: Member) -> int | None:
     """ Deletes given `member` from the DB and returns member's username. """
     db.session.delete(member)

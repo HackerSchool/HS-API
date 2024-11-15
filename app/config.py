@@ -47,3 +47,7 @@ class Config:
 
     ADMIN_USERNAME = _get_env_or_default("ADMIN_USERNAME", "admin")
     ADMIN_PASSWORD = _get_env_or_default("ADMIN_PASSWORD", "admin")
+    
+    CLIENT_ID = _get_env_or_default("CLIENT_ID", "")
+    CLIENT_SECRET = _get_env_or_default("CLIENT_SECRET", "")
+    OAUTH_CALLBACK = _get_env_or_default("OAUTH_CALLBACK", "")
