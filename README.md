@@ -97,7 +97,7 @@ These will only be necessary if you'll be using the `flask create-admin` command
 - `ADMIN_PASSWORD`:  Admin password
 
 
-**Note**: If you use `docker compose` you will either need the `.env` file or environment variables set (no default values will be used) because `docker compose` will use use them to mount the correct volumes.
+**Note**: If you use `docker compose` you will either need the `.env` file or environment variables set (no default values will be used) because `docker compose` will need them to mount the correct volumes.
 
 ## Project Structure
 The project follows a layered architecture with a controller, service and models layer. 
@@ -143,6 +143,8 @@ The structure is based on the Flask [factory extension pattern](https://flask.pa
 ├── data/              # application files
 │   └── roles.json     # roles configuration file
 │
+├── migrations/        # migration files (alembic)
+│
 └── tests/             # components tests
     ├── models/
     │
@@ -152,7 +154,7 @@ The structure is based on the Flask [factory extension pattern](https://flask.pa
 ## Testing
 To test run the following in the root directory of the repository:
 ```bash
-python -m unittests -s discover
+python -m unittest discover -s tests
 ```
 
 ## Endpoints
