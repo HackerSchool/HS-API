@@ -22,6 +22,7 @@ The HackerSchool API is an integrated database that accepts requests from the In
 - User authentication and role based authorization
 - CRUD operations for members and projects
 - Members and projects photos fetch and upload
+- Authentication and registration using Fénix student account 
 
 ## Technologies & Extensions
 - Web App Framework - [Flask](https://github.com/pallets/flask)
