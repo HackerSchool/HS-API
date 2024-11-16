@@ -38,7 +38,7 @@ def fetch_access_token(url: str) -> str | None:
 
     return access_token 
 
-def get_user_info(access_token: str) -> Tuple[bool, Optional[str], Optional[str]]:
+def get_user_info(access_token: str) -> Tuple[bool, Optional[str], Optional[str], Optional[str]]:
     r = requests.get(
         "https://fenix.tecnico.ulisboa.pt/api/fenix/v1/person?" + urlencode({"access_token": access_token})
     )

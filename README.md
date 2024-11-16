@@ -64,40 +64,22 @@ flask create-admin
 flask run --debug
 ```
 
-
-### Docker Setup (Optional)
-1. **Create all application-data folders**: 
-`docker compose` will mount the database and required folders into the container. For this you need to initialize the database, please refer to the [installation steps 1 to 5](#installation) to set this up.
-
-1. **Build the docker image**:
-```bash
-docker compose build
-```
-2. **Run the application (with gunicorn)**:
-```bash
-docker compose up
-```
-
 ## Environment Variables
 **TLDR**: You can just `cp .env.example .env` to get all default environment variables ready.
-
 
 - `SESSION_DIR`: Where to store session files (defaults to `data/flask_sessions/`)
 - `SESSION_LIFETIME`: How long a session should last in seconds (defaults to 3 hours)
 
-- `DATABASE_PATH`: Path to the `sqlite3` database file (defaults to `data/hackerschool.sqlite3`)
+- `DATABASE_PATH`: Path to the `sqlite3` database file (defaults to `data/db/hackerschool.sqlite3`)
+- `STATIC_DIR`:    Path to the folder where user and project images will be stored (defaults to `data/static/`)
 - `ROLES_PATH`:    Path to the roles configuration json file (defaults to `data/roles.json`)
-- `PHOTOS_DIR`:    Path to the folder where user and project images will be stored (defaults to `data/photos/`)
 
 - `LOG_LEVEL`:     Log level (defaults to INFO)
-- `LOGS_PATH`      Path to logs file (deault to stdout)
+- `LOGS_PATH`      Path to logs file (deaults to stdout)
 
 These will only be necessary if you'll be using the `flask create-admin` command
 - `ADMIN_USERNAME`:  Admin username
 - `ADMIN_PASSWORD`:  Admin password
-
-
-**Note**: If you use `docker compose` you will either need the `.env` file or environment variables set (no default values will be used) because `docker compose` will need them to mount the correct volumes.
 
 ## Project Structure
 The project follows a layered architecture with a controller, service and models layer. 

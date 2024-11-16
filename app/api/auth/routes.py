@@ -56,7 +56,7 @@ def logout():
 def fenix_auth():
     if current_app.config.get("CLIENT_ID", "") == "" \
         or current_app.config.get("CLIENT_SECRET", "") == "" \
-            or current_app.config.get("OAUTH_CALLBACK") == "":
+            or current_app.config.get("FENIX_REDIRECT_URL") == "":
         throw_api_error(HTTPStatus.NOT_IMPLEMENTED, {"error": "Unsupported"})
 
     state = generate_random_state()
@@ -65,7 +65,7 @@ def fenix_auth():
     session['state'] = state
     params = {
         "client_id": current_app.config.get("CLIENT_ID"),
-        "redirect_uri": current_app.config.get("OAUTH_CALLBACK"),
+        "redirect_uri": current_app.config.get("FENIX_REDIRECT_URL"),
         "state": state
     }
     return redirect("https://fenix.tecnico.ulisboa.pt/oauth/userdialog?" + urlencode(params))
@@ -85,7 +85,7 @@ def fenix_auth_callback():
     params = {
         "client_id": current_app.config.get("CLIENT_ID"),
         "client_secret": current_app.config.get("CLIENT_SECRET"),
-        "redirect_uri": current_app.config.get("OAUTH_CALLBACK"),
+        "redirect_uri": current_app.config.get("FENIX_REDIRECT_URL"),
         "code": code,
         "grant_type": "authorization_code"
     }

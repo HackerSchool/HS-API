@@ -1,22 +1,25 @@
 services:
-  app:
+  hs-api:
     build: .
     ports:
       - "8000:8000"
     volumes:
-      - ${DATABASE_PATH}:/hs-api/data/hackerschool.sqlite3
-      - ${ROLES_PATH}:/hs-api/data/roles.json
-      - ${SESSION_DIR}:/hs-api/data/flask_sessions/
-      - ${PHOTOS_DIR}:/hs-api/data/photos
-      - ${LOGS_PATH}:/hs-api/data/logs/log.app
+      - hs_db:/hs-api/data/db
+      - hs_static:/hs-api/data/static/
+      - hs_logs:/hs-api/data/logs/
     environment:
-      - DATABASE_PATH=/hs-api/data/hackerschool.sqlite3
-      - ROLES_PATH=/hs-api/data/roles.json
-      - SESSION_DIR=/hs-api/data/flask_sessions/
-      - PHOTOS_DIR=/hs-api/data/photos/
-      - LOGS_PATH=/hs-api/data/logs/app.log
-      - LOG_LEVEL=${LOG_LEVEL}
-      - SESSION_LIFETIME=${SESSION_LIFETIME}
-      - MAX_FILE_UPLOAD_LENGTH=${MAX_FILE_UPLOAD_LENGTH}
-      - FRONTEND_URI=${FRONTEND_URI}
+      - DATABASE_PATH=data/db/hackerschool.sqlite3
+      - STATIC_DIR=data/static/
+      - ROLES_PATH=data/roles.json
+      - SESSION_DIR=data/flask_sessions/
+      - LOGS_PATH=data/logs/app.log
+      - LOG_LEVEL=INFO
+      - MAX_FILE_UPLOAD_LENGTH=16777216
+      - CLIENT_ID=
+      - CLIENT_SECRET=
+      - FENIX_REDIRECT_URL=
 
+volumes:
+  hs_db:
+  hs_static:
+  hs_logs:

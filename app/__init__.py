@@ -4,7 +4,7 @@ import logging
 from flask import Flask
 from flask_cors import CORS
 
-from app.config import Config
+from app.config import Config, basedir
 from app.extensions import session
 from app.extensions import db
 from app.extensions import migrate
@@ -17,6 +17,11 @@ def create_app(config_class=Config):
 
     # Initialize extensions
     session.init_app(flask_app)
+
+    db_dir = os.path.dirname(flask_app.config.get("DATABASE_PATH"))
+    if not os.path.exists(db_dir):
+        os.makedirs(db_dir)
+
     db.init_app(flask_app)
     migrate.init_app(flask_app, db)
 
@@ -27,7 +32,7 @@ def create_app(config_class=Config):
     register_error_handlers(flask_app)
     register_commands(flask_app)
 
-    if (frontend_uri := flask_app.config.get("FRONTEND_URI", "")) != "":
+    if (frontend_uri := flask_app.config.get("FRONTEND_ORIGIN", "")) != "":
         CORS(flask_app, origins=[frontend_uri], supports_credentials=True)
 
     setup_logger(flask_app)
@@ -71,16 +76,17 @@ def register_commands(app: Flask):
     register_create_admin_user_command(app)
 
 def setup_logger(app: Flask):
-    if app.debug or app.config.get("LOGS_PATH", "") == "": # don't set logger in debug
+    logs_path = app.config.get("LOGS_PATH")
+    if app.debug or logs_path == basedir: # don't set logger in debug or if not log file
         return
 
     levels = {"DEBUG": logging.DEBUG, "INFO": logging.INFO, "WARNING": logging.WARNING}
-    app.logger.setLevel(levels[app.config.get("LOG_LEVEL")])
 
-    logs_path = app.config.get("LOGS_PATH")
     log_dir = os.path.dirname(logs_path)
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
+
+    app.logger.setLevel(levels[app.config.get("LOG_LEVEL")])
     handler = logging.FileHandler(logs_path)
     BASIC_FORMAT = "[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s"  
     handler.setFormatter(logging.Formatter(BASIC_FORMAT))

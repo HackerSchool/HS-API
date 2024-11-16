@@ -13,7 +13,6 @@ def _is_valid_content_type(content_type: str) -> bool:
 
 class LogosHandler:
     def __init__(self):
-        self.photos_dir    = None 
         self.members_path  = None
         self.projects_path = None
 
@@ -88,12 +87,9 @@ class LogosHandler:
             raise InvalidLogoTypeError(logo_type)
 
     def init_app(self, app: Flask) -> None:
-        self.photos_dir = app.config["PHOTOS_DIR"].rstrip("/")
-        self.members_path  = self.photos_dir+"/members"
-        self.projects_path = self.photos_dir+"/projects"
-
-        if not os.path.exists(self.photos_dir):
-            os.makedirs(self.photos_dir)
+        static_dir         = app.config["STATIC_DIR"].rstrip("/")
+        self.members_path  = static_dir+"/members"
+        self.projects_path = static_dir+"/projects"
         if not os.path.exists(self.members_path):
             os.makedirs(self.members_path)
         if not os.path.exists(self.projects_path):
