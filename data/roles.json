@@ -86,9 +86,17 @@
             ]
         },
         {
-            "name": "application",
+            "name": "applicant",
+            "description": "Member pending approval.",
+            "level": 99,
+            "permissions": [ 
+            ]
+ 
+        },
+        {
+            "name": "applicantion",
             "description": "External applications with read access to the DB.",
-            "level": 4,
+            "level": 99,
             "permissions": [ 
                 "read member",
                 "read project"
