@@ -88,7 +88,7 @@
         {
             "name": "application",
             "description": "External applications with read access to the DB.",
-            "level": 5,
+            "level": 4,
             "permissions": [ 
                 "read member",
                 "read project"

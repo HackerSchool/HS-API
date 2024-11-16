@@ -306,3 +306,44 @@ def remove_member_role(username):
         session['roles'] = roles
 
     return roles
+
+@bp.route('/register', methods=['POST'])
+def register():
+    if session.get("ist_id", "") == "" or session.get("name", "") == "":
+        throw_api_error(HTTPStatus.UNAUTHORIZED, {"error": "Unauthorized"})
+
+    mandatory_schema = {
+        "type": "object",
+        "properties": {
+            "ist_id": {"type": "string"},
+            "member_number": {"type": "number"},
+            "name": {"type": "string"},
+            "username": {"type": "string"},
+            "password": {"type": "string"},
+            "join_date": {"type": "string"},
+            "course": {"type": "string"},
+            "email": {"type": "string"},
+            "exit_date": {"type": "string"},
+            "extra": {"type": "string"},
+            "description": {"type": "string"},
+        },
+        "required": ["ist_id", "member_number", "name", "username", "password", "join_date", "course", "email"],
+        "additionalProperties": False
+    }
+
+    json_data = request.json
+    try:
+        validate(json_data, mandatory_schema)
+    except ValidationError as e:
+        throw_api_error(HTTPStatus.BAD_REQUEST, {"error": e.message})
+    
+    if session.get("ist_id", "") != json_data.get("ist_id", "_") or \
+        session.get("name", "") != json_data.get("name", "_"):
+        throw_api_error(HTTPStatus.BAD_REQUEST, {"error": "ist_id or name doesn't match Fenix credentials"})
+    
+    new_member = member_service.create_applicant(**json_data)
+    # login the user after registration
+    session.clear()
+    session['roles'] = new_member.roles
+    session['username'] = new_member.username
+    return new_member.to_dict()

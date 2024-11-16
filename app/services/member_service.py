@@ -114,3 +114,33 @@ def remove_member_role(member: Member, role: str) -> List[str] | None:
     db.session.commit()
     return member.roles
     
+def create_applicant(
+    username: str, 
+    password: str, 
+    ist_id: str,
+    member_number: int, 
+    name: str, 
+    join_date: str, 
+    course: str, 
+    email: str, 
+    exit_date: str = "",
+    description: str = "", 
+    extra: str = "",
+) -> Member :
+    new_member = Member(
+        username=username,
+        password=password,
+        ist_id=ist_id,
+        member_number=member_number,
+        name=name,
+        join_date=join_date,
+        course=course,
+        email=email,
+        exit_date=exit_date,
+        description=description,
+        extra=extra,
+        roles=["applicant"]
+    )
+    db.session.add(new_member)
+    db.session.commit()
+    return new_member

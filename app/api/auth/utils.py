@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Optional
 
 import secrets
 import requests
@@ -38,7 +38,7 @@ def fetch_access_token(url: str) -> str | None:
 
     return access_token 
 
-def get_user_ist_id(access_token: str) -> str | None:
+def get_user_info(access_token: str) -> Tuple[bool, Optional[str], Optional[str]]:
     r = requests.get(
         "https://fenix.tecnico.ulisboa.pt/api/fenix/v1/person?" + urlencode({"access_token": access_token})
     )
@@ -46,25 +46,26 @@ def get_user_ist_id(access_token: str) -> str | None:
         r.raise_for_status()
     except requests.httperror as e:
         current_app.logger.info(f"Failed requesting user info from Fenix. {e}")
-        return None
+        return False, None, None, None
     except Exception:
-        return None
+        return False, None, None, None
 
     if r.status_code != 200:
         current_app.logger.info(f"Failed requesting user info from Fenix. Status Code {r.status_code}")
-        return None
+        return False, None, None, None
 
     ist_id: dict 
+    name: str
     try:
-        ist_id = r.json()['username']
+        ist_id, name, email = r.json()['username'], r.json()['name'], r.json()['email']
     except requests.exceptions.JSONDecodeError as e:
         current_app.logger.info(f"User info response from fenix is not JSON. {e}")
-        return None
+        return False, None, None, None
     except TypeError as e:
         current_app.logger.info(f"Unknown response type. {e}")
-        return None
+        return False, None, None, None
     except KeyError:
         current_app.logger.info(f"Missing access token key in Fenix response. {e}")
-        return None
+        return False, None, None, None
 
-    return ist_id
+    return True, ist_id, name, email

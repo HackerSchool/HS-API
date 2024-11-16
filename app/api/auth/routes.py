@@ -14,7 +14,7 @@ from app.api.errors import throw_api_error
 
 from app.services import member_service
 
-from .utils import generate_random_state, fetch_access_token, get_user_ist_id
+from .utils import generate_random_state, fetch_access_token, get_user_info
 
 @bp.route('/login', methods=['POST'])
 def login():
@@ -53,7 +53,7 @@ def logout():
     return jsonify({"message": "Logged out successfully"})
 
 @bp.route('/fenix-auth')
-def oauth():
+def fenix_auth():
     if current_app.config.get("CLIENT_ID", "") == "" \
         or current_app.config.get("CLIENT_SECRET", "") == "" \
             or current_app.config.get("OAUTH_CALLBACK") == "":
@@ -71,7 +71,7 @@ def oauth():
     return redirect("https://fenix.tecnico.ulisboa.pt/oauth/userdialog?" + urlencode(params))
 
 @bp.route('/fenix-auth-callback')
-def oauth_callback():
+def fenix_auth_callback():
     if request.args.get("state", "") != session.get("state", "_"):
         throw_api_error(HTTPStatus.UNAUTHORIZED, {"error": "Unauthorized"})
 
@@ -94,15 +94,21 @@ def oauth_callback():
     if access_token is None:
         throw_api_error(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": "Failed obtaining access token from Fénix."})
    
-    ist_id = get_user_ist_id(access_token)
-    if ist_id is None:
+    success, ist_id, name, email = get_user_info(access_token)
+    if not success:
         throw_api_error(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": "Failed obtaining user information from Fénix"})
     
+    session.clear()
     member = member_service.get_member_by_ist_id(ist_id)
     if member is None:
-        throw_api_error(HTTPStatus.UNAUTHORIZED, {"error": "Unauthorized"})
+        # redirect to register
+        session['ist_id'] = ist_id
+        session['name'] = name
+        redirect_uri = \
+            current_app.config.get('FRONTEND_URI').rstrip('/') + "/register?" + \
+                urlencode({"ist_id": ist_id, "name": name, "email": email})
+        return redirect(redirect_uri)
 
-    session.clear()
     session['username'] = member.username
     session['roles'] = member.roles
     return redirect(current_app.config.get('FRONTEND_URI'))
