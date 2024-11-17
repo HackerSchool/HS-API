@@ -78,14 +78,9 @@ def update_member(username):
     schema = {
         "type": "object",
         "properties": {
-            "ist_id": {"type": "string"},
-            "member_number": {"type": "number"},
             "name": {"type": "string"},
-            "join_date": {"type": "string"},
             "course": {"type": "string"},
             "email": {"type": "string"},
-            "exit_date": {"type": "string"},
-            "extra": {"type": "string"},
             "description": {"type": "string"},
         },
         "additionalProperties": False
