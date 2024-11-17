@@ -41,12 +41,11 @@ class Config:
     MAX_CONTENT_LENGTH = _get_int_env_or_default("MAX_FILE_UPLOAD_LENGTH", 16 * 1024 * 1024)
 
     LOGS_PATH = os.path.join(basedir, _get_env_or_default("LOGS_PATH", ""))
-    LOG_LEVEL = _get_env_or_default("LOG_LEVEL", "INFO")
 
     FRONTEND_ORIGIN = _get_env_or_default("FRONTEND_ORIGIN", "http://localhost:3000")
 
-    ADMIN_USERNAME = _get_env_or_default("ADMIN_USERNAME", "admin")
-    ADMIN_PASSWORD = _get_env_or_default("ADMIN_PASSWORD", "admin")
+    ADMIN_USERNAME = _get_env_or_default("ADMIN_USERNAME", "")
+    ADMIN_PASSWORD = _get_env_or_default("ADMIN_PASSWORD", "")
     
     CLIENT_ID = _get_env_or_default("CLIENT_ID", "")
     CLIENT_SECRET = _get_env_or_default("CLIENT_SECRET", "")

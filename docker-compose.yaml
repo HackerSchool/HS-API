@@ -12,8 +12,7 @@ services:
       - STATIC_DIR=data/static/
       - ROLES_PATH=data/roles.json
       - SESSION_DIR=data/flask_sessions/
-      - LOGS_PATH=data/logs/app.log
-      - LOG_LEVEL=INFO
+      - LOGS_PATH=data/logs/
       - MAX_FILE_UPLOAD_LENGTH=16777216
       - CLIENT_ID=
       - CLIENT_SECRET=

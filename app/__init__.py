@@ -11,6 +11,7 @@ from app.extensions import migrate
 from app.extensions import roles_handler
 from app.extensions import logos_handler
 
+
 def create_app(config_class=Config):
     flask_app = Flask(__name__)
     flask_app.config.from_object(config_class)
@@ -76,19 +77,22 @@ def register_commands(app: Flask):
     register_create_admin_user_command(app)
 
 def setup_logger(app: Flask):
+    """ 
+    If ran with gunicorn simply sets Flask logger to gunicorn ones, configured through cli arguments. 
+    If ran with Flask development server simply logs at debug level or default to stdout. """
+    if app.debug:
+        app.logger.setLevel(logging.DEBUG)
+        return 
+
+    # create logs folder
     logs_path = app.config.get("LOGS_PATH")
-    if app.debug or logs_path == basedir: # don't set logger in debug or if not log file
-        return
-
-    levels = {"DEBUG": logging.DEBUG, "INFO": logging.INFO, "WARNING": logging.WARNING}
-
     log_dir = os.path.dirname(logs_path)
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
 
-    app.logger.setLevel(levels[app.config.get("LOG_LEVEL")])
-    handler = logging.FileHandler(logs_path)
-    BASIC_FORMAT = "[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s"  
-    handler.setFormatter(logging.Formatter(BASIC_FORMAT))
-    app.logger.addHandler(handler)
-    logging.getLogger("werkzeug").addHandler(handler)  # Root logger for all logs
+    # ran in gunicorn, use gunicorn handlers set through cli arguments
+    if __name__ != '__main__':
+        gunicorn_logger = logging.getLogger('gunicorn.error')
+        app.logger.handlers = gunicorn_logger.handlers
+        app.logger.setLevel(gunicorn_logger.level)
+        return
