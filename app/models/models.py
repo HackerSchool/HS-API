@@ -101,7 +101,7 @@ class Member(db.Model):
 
         # ist_id
         if not isinstance(self.ist_id, str) or not self.ist_id or \
-            len(self.ist_id < 4) or len(self.ist_id) > 20 or \
+            len(self.ist_id) < 4 or len(self.ist_id) > 20 or \
                 not self.ist_id.startswith("ist1"):
             raise ValueError("Field 'ist_id' must be a valid IST student number.")
 
