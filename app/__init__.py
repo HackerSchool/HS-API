@@ -72,9 +72,10 @@ def register_error_handlers(app: Flask):
     app.register_error_handler(exc.SQLAlchemyError, handle_db_exceptions)
 
 def register_commands(app: Flask):
-    from app.extensions import register_create_admin_user_command, register_initialize_db_command 
+    from app.extensions import register_create_admin_user_command, register_initialize_db_command, register_populate_dummy_db_command 
     register_initialize_db_command(app)
     register_create_admin_user_command(app)
+    register_populate_dummy_db_command(app)
 
 def setup_logger(app: Flask):
     """ 
