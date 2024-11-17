@@ -54,6 +54,10 @@ class Member(db.Model):
 
     @password.setter
     def password(self, password: str):
+        # password
+        if not isinstance(password, str) or not password or \
+                len(password) > 255:
+            raise ValueError("Field 'password' must be a non-empty string with max 255 characters.")
         self._password = _hash_password(password)
 
     def __init__(
@@ -93,11 +97,6 @@ class Member(db.Model):
             raise ValueError("Invalid username, length must be between 2 to 20 characters")
         if not re.match(r"^[a-zA-Z0-9]+$", self.username):
             raise ValueError("Invalid username, only allowed characters in the ranges a-z A-Z and 0-9")
-
-        # password
-        if not isinstance(self.password, str) or not self.password or \
-                len(self.password) > 255:
-            raise ValueError("Field 'password' must be a non-empty string with max 255 characters.")
 
         # ist_id
         if not isinstance(self.ist_id, str) or not self.ist_id or \
