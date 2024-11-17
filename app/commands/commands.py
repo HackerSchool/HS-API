@@ -29,7 +29,7 @@ def register_create_admin_user_command(app: Flask):
         admin = Member(
             username=admin_username,
             password=admin_password,
-            ist_id="ist"+admin_username,
+            ist_id="ist1"+admin_username,
             member_number=0,
             name=admin_username,
             join_date="1970-01-01",

@@ -33,7 +33,7 @@ def create_app(config_class=Config):
     register_error_handlers(flask_app)
     register_commands(flask_app)
 
-    if (frontend_uri := flask_app.config.get("FRONTEND_ORIGIN", "")) != "":
+    if (frontend_uri := flask_app.config.get("FRONTEND_URI", "")) != "":
         CORS(flask_app, origins=[frontend_uri], supports_credentials=True)
 
     setup_logger(flask_app)

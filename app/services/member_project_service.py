@@ -46,8 +46,8 @@ def delete_project_member(
 
     return member.id
 
-def get_member_projects(member: Member) -> List[Project]:
-    return [assoc.project for assoc in member.projects if assoc.project]
+def get_member_projects(member: Member) -> List[MemberProjects]:
+    return [assoc for assoc in member.projects if assoc.project]
 
 def get_project_members(project: Project) -> List[Member]:
-    return [assoc.member for assoc in project.members if assoc.member]
+    return [assoc for assoc in project.members if assoc.member]

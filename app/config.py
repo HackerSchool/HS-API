@@ -42,7 +42,7 @@ class Config:
 
     LOGS_PATH = os.path.join(basedir, _get_env_or_default("LOGS_PATH", ""))
 
-    FRONTEND_ORIGIN = _get_env_or_default("FRONTEND_ORIGIN", "http://localhost:3000")
+    FRONTEND_URI = _get_env_or_default("FRONTEND_URI", "http://localhost:3000")
 
     ADMIN_USERNAME = _get_env_or_default("ADMIN_USERNAME", "")
     ADMIN_PASSWORD = _get_env_or_default("ADMIN_PASSWORD", "")

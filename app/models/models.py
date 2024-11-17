@@ -103,7 +103,7 @@ class Member(db.Model):
         if not isinstance(self.ist_id, str) or not self.ist_id or \
             len(self.ist_id) < 4 or len(self.ist_id) > 20 or \
                 not self.ist_id.startswith("ist1"):
-            raise ValueError("Field 'ist_id' must be a valid IST student number.")
+            raise ValueError(f"Field 'ist_id' must be a valid IST student number.")
 
         # name
         if not isinstance(self.name, str) or not self.name or \
@@ -121,7 +121,7 @@ class Member(db.Model):
             raise ValueError("Field 'course' must be a non-empty string with max 8 characters.")
 
         # member_number
-        if not isinstance(self.member_number, int) or self.member_number <= 0:
+        if not isinstance(self.member_number, int) or self.member_number < 0:
             raise ValueError("Field 'member_number' must be a positive integer.")
 
         # join_date
@@ -269,8 +269,8 @@ class MemberProjects(db.Model):
 
     def to_dict(self):
         return {
-            "member_id": self.member_id,
-            "project_id": self.project_id,
+            "username": self.member_username,
+            "project_name": self.project_name,
             "entry_date": self.entry_date,
             "contributions": self.contributions,
             "exit_date": self.exit_date
