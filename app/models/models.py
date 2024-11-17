@@ -127,7 +127,8 @@ class Member(db.Model):
         # join_date
         if not isinstance(self.join_date, str):
             raise ValueError("Field 'join_date' must be a string.")
-        _validate_date_string(self.join_date, "join_date")
+        if self.join_date != "":
+            _validate_date_string(self.join_date, "join_date")
  
         # exit_date
         if not isinstance(self.exit_date, str):
