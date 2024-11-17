@@ -30,19 +30,19 @@ def create_member():
     mandatory_schema = {
         "type": "object",
         "properties": {
-            "ist_id": {"type": "string"},
-            "member_number": {"type": "number"},
-            "name": {"type": "string"},
             "username": {"type": "string"},
             "password": {"type": "string"},
-            "join_date": {"type": "string"},
-            "course": {"type": "string"},
+            "ist_id": {"type": "string"},
+            "name": {"type": "string"},
             "email": {"type": "string"},
+            "course": {"type": "string"},
+            "member_number": {"type": "number"},
+            "join_date": {"type": "string"},
             "exit_date": {"type": "string"},
             "extra": {"type": "string"},
             "description": {"type": "string"},
         },
-        "required": ["ist_id", "member_number", "name", "username", "password", "join_date", "course", "email"],
+        "required": ["username", "password", "ist_id", "name", "email", "course", "member_number", "join_date"],
         "additionalProperties": False
     }
     json_data = request.json
@@ -315,19 +315,14 @@ def register():
     mandatory_schema = {
         "type": "object",
         "properties": {
-            "ist_id": {"type": "string"},
-            "member_number": {"type": "number"},
-            "name": {"type": "string"},
             "username": {"type": "string"},
             "password": {"type": "string"},
-            "join_date": {"type": "string"},
-            "course": {"type": "string"},
+            "ist_id": {"type": "string"},
+            "name": {"type": "string"},
             "email": {"type": "string"},
-            "exit_date": {"type": "string"},
-            "extra": {"type": "string"},
-            "description": {"type": "string"},
+            "course": {"type": "string"},
         },
-        "required": ["ist_id", "member_number", "name", "username", "password", "join_date", "course", "email"],
+        "required": ["username", "password", "ist_id", "name", "email", "course"],
         "additionalProperties": False
     }
 
