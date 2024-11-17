@@ -75,8 +75,8 @@ flask run --debug
 - `STATIC_DIR`:    Path to the folder where user and project images will be stored (defaults to `data/static/`)
 - `ROLES_PATH`:    Path to the roles configuration json file (defaults to `data/roles.json`)
 
-- `LOG_LEVEL`:     Log level (defaults to INFO)
-- `LOGS_PATH`      Path to logs file (deaults to stdout)
+- `LOGS_PATH`      Path to logs file (defaults to stdout)
+- `FRONTEND_URI`   URI for the frontend (defaults to `http://localhost:3000` for dev)
 
 These will only be necessary if you'll be using the `flask create-admin` command
 - `ADMIN_USERNAME`:  Admin username
