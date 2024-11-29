@@ -1,107 +1,126 @@
 {
-    "roles": [
+    "scopes": [
         {
-            "name": "sysadmin",
-            "description": "The person who manages the server, the network and the API.",
-            "level": 0,
-            "permissions": [ 
-                "read member", "create member", "edit member", "delete member", 
-                "read project", "create project", "edit project", "delete project", 
-                "edit password"
-            ]
+            "name": "general",
+            "roles": [
+                {
+                    "name": "sysadmin",
+                    "level": 0,
+                    "permissions": [ 
+                        "read member", "create member", "edit member", "delete member", 
+                        "read project", "create project", "edit project", "delete project", 
+                        "edit password", "edit role"
+                    ]
+                },
+                {
+                    "name": "president",
+                    "description": "President of Hackerschool.",
+                    "level": 1,
+                    "permissions": [ 
+                        "read member", "create member", "edit member", "delete member", 
+                        "read project", "create project", "edit project", "delete project", 
+                        "edit password", "edit role"
+                    ]
+                },
+                {
+                    "name": "vice",
+                    "description": "Vice President of Hackerschool.",
+                    "level": 2,
+                    "permissions": [ 
+                        "read member", "create member", "edit member", "delete member", 
+                        "read project", "create project", "edit project", "delete project", 
+                        "edit password", "edit role"
+                    ]
+                },
+                {
+                    "name": "dev",
+                    "description": "Dev of Hackerschool.",
+                    "level": 3,
+                    "permissions": [ 
+                        "read member", "create member", "edit member", "delete member", 
+                        "read project", "create project", "edit project", "delete project", 
+                        "edit password", "edit role"
+                    ]
+                },
+                {
+                    "name": "rh",
+                    "description": "Member of Hackerschool's Human Resources Team.",
+                    "level": 3,
+                    "permissions": [ 
+                        "read member", "create member", "edit member", "delete member", 
+                        "read project", "create project", "edit project", "delete project", 
+                        "edit password", "edit role"
+                    ]
+                },
+                {
+                    "name": "market",
+                    "description": "Member of Hackerschool's Marketing Team.",
+                    "level": 4,
+                    "permissions": [ 
+                        "read member", 
+                        "read project", "create project", "edit project"
+                    ]
+                },
+                {
+                    "name": "lab",
+                    "description": "Member that manages Hackerschool's Laboratory.",
+                    "level": 4,
+                    "permissions": [ 
+                        "read member", 
+                        "read project", "create project", "edit project"
+                    ]
+                },
+                {
+                    "name": "money",
+                    "description": "Member of Hackerschool's Financial Team.",
+                    "level": 4,
+                    "permissions": [ 
+                        "read member", 
+                        "read project", "create project", "edit project"
+                    ]
+                },
+                {
+                    "name": "member",
+                    "description": "Member of HackerSchool.",
+                    "level": 5,
+                    "permissions": [ 
+                        "read member",
+                        "read project"
+                    ]
+                },
+                {
+                    "name": "application",
+                    "description": "External applications with read access to the DB.",
+                    "level": 10,
+                    "permissions": [ 
+                        "read member",
+                        "read project"
+                    ]
+                },
+                {
+                    "name": "applicant",
+                    "description": "User pending approval.",
+                    "level": 99,
+                    "permissions": []
+                }
+           ]
         },
         {
-            "name": "president",
-            "description": "The person who manages HackerSchool.",
-            "level": 1,
-            "permissions": [ 
-                "read member", "create member", "edit member", "delete member", 
-                "read project", "create project", "edit project", "delete project", 
-                "edit password"
+            "name": "project",
+            "roles": [
+                {
+                    "name": "coordinator",
+                    "level": 1,
+                    "description": "Person managing the project.",
+                    "permissions": ["add participant", "remove participant", "set logo", "edit project"]
+                },
+                {
+                    "name": "participant",
+                    "level": 2,
+                    "description": "Person participating in the project.",
+                    "permissions": []
+                }
             ]
-        },
-        {
-            "name": "vice",
-            "description": "The person who manages HackerSchool.",
-            "level": 2,
-            "permissions": [ 
-                "read member", "create member", "edit member", "delete member", 
-                "read project", "create project", "edit project", "delete project", 
-                "edit password"
-            ]
-        },
-        {
-            "name": "dev",
-            "description": "The person who manages the development team.",
-            "level": 2,
-            "permissions": [ 
-                "read member", "create member", "edit member", "delete member", 
-                "read project", "create project", "edit project", "delete project", 
-                "edit password"
-            ]
-        },
-        {
-            "name": "rh",
-            "description": "The person who manages human resources.",
-            "level": 3,
-            "permissions": [ 
-                "read member", "create member", "edit member", "delete member", 
-                "read project", "create project", "edit project", "delete project", 
-                "edit password"
-            ]
-        },
-        {
-            "name": "market",
-            "description": "The person who manages the marketing team.",
-            "level": 3,
-            "permissions": [ 
-                "read member", 
-                "read project", "create project", "edit project"
-            ]
-        },
-        {
-            "name": "lab",
-            "description": "The person who manages the laboratory.",
-            "level": 3,
-            "permissions": [ 
-                "read member", 
-                "read project", "create project", "edit project"
-            ]
-        },
-        {
-            "name": "money",
-            "description": "The person who manages the finance team.",
-            "level": 3,
-            "permissions": [ 
-                "read member", 
-                "read project", "create project", "edit project"
-            ]
-        },
-        {
-            "name": "member",
-            "description": "The person who is a member.",
-            "level": 4,
-            "permissions": [ 
-                "read member"
-            ]
-        },
-        {
-            "name": "applicant",
-            "description": "Member pending approval.",
-            "level": 99,
-            "permissions": [ 
-            ]
- 
-        },
-        {
-            "name": "applicantion",
-            "description": "External applications with read access to the DB.",
-            "level": 99,
-            "permissions": [ 
-                "read member",
-                "read project"
-            ]
- 
         }
     ]
 }

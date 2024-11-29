@@ -1,0 +1,34 @@
+{
+    "scopes": [
+        {
+            "name": "general",
+            "roles": [
+                {
+                    "name": "admin",
+                    "level": 0,
+                    "permissions": ["create", "read", "update", "delete"]
+                },
+                {
+                    "name": "member",
+                    "level": 1,
+                    "permissions": ["read"]
+                }
+            ]
+        },
+        {
+            "name": "project",
+            "roles": [
+                {
+                    "name": "coordinator",
+                    "level": 0,
+                    "permissions": ["update", "add participant", "remove participant"]
+                },
+                {
+                    "name": "participant",
+                    "level": 1,
+                    "permissions": []
+                }
+            ]
+        }
+    ]
+}

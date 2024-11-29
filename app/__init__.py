@@ -1,15 +1,14 @@
-import os
 import logging
+import os
 
 from flask import Flask
 from flask_cors import CORS
 
-from app.config import Config, basedir
-from app.extensions import session
-from app.extensions import db
-from app.extensions import migrate
-from app.extensions import roles_handler
-from app.extensions import logos_handler
+from app.config import Config
+from app.extensions import db, migrate, session
+from app.services.fenix import fenix_service
+from app.services.logos import logos_service
+from app.services.roles import roles_service
 
 
 def create_app(config_class=Config):
@@ -26,8 +25,9 @@ def create_app(config_class=Config):
     db.init_app(flask_app)
     migrate.init_app(flask_app, db)
 
-    roles_handler.init_app(flask_app)
-    logos_handler.init_app(flask_app)
+    roles_service.init_app(flask_app)
+    logos_service.init_app(flask_app)
+    fenix_service.init_app(flask_app)
 
     register_blueprints(flask_app)
     register_error_handlers(flask_app)
@@ -40,50 +40,62 @@ def create_app(config_class=Config):
 
     return flask_app
 
+
 def register_blueprints(app: Flask):
-    from app.api.auth import bp as auth_bp
+    from app.controllers.auth import bp as auth_bp
+
     app.register_blueprint(auth_bp)
 
-    from app.api.members import bp as members_bp
-    app.register_blueprint(members_bp, url_prefix="/members")
+    from app.controllers.users import bp as members_bp
 
-    from app.api.projects import bp as projects_bp
-    app.register_blueprint(projects_bp, url_prefix="/projects")
+    app.register_blueprint(members_bp, url_prefix="/users")
 
-    from app.api.logos import bp as logos_bp
-    app.register_blueprint(logos_bp)
+    # from app.controllers.projects import bp as projects_bp
+
+    # app.register_blueprint(projects_bp, url_prefix="/projects")
+
 
 def register_error_handlers(app: Flask):
-    from app.api.errors import handle_http_exception
     from werkzeug.exceptions import HTTPException
+
+    from app.errors import handle_http_exception
+
     app.register_error_handler(HTTPException, handle_http_exception)
 
-    # Register error handlers
-    from app.api.errors import handle_api_error, APIError
-    app.register_error_handler(APIError, handle_api_error)
+    # TODO: Should custom exceptions be prefered to ValueError?
+    from app.errors import handle_value_error
 
-    # TODO: Should custom exceptions be prefered to ValueError? 
-    from app.api.errors import handle_invalid_input
-    app.register_error_handler(ValueError, handle_invalid_input)
+    app.register_error_handler(ValueError, handle_value_error)
 
     from sqlalchemy import exc
-    from app.api.errors import handle_db_integrity_exception, handle_db_exceptions
+
+    from app.errors import handle_db_exceptions, handle_db_integrity_exception
+
     app.register_error_handler(exc.IntegrityError, handle_db_integrity_exception)
     app.register_error_handler(exc.SQLAlchemyError, handle_db_exceptions)
 
+
 def register_commands(app: Flask):
-    from app.extensions import register_create_admin_user_command, register_initialize_db_command, register_populate_dummy_db_command 
+    from app.commands.commands import (
+        register_create_admin_user_command,
+        register_initialize_db_command,
+        register_populate_dummy_db_command,
+        register_test_command,
+    )
+
     register_initialize_db_command(app)
     register_create_admin_user_command(app)
     register_populate_dummy_db_command(app)
+    register_test_command(app)
+
 
 def setup_logger(app: Flask):
-    """ 
-    If ran with gunicorn simply sets Flask logger to gunicorn ones, configured through cli arguments. 
-    If ran with Flask development server simply logs at debug level or default to stdout. """
+    """
+    If ran with gunicorn simply sets Flask logger to gunicorn ones, configured through cli arguments.
+    If ran with Flask development server simply logs at debug level or default to stdout."""
     if app.debug:
         app.logger.setLevel(logging.DEBUG)
-        return 
+        return
 
     # create logs folder
     logs_path = app.config.get("LOGS_PATH")
@@ -92,8 +104,8 @@ def setup_logger(app: Flask):
         os.makedirs(log_dir)
 
     # ran in gunicorn, use gunicorn handlers set through cli arguments
-    if __name__ != '__main__':
-        gunicorn_logger = logging.getLogger('gunicorn.error')
+    if __name__ != "__main__":
+        gunicorn_logger = logging.getLogger("gunicorn.error")
         app.logger.handlers = gunicorn_logger.handlers
         app.logger.setLevel(gunicorn_logger.level)
         return
