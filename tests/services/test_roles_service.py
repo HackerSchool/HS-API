@@ -4,16 +4,17 @@ from unittest.mock import Mock
 from app.services.roles import roles_service
 
 
-@pytest.fixure
-def load_invalid_config(scope="module"):
+def test_load_invalid_config():
     mock_app = Mock()
-    mock_app.config = {"ROLES_PATH": "tests/services/assets/roles_test.json"}
-    roles_service.init_app(mock_app)
+    mock_app.config = {"ROLES_PATH": "tests/services/assets/no_file.json"}
+    with pytest.raises(FileNotFoundError) as e_info:
+        roles_service.init_app(mock_app)
+
+    assert e_info.match("no_file.json") is True
 
 
 @pytest.fixture
 def load_config():
-    print("sss")
     mock_app = Mock()
     mock_app.config = {"ROLES_PATH": "tests/services/assets/roles_test.json"}
     roles_service.init_app(mock_app)

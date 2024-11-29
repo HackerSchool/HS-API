@@ -2,6 +2,7 @@ import re
 from typing import List
 
 from app.extensions import db
+from app.services.roles import roles_service
 
 from .utils import _hash_password, _validate_date_string
 
@@ -36,6 +37,15 @@ class User(db.Model):
 
     @roles.setter
     def roles(self, roles_list: List[str]):
+        if not isinstance(roles_list, list) or len(roles_list) == 0:
+            raise ValueError("Field 'roles' must be a non-empty list.")
+
+        for role in roles_list:
+            if role == "":
+                raise ValueError("A role must be a non-empty string.")
+            if not roles_service.exists_role_in_scope("general", role):
+                raise ValueError(f"Role does not exist '{role}'.")
+
         self._roles = ",".join(roles_list)
 
     @property
@@ -83,9 +93,9 @@ class User(db.Model):
         if not isinstance(self.username, str) or not self.username:
             raise ValueError("Field 'username' must be a non-empty string.")
         if len(self.username) > 20 or len(self.username) < 2:
-            raise ValueError("Invalid username, length must be between 2 to 20 characters")
+            raise ValueError("Invalid username, length must be between 2 to 20 characters.")
         if not re.match(r"^[a-zA-Z0-9]+$", self.username):
-            raise ValueError("Invalid username, only allowed characters in the ranges a-z A-Z and 0-9")
+            raise ValueError("Invalid username, only allowed characters in the ranges a-z A-Z and 0-9.")
 
         # ist_id
         if (
@@ -106,7 +116,7 @@ class User(db.Model):
             raise ValueError("Field 'email' must be a non-empty string with max 255 characters.")
 
         # course
-        if not isinstance(self.course, str) or not self.course or len(self.course) > 10:
+        if not isinstance(self.course, str) or not self.course or len(self.course) > 8:
             raise ValueError("Field 'course' must be a non-empty string with max 8 characters.")
 
         # member_number
@@ -130,16 +140,8 @@ class User(db.Model):
             raise ValueError("Field 'description' must be a string with max 512 characters.")
 
         # extra
-        if not isinstance(self.extra, str) or len(self.exit_date) > 512:
+        if not isinstance(self.extra, str) or len(self.extra) > 512:
             raise ValueError("Field 'extra' must be a string with max 512 characters.")
-
-        # roles
-        if not isinstance(self.roles, list) or (len(self.roles) == 1 and self.roles[0] == ""):
-            raise ValueError("Field 'roles' must have at least 1 role")
-        # for role in self.roles:
-        #     pass
-        # if not roles_service.exists_role("global", role):
-        # raise ValueError(f"Unknown role '{role}'")
 
     def to_dict(self):
         return {
