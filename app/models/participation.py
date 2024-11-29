@@ -1,6 +1,7 @@
 from typing import List
 
 from app.extensions import db
+from app.services.roles import roles_service
 
 from .utils import _validate_date_string
 
@@ -30,6 +31,15 @@ class ProjectParticipation(db.Model):
 
     @roles.setter
     def roles(self, roles_list: List[str]):
+        if not isinstance(roles_list, list) or len(roles_list) == 0:
+            raise ValueError("Field 'roles' must be a non-empty list.")
+
+        for role in roles_list:
+            if role == "":
+                raise ValueError("A role must be a non-empty string.")
+            if not roles_service.exists_role_in_scope("project", role):
+                raise ValueError(f"Role does not exist '{role}'.")
+
         self._roles = ",".join(roles_list)
 
     def __init__(
@@ -50,14 +60,6 @@ class ProjectParticipation(db.Model):
         if not isinstance(self.entry_date, str) or not self.entry_date:
             raise ValueError("Field 'entry_date' must be a non-empty string.")
         _validate_date_string(self.entry_date, "entry_date")
-
-        # roles
-        if not isinstance(self.roles, list) or (len(self.roles) == 1 and self.roles[0] == ""):
-            raise ValueError("Field 'roles' must have at least 1 role")
-        # for role in self.roles:
-        #     pass
-        # if not roles_service.exists_role("project", role):
-        #     raise ValueError(f"Role '{role}' not found in scope 'project'")
 
         # contributions
         if not isinstance(self.contributions, str) or len(self.contributions) > 512:

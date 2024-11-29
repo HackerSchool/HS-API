@@ -27,8 +27,8 @@ class Project(db.Model):
         self.state = state
         self.description = description
 
-        self.post_init()
         self.check_invariants()
+        self.post_init()
 
     def post_init(self):
         self.name = self.name.replace(" ", "-")  # remove whitespaces for prettier URLs
@@ -43,17 +43,17 @@ class Project(db.Model):
             )
 
         # state
-        if not isinstance(self.state, str) or not self.state:  # TODO add states enum
+        if not isinstance(self.state, str) or not self.state or len(self.state) > 32:
             raise ValueError("Field 'state' must be a non-empty string.")
 
         if not isinstance(self.start_date, str) or not self.start_date:
             raise ValueError("Field 'start_date' must be a non-empty string.")
         # start_date
-        _validate_date_string(self.start_date, "start")
+        _validate_date_string(self.start_date, "start_date")
 
         # description
         if not isinstance(self.description, str) or len(self.description) > 512:
-            raise ValueError("Field 'description' must be a string with max 512 characters")
+            raise ValueError("Field 'description' must be a string with max 512 characters.")
 
     def to_dict(self):
         return {

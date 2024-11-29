@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 from app.models.user import User
 
@@ -620,7 +621,7 @@ def test_invalid_extra_long():
 
 def test_invalid_roles_type():
     with pytest.raises(ValueError) as e_info:
-        u = User(
+        User(
             username="username",
             password="password",
             ist_id="ist100000",
