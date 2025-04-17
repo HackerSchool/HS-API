@@ -16,7 +16,8 @@ from app.services import member_service
 
 from .utils import generate_random_state, fetch_access_token, get_user_info
 
-@bp.route('/login', methods=['POST'])
+
+@bp.route("/login", methods=["POST"])
 def login():
     mandatory_schema = {
         "type": "object",
@@ -25,7 +26,7 @@ def login():
             "password": {"type": "string"},
         },
         "required": ["username", "password"],
-        "additionalProperties": False
+        "additionalProperties": False,
     }
 
     json_data = request.json
@@ -38,77 +39,101 @@ def login():
     if member is None:
         throw_api_error(HTTPStatus.UNAUTHORIZED, {"error": "Invalid credentials"})
 
-    if not bcrypt.checkpw(json_data.get("password").encode('utf-8'), member.password.encode('utf-8')):
+    if not bcrypt.checkpw(
+        json_data.get("password").encode("utf-8"), member.password.encode("utf-8")
+    ):
         throw_api_error(HTTPStatus.UNAUTHORIZED, {"error": "Invalid credentials"})
 
     session.clear()
-    session['username'] = member.username
-    session['roles'] = member.roles
+    session["username"] = member.username
+    session["roles"] = member.roles
     return jsonify({"message": f"Welcome {member.username}!"})
 
-@bp.route('/logout')
+
+@bp.route("/logout")
 @requires_login
 def logout():
     session.clear()
     return jsonify({"message": "Logged out successfully"})
 
-@bp.route('/fenix-auth')
+
+@bp.route("/fenix-auth")
 def fenix_auth():
-    if current_app.config.get("CLIENT_ID", "") == "" \
-        or current_app.config.get("CLIENT_SECRET", "") == "" \
-            or current_app.config.get("FENIX_REDIRECT_URL") == "":
+    if (
+        current_app.config.get("CLIENT_ID", "") == ""
+        or current_app.config.get("CLIENT_SECRET", "") == ""
+        or current_app.config.get("FENIX_REDIRECT_URL") == ""
+    ):
         throw_api_error(HTTPStatus.NOT_IMPLEMENTED, {"error": "Unsupported"})
 
     state = generate_random_state()
 
     session.clear()
-    session['state'] = state
+    session["state"] = state
     params = {
         "client_id": current_app.config.get("CLIENT_ID"),
         "redirect_uri": current_app.config.get("FENIX_REDIRECT_URL"),
-        "state": state
+        "state": state,
     }
-    return redirect("https://fenix.tecnico.ulisboa.pt/oauth/userdialog?" + urlencode(params))
+    return redirect(
+        "https://fenix.tecnico.ulisboa.pt/oauth/userdialog?" + urlencode(params)
+    )
 
-@bp.route('/fenix-auth-callback')
+
+@bp.route("/fenix-auth-callback")
 def fenix_auth_callback():
     if request.args.get("state", "") != session.get("state", "_"):
         throw_api_error(HTTPStatus.UNAUTHORIZED, {"error": "Unauthorized"})
 
     if (err := request.args.get("error", "")) != "":
         current_app.logger.info(f"Failed completing OAuth flow. {err}")
-        throw_api_error(HTTPStatus.UNAUTHORIZED, {"error": "Failed completing OAuth Flow with Fénix"})
+        throw_api_error(
+            HTTPStatus.UNAUTHORIZED,
+            {"error": "Failed completing OAuth Flow with Fénix"},
+        )
 
     if (code := request.args.get("code", "")) == "":
-        throw_api_error(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": "Failed completing OAuth Flow with Fénix"})
-    
+        throw_api_error(
+            HTTPStatus.INTERNAL_SERVER_ERROR,
+            {"error": "Failed completing OAuth Flow with Fénix"},
+        )
+
     params = {
         "client_id": current_app.config.get("CLIENT_ID"),
         "client_secret": current_app.config.get("CLIENT_SECRET"),
         "redirect_uri": current_app.config.get("FENIX_REDIRECT_URL"),
         "code": code,
-        "grant_type": "authorization_code"
+        "grant_type": "authorization_code",
     }
-    access_token = \
-        fetch_access_token("https://fenix.tecnico.ulisboa.pt/oauth/access_token?" + urlencode(params))
+    access_token = fetch_access_token(
+        "https://fenix.tecnico.ulisboa.pt/oauth/access_token?" + urlencode(params)
+    )
     if access_token is None:
-        throw_api_error(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": "Failed obtaining access token from Fénix."})
-   
+        throw_api_error(
+            HTTPStatus.INTERNAL_SERVER_ERROR,
+            {"error": "Failed obtaining access token from Fénix."},
+        )
+
     success, ist_id, name, email = get_user_info(access_token)
     if not success:
-        throw_api_error(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": "Failed obtaining user information from Fénix"})
-    
+        throw_api_error(
+            HTTPStatus.INTERNAL_SERVER_ERROR,
+            {"error": "Failed obtaining user information from Fénix"},
+        )
+
     session.clear()
     member = member_service.get_member_by_ist_id(ist_id)
     if member is None:
         # redirect to register
-        session['ist_id'] = ist_id
-        session['name'] = name
-        redirect_uri = \
-            current_app.config.get('FRONTEND_URI').rstrip('/') + "/register?" + \
-                urlencode({"ist_id": ist_id, "name": name, "email": email})
+        session["ist_id"] = ist_id
+        session["name"] = name
+        redirect_uri = (
+            current_app.config.get("FRONTEND_URI").rstrip("/")
+            + "/register?"
+            + urlencode({"ist_id": ist_id, "name": name, "email": email})
+        )
         return redirect(redirect_uri)
 
-    session['username'] = member.username
-    session['roles'] = member.roles
-    return redirect(current_app.config.get('FRONTEND_URI'))
+    session["username"] = member.username
+    session["roles"] = member.roles
+    return redirect(current_app.config.get("FRONTEND_URI"))
