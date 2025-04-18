@@ -38,7 +38,7 @@ Make sure you have the following installed:
 - Python 3.11
 - pip
 
-### Installation
+### Development 
 1. **Clone the repository**:
 ```bash
 git clone git@github.com:HackerSchool/HS-API.git
@@ -64,6 +64,9 @@ flask create-admin
 ```bash
 flask run --debug
 ```
+
+7. **Extra**: For development purposes you can also run the command `flask populate-db` to add dummy data into the database.
+
 
 ## Environment Variables
 **TLDR**: You can just `cp .env.example .env` to get all default environment variables ready.
@@ -194,6 +197,32 @@ python -m unittest discover -s tests
 | `GET`    | `/projects/{proj_name}/logo`            |`image/*`     | Get project logo                                    |
 | `PUT`    | `/projects/{proj_name}/logo`            |`multipart/form-data` | Upload or update project logo               |
 | `DELETE` | `/projects/{proj_name}/logo`            |`-`           | Delete project logo                                 |
+
+## Deployment
+
+For deploying the application you can simply tweak your configuration on `docker-compose.yaml` and run `docker compose up`.
+This runs the backend container alongside a session redis backend so these options should not be changed on the configuration. A docker volume is created to hold all relevant backend information, such as, static images, access logs, error logs and the database itself.
+
+Useful commands to inspect the deployed containers:
+
+Launch a sqlite3 shell on the backend database:
+```sh
+docker run --rm -it -v <hs-volume-name>:/data nouchka/sqlite3 /data/hackerschool.sqlite3
+```
+
+Launch a redis shell on the session backend:
+```sh
+docker run -it --network <hs-bridge-network> --rm redis redis-cli -h <hs-redis-container>
+```
+
+Open a shell with mounted volume to inspect logs:
+```sh
+docker run --rm -it -v <hs-volume-name>:/mnt apline sh
+```
+or you can directly open a shell inside the running container if it's up
+```sh
+docker exec -it <hs-backend-container> bash
+```
 
 ## Issues and To-Do
 Known issues can be found [here](https://github.com/HackerSchool/HS-API/issues/5), and a to-do list [here](https://github.com/HackerSchool/HS-API/issues/7).
