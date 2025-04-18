@@ -94,7 +94,7 @@
  
         },
         {
-            "name": "applicantion",
+            "name": "application",
             "description": "External applications with read access to the DB.",
             "level": 99,
             "permissions": [ 

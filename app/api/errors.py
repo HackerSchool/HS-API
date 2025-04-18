@@ -3,7 +3,6 @@ from http import HTTPStatus
 from werkzeug.exceptions import HTTPException
 
 from flask import jsonify, json, current_app as app
-from flask import json
 
 from app.extensions import db
 from sqlalchemy import exc
