@@ -1,24 +1,26 @@
 services:
-  hs-api:
+  redis:
+    image: redis:6.2-alpine
+    restart: unless-stopped 
+  backend:
     build: .
     ports:
-      - "8000:8000"
+      - "5000:5000"
     volumes:
-      - hs_db:/hs-api/data/db
-      - hs_static:/hs-api/data/static/
-      - hs_logs:/hs-api/data/logs/
+      - data:/hs-api/data/
     environment:
+      - SESSION_TYPE=redis
+      - SESSION_REDIS=redis://redis:6379
       - DATABASE_PATH=data/db/hackerschool.sqlite3
       - STATIC_DIR=data/static/
       - ROLES_PATH=data/roles.json
       - SESSION_DIR=data/flask_sessions/
       - LOGS_PATH=data/logs/
-      - MAX_FILE_UPLOAD_LENGTH=16777216
       - CLIENT_ID=
       - CLIENT_SECRET=
       - FENIX_REDIRECT_URL=
+    depends_on:
+      - "redis"
 
 volumes:
-  hs_db:
-  hs_static:
-  hs_logs:
+  data:

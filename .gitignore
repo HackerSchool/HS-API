@@ -1,6 +1,7 @@
 __pycache__/
 .venv/
 .scripts/
+.vscode/
 
 data/flask_sessions/
 data/logs/
