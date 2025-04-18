@@ -35,7 +35,7 @@ The HackerSchool API is an integrated database that accepts requests from the In
 ## Setup 
 ### Prerequisites
 Make sure you have the following installed:
-- Python 3.x
+- Python 3.11
 - pip
 
 ### Installation
@@ -68,8 +68,11 @@ flask run --debug
 ## Environment Variables
 **TLDR**: You can just `cp .env.example .env` to get all default environment variables ready.
 
-- `SESSION_DIR`: Where to store session files (defaults to `data/flask_sessions/`)
-- `SESSION_LIFETIME`: How long a session should last in seconds (defaults to 3 hours)
+- `SESSION_TYPE`: Backend for session data, redis or filesystem (defaults to filesystem)
+- `SESSION_DIR`: Directory if filesystem session backend (defaults to `data/flask_sessions/`)
+- `SESSION_REDIS`: Redis URI if redis session backend
+
+- `SESSION_LIFETIME`: How long a session should last in seconds (defaults to 14 days)
 
 - `DATABASE_PATH`: Path to the `sqlite3` database file (defaults to `data/db/hackerschool.sqlite3`)
 - `STATIC_DIR`:    Path to the folder where user and project images will be stored (defaults to `data/static/`)
@@ -81,6 +84,11 @@ flask run --debug
 These will only be necessary if you'll be using the `flask create-admin` command
 - `ADMIN_USERNAME`:  Admin username
 - `ADMIN_PASSWORD`:  Admin password
+
+These variables are used if you want to allow authentication with Fénix
+- `CLIENT_ID`
+- `CLIENT_SECRET`
+- `FENIX_REDIRECT_URI`: `<your-url>/fenix-auth-callback` is already implemented and either logs in or redirects to the frontend `register` endpoint.
 
 ## Project Structure
 The project follows a layered architecture with a controller, service and models layer. 
