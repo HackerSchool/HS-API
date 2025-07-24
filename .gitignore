@@ -1,7 +1,9 @@
 __pycache__/
+coverage/
 .venv/
 .scripts/
 .vscode/
+.idea/
 
 data/flask_sessions/
 data/logs/
