@@ -1,13 +1,17 @@
 from pydantic import BaseModel, Field, field_validator
-from typing import Optional, List
+from typing import List, Optional
 
 from app.utils import is_valid_datestring
+from app.models.member_model import Member
 
-class UpdateMemberSchema(BaseModel):
-    username: Optional[str] = Field(None, min_length=3, max_length=32, pattern="^[a-zA-Z0-9]*$")
-    name: Optional[str] = Field(None, min_length=1, max_length=512)
-    email: Optional[str] = Field(None, min_length=1, max_length=512)
-    password: Optional[str] = Field(None, min_length=6, max_length=256)
+
+class MemberSchema(BaseModel):
+    username: str = Field(..., min_length=3, max_length=32, pattern="^[a-zA-Z0-9]*$")
+    ist_id: str = Field(..., pattern="^ist1[0-9]{5,7}$")
+    name: str = Field(..., min_length=1, max_length=512)
+    email: str = Field(..., min_length=1, max_length=512)
+
+    password: Optional[str] = Field(default=None, min_length=6, max_length=256)
     member_number: Optional[int] = Field(default=None, gt=0)
     course: Optional[str] = Field(default=None, min_length=1, max_length=8)
     roles: Optional[List[str]] = Field(default=[])
@@ -26,4 +30,13 @@ class UpdateMemberSchema(BaseModel):
                 f'Invalid date format: "{v}". Expected format is "YYYY-MM-DD"'
             )
         return v
+
+    @classmethod
+    def from_member(cls, member: Member):
+        member_data = {}
+        for field in cls.model_fields:
+            if hasattr(member, field) and getattr(member, field) is not None:
+                member_data[field] = getattr(member, field)
+        member_data.pop("password", None)
+        return cls(**member_data)
 

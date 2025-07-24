@@ -1,13 +1,13 @@
 import os
-import secrets
 
 from datetime import timedelta
 from dotenv import load_dotenv
 from redis import Redis
+from cachelib import FileSystemCache
 
 basedir = os.path.abspath(
     os.path.abspath(os.path.dirname(__file__)) + "/.."
-)  # the repository folder
+)  # the repositories folder
 
 load_dotenv(os.path.join(basedir, ".env"))
 
@@ -29,20 +29,23 @@ def _get_int_env_or_default(env: str, default: int) -> int:
 
 class Config:
     # see https://flask-session.readthedocs.io/en/latest/config.html#
-    SESSION_TYPE = _get_env_or_default("SESSION_TYPE", "filesystem")
-    if SESSION_TYPE == "filesystem":
-        SESSION_FILE_DIR = os.path.join(
-            basedir, _get_env_or_default("SESSION_FILE_DIR", "data/flask_sessions/")
+    SESSION_TYPE = _get_env_or_default("SESSION_TYPE", "cachelib")
+    if SESSION_TYPE == "cachelib":
+        SESSION_CACHELIB = FileSystemCache(
+            cache_dir=os.path.join(
+                basedir, _get_env_or_default("SESSION_DIR", "/data/")
+            ),
+            threshold=500,
         )
     elif SESSION_TYPE == "redis":
-        SESSION_REDIS = Redis.from_url(_get_env_or_default("SESSION_REDIS", ""))
+        SESSION_REDIS = Redis.from_url(url=_get_env_or_default("SESSION_REDIS", ""))
 
     PERMANENT_SESSION_LIFETIME = _get_int_env_or_default(
         "PERMANENT_SESSION_LIFETIME", timedelta(days=14)
     )
 
     DATABASE_PATH = os.path.join(
-        basedir, _get_env_or_default("DATABASE_PATH", "data/db/hackerschool.sqlite3")
+        basedir, _get_env_or_default("DATABASE_PATH", "data/hackerschool.sqlite3")
     )
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + DATABASE_PATH
 
