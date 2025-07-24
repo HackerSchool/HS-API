@@ -1,5 +1,5 @@
 __pycache__/
-coverage/
+.coverage/
 .venv/
 .scripts/
 .vscode/
@@ -11,3 +11,4 @@ data/photos/
 *.sqlite3
 
 .env
+ruff.toml
