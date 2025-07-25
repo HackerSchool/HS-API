@@ -20,7 +20,7 @@ def _get_env_or_default(env: str, default: str, cast=None):
     return cast(val) if cast is not None else val
 
 
-def _get_int_env_or_default(env: str, default: int) -> int:
+def _get_int_env_or_default(env: str, default: str) -> int:
     try:
         return _get_env_or_default(env, default, int)
     except ValueError:
@@ -33,7 +33,7 @@ class Config:
     if SESSION_TYPE == "cachelib":
         SESSION_CACHELIB = FileSystemCache(
             cache_dir=os.path.join(
-                basedir, _get_env_or_default("SESSION_DIR", "/data/")
+                basedir, _get_env_or_default("SESSION_DIR", "data/")
             ),
             threshold=500,
         )
