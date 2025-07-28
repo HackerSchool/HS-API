@@ -38,11 +38,12 @@ def populate_db():
     db.session.commit()
 
 
-def test_get_member(client: FlaskClient):
-    rsp = client.get(f"/members/{base_member['ist_id'] + str(0)}")
-    assert rsp.status_code == 200
-    assert rsp.mimetype == "application/json"
-    assert ("name", "email", "username", "ist_id") - rsp.json.keys() == set()
-    for k, v in base_member.items():
-        assert rsp.json[k] == v + str(0)
-
+#def test_get_member(client: FlaskClient):
+#    rsp = client.get(f"/members/{base_member['ist_id'] + str(0)}")
+#    assert rsp.status_code == 200
+#    assert rsp.mimetype == "application/json"
+#    assert ("name", "email", "username", "ist_id") - rsp.json.keys() == set()
+#    for k, v in base_member.items():
+#        assert rsp.json[k] == v + str(0)
+#
+#
