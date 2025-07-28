@@ -1,6 +1,5 @@
 import pytest
 
-
 from unittest.mock import MagicMock
 from flask.testing import FlaskClient
 from http import HTTPStatus
@@ -30,8 +29,8 @@ def client(mock_member_repo):
         yield client
 
 def test_get_member(client: FlaskClient, mock_member_repo: MemberRepository):
-    mock_member_repo.get_member_by_ist_id.return_value = Member(**base_member)
-    rsp = client.get(f"/members/{base_member['ist_id']}")
+    mock_member_repo.get_member_by_username.return_value = Member(**base_member)
+    rsp = client.get(f"/members/{base_member['username']}")
 
     assert rsp.status_code == 200
     assert rsp.mimetype == "application/json"
@@ -39,8 +38,8 @@ def test_get_member(client: FlaskClient, mock_member_repo: MemberRepository):
         assert rsp.json[k] == v
 
 def test_get_member_not_found(client: FlaskClient, mock_member_repo: MemberRepository):
-    mock_member_repo.get_member_by_ist_id.return_value = None
-    rsp = client.get(f"/members/{base_member['ist_id']}")
+    mock_member_repo.get_member_by_username.return_value = None
+    rsp = client.get(f"/members/{base_member['username']}")
 
     assert rsp.status_code == 404
     assert rsp.mimetype == "application/json"
@@ -58,13 +57,13 @@ def test_create_member(client: FlaskClient, mock_member_repo: MemberRepository):
     for k, v in base_member.items():
         assert rsp.json[k] == v
 
-def test_create_member_ist_id_duplicate(client: FlaskClient, mock_member_repo: MemberRepository):
+def test_create_member_duplicate_ist_id(client: FlaskClient, mock_member_repo: MemberRepository):
     mock_member_repo.get_member_by_ist_id.return_value = not None  # simply not None
     schema = MemberSchema(**base_member)
     rsp = client.post(f"/members", json=schema.model_dump())
     assert rsp.status_code == HTTPStatus.CONFLICT
 
-def test_create_member_username_duplicate(client: FlaskClient, mock_member_repo: MemberRepository):
+def test_create_member_duplicate_username(client: FlaskClient, mock_member_repo: MemberRepository):
     mock_member_repo.get_member_by_ist_id.return_value = None
     mock_member_repo.get_member_by_username.return_value = True  # simply a not None value
     schema = MemberSchema(**base_member)
@@ -112,39 +111,39 @@ def test_get_members_empty(client: FlaskClient, mock_member_repo: MemberReposito
     assert rsp.json == []
 
 def test_update_member_not_found(client: FlaskClient, mock_member_repo: MemberRepository):
-    mock_member_repo.get_member_by_ist_id.return_value = None
+    mock_member_repo.get_member_by_username.return_value = None
     rsp = client.put(f"/members/{base_member['ist_id']}")
     assert rsp.status_code == 404
     assert rsp.mimetype == "application/json"
 
 def test_update_member_conflict(client: FlaskClient, mock_member_repo: MemberRepository):
-    mock_member_repo.get_member_by_ist_id.return_value = not None
     mock_member_repo.get_member_by_username.return_value = not None
-    rsp = client.put(f"/members/{base_member['ist_id']}", json={})
+    rsp = client.put(f"/members/{base_member['username']}", json={"username": "newusername"})
     assert rsp.status_code == HTTPStatus.CONFLICT.value
     assert rsp.mimetype == "application/json"
 
 def test_update_member(client: FlaskClient, mock_member_repo: MemberRepository):
-    update_user = {**base_member}
-    update_user["username"] = "newusername"
-    mock_member_repo.get_member_by_ist_id.return_value = Member(**update_user)
-    mock_member_repo.get_member_by_username.return_value = None
-    rsp = client.put(f"/members/{base_member['ist_id']}", json={"username": "newusername"})
+    update_member = {**base_member, "email": "new-email"}
+    mock_member_repo.get_member_by_username.return_value = not None
+    mock_member_repo.side_effects = [not None, None]
+    mock_member_repo.update_member.return_value = Member(**update_member)
+    rsp = client.put(f"/members/{base_member['ist_id']}", json={"email": "new-email"})
     assert rsp.status_code == 200
     assert rsp.mimetype == "application/json"
-    for k, v in update_user.items():
+    for k, v in update_member.items():
         assert rsp.json[k] == v
 
 def test_delete_member_not_found(client: FlaskClient, mock_member_repo: MemberRepository):
-    mock_member_repo.get_member_by_ist_id.return_value = None
-    rsp = client.delete(f"/members/{base_member['ist_id']}")
+    mock_member_repo.get_member_by_username.return_value = None
+    rsp = client.delete(f"/members/{base_member['username']}")
     assert rsp.status_code == 404
     assert rsp.mimetype == "application/json"
 
 def test_delete_member(client: FlaskClient, mock_member_repo: MemberRepository):
-    mock_member_repo.get_member_by_ist_id.return_value = not None
-    rsp = client.delete(f"/members/{base_member['ist_id']}")
+    mock_member_repo.get_member_by_username.return_value = not None
+    mock_member_repo.delete_member.return_value = base_member["username"]
+    rsp = client.delete(f"/members/{base_member['username']}")
     assert rsp.status_code == 200
     assert rsp.mimetype == "application/json"
-    assert rsp.json["ist_id"] == base_member["ist_id"]
+    assert rsp.json["username"] == base_member["username"]
 

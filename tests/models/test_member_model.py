@@ -22,12 +22,18 @@ class InitTestCase:
         self.exc_type: Exception = exc_type
         self.exc_str: str = exc_str
 
+    def __repr__(self):
+        fields = ', '.join(f"{k}={v!r}" for k, v in self.__dict__.items())
+        return f"{self.__class__.__name__}({fields})"
 
 class ValidPasswordTestCase:
     def __init__(self, *, data: dict, password: str | None):
         self.data = data
         self.password = password
 
+    def __repr__(self):
+        fields = ', '.join(f"{k}={v!r}" for k, v in self.__dict__.items())
+        return f"{self.__class__.__name__}({fields})"
 
 # {**base_user} is similar to a deep copy but more 🌠 pythonic 🌠
 valid_init_test_cases = [
@@ -50,6 +56,8 @@ valid_init_test_cases = [
 
     InitTestCase(data={**base_user}, override=True, field="email", value="1"),
     InitTestCase(data={**base_user}, override=True, field="email", value="a" * 256),
+
+    InitTestCase(data={**base_user}, override=True, field="roles", value=["member"]),
 
     InitTestCase(data={**base_user}, override=True, field="course", value="1"),
     InitTestCase(data={**base_user}, override=True, field="course", value="88888888"),  # 8
@@ -163,7 +171,7 @@ app.config.update({"TESTING": True})
 
 
 @pytest.mark.parametrize("test_case", valid_init_test_cases)
-def test_assert_valid_init(test_case: InitTestCase):
+def test_valid_init(test_case: InitTestCase):
     if test_case.override:
         test_case.data[test_case.field] = test_case.value
 
@@ -174,7 +182,7 @@ def test_assert_valid_init(test_case: InitTestCase):
 
 
 @pytest.mark.parametrize("test_case", invalid_init_test_cases)
-def test_assert_invalid_init(test_case: InitTestCase):
+def test_invalid_init(test_case: InitTestCase):
     if test_case.override:
         test_case.data[test_case.field] = test_case.value
 
@@ -188,5 +196,4 @@ def test_assert_invalid_init(test_case: InitTestCase):
 def test_valid_password_property(test_case: ValidPasswordTestCase):
     test_case.data["password"] = test_case.password
     member = Member(**test_case.data)
-    assert (not member.password and test_case.password is None) or bcrypt.checkpw(test_case.password.encode("utf-8"),
-                                                                                  member.password.encode("utf-8"))
+    assert (member.password is None and test_case.password is None) or member.matches_password(test_case.password)

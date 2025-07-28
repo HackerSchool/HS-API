@@ -1,4 +1,5 @@
 from app.models.member_model import Member
+from app.schemas.update_member_schema import UpdateMemberSchema
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import select, delete, update
@@ -23,11 +24,12 @@ class MemberRepository:
     def get_member_by_username(self, username: str) -> Member | None:
         return self.db.session.execute(select(Member).where(Member.username == username)).scalars().one_or_none()
 
-    def update_member_by_ist_id(self, ist_id: str, **values) -> None:
-        self.db.session.execute(update(Member).where(Member.ist_id == ist_id).values(**values))
+    def update_member(self, member: Member, update_values: UpdateMemberSchema) -> Member:
+        for k, v in update_values.model_dump(exclude_unset=True).items():
+            setattr(member, k, v)
+        return member
 
-    def delete_member_by_ist_id(self, ist_id: str) -> None:
-        self.db.session.execute(delete(Member).where(Member.ist_id == ist_id))
+    def delete_member(self, member: Member) -> int:
+        self.db.session.execute(delete(Member).where(Member.username == member.username))
+        return member.username
 
-    def delete_member_by_username(self, username: str) -> None:
-        self.db.session.execute(delete(Member).where(Member.username == username))

@@ -20,8 +20,8 @@ def _hash_password(password) -> str:
 class Member(db.Model):
     __tablename__ = "members"
 
-    ist_id: Mapped[str] = mapped_column(primary_key=True)
-    username: Mapped[str] = mapped_column(unique=True)
+    username: Mapped[str] = mapped_column(primary_key=True)
+    ist_id: Mapped[str] = mapped_column(unique=True, nullable=True)
     name: Mapped[str] = mapped_column()
     email: Mapped[str] = mapped_column(unique=True)
 
@@ -63,14 +63,14 @@ class Member(db.Model):
             return
         if not isinstance(v, str):
             raise ValueError(f'Invalid password type: "{type(v)}"')
-        if isinstance(v, str) and not 6 <= len(v) <= 256:
+        if not 6 <= len(v) <= 256:
             raise ValueError("Invalid password length, minimum 6 and maximum 256 characters")
         self._password = _hash_password(v)
 
     @property
     def roles(self) -> List[str]:
         if "," not in self._roles:
-            return []
+            return [] if self._roles == "" else [self._roles]
         return self._roles.split(",")
 
     @roles.setter
@@ -147,6 +147,9 @@ class Member(db.Model):
         if len(v) > 2048:
             raise ValueError(f'Invalid {k} length, minimum 0 and maximum 2048 characters: "{v}"')
         return v
+
+    def matches_password(self, password: str):
+        return bcrypt.checkpw(password.encode("utf-8"), self.password.encode("utf-8"))
 
     def __repr__(self):
         return f"<{self.__class__.__name__}({', '.join(f'{k}={v!r}' for k, v in self.__dict__.items())})>"

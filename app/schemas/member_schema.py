@@ -7,14 +7,14 @@ from app.models.member_model import Member
 
 class MemberSchema(BaseModel):
     username: str = Field(..., min_length=3, max_length=32, pattern="^[a-zA-Z0-9]*$")
-    ist_id: str = Field(..., pattern="^ist1[0-9]{5,7}$")
+    ist_id: Optional[str] = Field(default=None, pattern="^ist1[0-9]{5,7}$")
     name: str = Field(..., min_length=1, max_length=512)
     email: str = Field(..., min_length=1, max_length=512)
 
     password: Optional[str] = Field(default=None, min_length=6, max_length=256)
     member_number: Optional[int] = Field(default=None, gt=0)
     course: Optional[str] = Field(default=None, min_length=1, max_length=8)
-    roles: Optional[List[str]] = Field(default=[])
+    roles: Optional[List[str]] = Field(default=None)
     join_date: Optional[str] = Field(default=None)
     exit_date: Optional[str] = Field(default=None)
     description: Optional[str] = Field(default=None, max_length=2048)
@@ -35,7 +35,7 @@ class MemberSchema(BaseModel):
     def from_member(cls, member: Member):
         member_data = {}
         for field in cls.model_fields:
-            if hasattr(member, field) and getattr(member, field) is not None:
+            if hasattr(member, field):
                 member_data[field] = getattr(member, field)
         member_data.pop("password", None)
         return cls(**member_data)
