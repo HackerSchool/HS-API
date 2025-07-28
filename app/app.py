@@ -11,11 +11,13 @@ from app.extensions import db
 from app.extensions import migrate
 
 from app.controllers.member_controller import create_member_bp
+from app.controllers.project_controller import create_project_bp
 
 from app.repositories.member_repository import MemberRepository
+from app.repositories.project_repository import ProjectRepository
 
 
-def create_app(config_class=Config, *, member_repo=None):
+def create_app(config_class=Config, *, member_repo=None, project_repo=None, access_control=False):
     flask_app = Flask(__name__)
     flask_app.config.from_object(config_class)
 
@@ -27,6 +29,11 @@ def create_app(config_class=Config, *, member_repo=None):
         member_repo = MemberRepository(db=db)
     member_bp = create_member_bp(member_repo=member_repo)
     flask_app.register_blueprint(member_bp)
+
+    if project_repo is None:
+        project_repo = ProjectRepository(db=db)
+    project_bp = create_project_bp(project_repo=project_repo)
+    flask_app.register_blueprint(project_bp)
 
     from werkzeug.exceptions import HTTPException
     flask_app.register_error_handler(HTTPException, handle_http_exception)

@@ -28,4 +28,4 @@ def test_invalid_datestring():
         schema = MemberSchema(**data)
 
     assert exc_info.type == pydantic.ValidationError
-    assert "Invalid date" in str(exc_info.value.errors()[0].get("ctx", {}).get("error", None))
+    assert "Invalid date format" in str(exc_info.value.errors()[0].get("ctx", {}).get("error", None))
