@@ -20,7 +20,8 @@ def _hash_password(password) -> str:
 class Member(db.Model):
     __tablename__ = "members"
 
-    username: Mapped[str] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str] = mapped_column(unique=True)
     ist_id: Mapped[str] = mapped_column(unique=True, nullable=True)
     name: Mapped[str] = mapped_column()
     email: Mapped[str] = mapped_column(unique=True)

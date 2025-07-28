@@ -12,7 +12,8 @@ if TYPE_CHECKING:
 class Project(db.Model):
     __tablename__ = "projects"
 
-    _name: Mapped[str] = mapped_column("name", primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    _name: Mapped[str] = mapped_column("name", unique=True)
     slug: Mapped[str] = mapped_column(unique=True)
     state: Mapped[ProjectStateEnum] = mapped_column(Enum(ProjectStateEnum, native_enum=False))
     start_date: Mapped[str] = mapped_column()
