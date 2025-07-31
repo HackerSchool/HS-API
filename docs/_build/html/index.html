@@ -1,0 +1,560 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HS-API &mdash; HS-API  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            HS-API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">HS-API</a></li>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#core-libraries">Core Libraries</a></li>
+<li><a class="reference internal" href="#developing">Developing</a><ul>
+<li><a class="reference internal" href="#models">Models</a></li>
+<li><a class="reference internal" href="#repository">Repository</a></li>
+<li><a class="reference internal" href="#schemas">Schemas</a></li>
+<li><a class="reference internal" href="#controller">Controller</a></li>
+<li><a class="reference internal" href="#access">Access</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#testing">Testing</a><ul>
+<li><a class="reference internal" href="#id1">Models</a></li>
+<li><a class="reference internal" href="#repositories">Repositories</a></li>
+<li><a class="reference internal" href="#controllers">Controllers</a></li>
+<li><a class="reference internal" href="#id2">Schemas</a></li>
+<li><a class="reference internal" href="#id3">Access</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">HS-API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">HS-API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="hs-api">
+<h1>HS-API<a class="headerlink" href="#hs-api" title="Link to this heading"></a></h1>
+<p>Welcome to the HS-API developer documentation. If you are not directly developing the HS-API but rather using it please refer to the following documentation HS-API usage.</p>
+</section>
+<section id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h1>
+<p>This project follows a layered architecture, organized into the following core layers:</p>
+<ul class="simple">
+<li><p><strong>Controller</strong> – Responsible for handling requests and orchestrating business logic.</p></li>
+<li><p><strong>Repository</strong> – Manages data access, queries, and database transactions.</p></li>
+<li><p><strong>Models</strong> – Defines the data structures and schema used throughout the application.</p></li>
+</ul>
+<p>Each layer has its own dedicated directory in the project structure.</p>
+</section>
+<section id="core-libraries">
+<h1>Core Libraries<a class="headerlink" href="#core-libraries" title="Link to this heading"></a></h1>
+<p>This API is built using the following core Python libraries:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://flask.palletsprojects.com/en/stable/">Flask</a> - Web Application Framework</p></li>
+<li><p><a class="reference external" href="https://docs.sqlalchemy.org/">SQLAlchemy</a> - ORM</p></li>
+<li><p><a class="reference external" href="https://docs.pydantic.dev/latest/">Pydantic</a> - Data validation and serialization</p></li>
+<li><p><a class="reference external" href="https://pytest.org/">Pytest</a> - Unit, component and integration testing</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="developing">
+<h1>Developing<a class="headerlink" href="#developing" title="Link to this heading"></a></h1>
+<p>In this section, we’ll demonstrate how to add the <strong>Workshop</strong> feature into the existing codebase, covering models, repositories, schemas, controllers and access modules.</p>
+<section id="models">
+<h2>Models<a class="headerlink" href="#models" title="Link to this heading"></a></h2>
+<p>We begin by creating the <strong>SQLAlchemy model</strong>, which also serves as our domain entity.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file app/models/workshop_model.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span><span class="p">,</span> <span class="n">validates</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">db</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_valid_datestring</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Workshop</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span>
+
+    <span class="nd">@validates</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+           <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid name type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span>
+
+    <span class="nd">@validates</span><span class="p">(</span><span class="s2">&quot;duration&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+           <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid duration type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+           <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid dauration: </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">. Expected integer bigger than 0.)</span>
+        <span class="k">return</span> <span class="n">v</span>
+</pre></div>
+</div>
+<p>We use <code class="docutils literal notranslate"><span class="pre">mapped_column()</span></code> to define attributes and SQL constraints, and the <code class="docutils literal notranslate"><span class="pre">&#64;validates</span></code> decorator to enforce domain rules at the model level.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The domain logic is tightly coupled with SQLAlchemy here, which limits flexibility.</p>
+</div>
+</section>
+<section id="repository">
+<h2>Repository<a class="headerlink" href="#repository" title="Link to this heading"></a></h2>
+<p>Next, we define a <strong>repository</strong> to handle data access and mutations for the Workshop entity.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file app/repositories/workshop_repository.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.models.workshop_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Workshop</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schemas.update_workshop_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">UpdateWorkshopSchema</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WorkshopRepository</span><span class="p">:</span>
+     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">db</span><span class="p">:</span> <span class="n">SQLAlchemy</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">db</span>
+
+     <span class="k">def</span><span class="w"> </span><span class="nf">create_workshop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workshop</span><span class="p">:</span> <span class="n">Workshop</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Workshop</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">gotten_workshop</span><span class="p">)</span>
+        <span class="n">returngotten_workshop</span>
+
+     <span class="k">def</span><span class="w"> </span><span class="nf">get_workshops</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Workshops</span><span class="p">]:</span>
+         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Workshop</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+     <span class="k">def</span><span class="w"> </span><span class="nf">get_workshop_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Workshop</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Workshop</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Workshop</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">one_or_none</span><span class="p">()</span>
+
+     <span class="k">def</span><span class="w"> </span><span class="nf">update_workshop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workshop</span><span class="p">:</span> <span class="n">Workshop</span><span class="p">,</span> <span class="n">update_values</span><span class="p">:</span> <span class="n">WorkshopUpdateSchema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Workshop</span><span class="p">:</span>
+         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">update_values</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+             <span class="nb">setattr</span><span class="p">(</span><span class="n">workshop</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+         <span class="k">return</span> <span class="n">workshop</span>
+
+     <span class="k">def</span><span class="w"> </span><span class="nf">delete_workshop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workshop</span><span class="p">:</span> <span class="n">Workshop</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">delete</span><span class="p">(</span><span class="n">Workshop</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Workshop</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">workshop</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+         <span class="k">return</span> <span class="n">workshop</span><span class="o">.</span><span class="n">name</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The repository can be injected into our controllers (which we’ll see next), making the application more modular, testable, and decoupled from the ORM.</p>
+</div>
+</section>
+<section id="schemas">
+<h2>Schemas<a class="headerlink" href="#schemas" title="Link to this heading"></a></h2>
+<p>Before we implement the controller layer, we need to define the <strong>schemas</strong> that describe the structure of incoming and outgoing data. These schemas act as the interface between the client and the application, enforcing data shape and validation rules.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file app/schemas/workshop_schema.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WorkshopSchema</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">gt</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file app/schemas/update_workshop_schema.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UpdateWorkshopSchema</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gt</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We use <strong>Pydantic</strong> to define and validate the schema data. In this example, we defined two schemas for the Workshop entity.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Our current design uses Pydantic strictly for request validation, but it’s worth noting that Pydantic can also be used to define true domain models. This could help decouple the domain logic from the ORM entirely.</p>
+</div>
+</section>
+<section id="controller">
+<h2>Controller<a class="headerlink" href="#controller" title="Link to this heading"></a></h2>
+<p>Now we can finally move into the <strong>controller</strong> layer. We will implement a Flask Blueprint factory.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file app/controllers/workshop_controller.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">request</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.models.workshop_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Workshop</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repository.workshop_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">WorkshopRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schemas.workshop_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">WorkshopSchema</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schemas.update_workshop_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">UpdateWorkshopSchema</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_workshop_blueprint</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">workshop_repository</span><span class="p">:</span> <span class="n">WorkshopRepository</span><span class="p">)</span>
+    <span class="n">bp</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s2">&quot;workshops&quot;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/workshops&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">])</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_workshop</span><span class="p">():</span>
+        <span class="n">workshop_data</span> <span class="o">=</span> <span class="n">WorkshopSchema</span><span class="p">(</span><span class="o">**</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span> <span class="c1"># this enforces the validation, fails if invalid</span>
+        <span class="k">if</span> <span class="n">workshop_repository</span><span class="o">.</span><span class="n">get_workshop_by_name</span><span class="p">(</span><span class="n">workshop_data</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">abort</span><span class="p">(</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">CONFLICT</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Workshop with name &quot;</span><span class="si">{</span><span class="n">workshop_data</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; already exists.&#39;</span><span class="p">)</span>
+
+        <span class="n">workshop</span> <span class="o">=</span> <span class="n">workshop_repository</span><span class="o">.</span><span class="n">create_workshop</span><span class="p">(</span><span class="n">Workshop</span><span class="o">.</span><span class="n">from_schema</span><span class="p">(</span><span class="n">workshop_data</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">WorkshopSchema</span><span class="o">.</span><span class="n">from_workshop</span><span class="p">(</span><span class="n">workshop</span><span class="p">)</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
+
+
+    <span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/workshops/&lt;name&gt;&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_workshop_by_name</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">workshop</span> <span class="o">:=</span> <span class="n">workshop_repo</span><span class="o">.</span><span class="n">get_workshop_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+             <span class="k">return</span> <span class="n">abort</span><span class="p">(</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">NOT_FOUND</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Workshop with name &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; not found&#39;</span><span class="p">)</span>
+         <span class="k">return</span> <span class="n">WorkshopSchema</span><span class="o">.</span><span class="n">from_workshop</span><span class="p">(</span><span class="n">workshop</span><span class="p">)</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
+
+    <span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/workshops/&lt;name&gt;&quot;</span><span class="p">,</span> <span class="n">mehtods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;PUT&quot;</span><span class="p">])</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_workshop</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+         <span class="k">if</span> <span class="p">(</span><span class="n">workshop</span> <span class="o">:=</span> <span class="n">workshop_repository</span><span class="o">.</span><span class="n">get_workshop_by_name</span><span class="p">(</span><span class="n">name</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+             <span class="k">return</span> <span class="n">abort</span><span class="p">(</span><span class="n">HTTPSTatus</span><span class="o">.</span><span class="n">NOT_FOUND</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Workshop with name &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; not found.&#39;</span><span class="p">)</span>
+
+         <span class="n">workshop_update</span> <span class="o">=</span> <span class="n">UpdateWorkshopSchema</span><span class="p">(</span><span class="o">**</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+         <span class="k">if</span> <span class="n">workshop_update</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="n">workshop_repository</span><span class="o">.</span><span class="n">get_workshop_by_name</span><span class="p">(</span><span class="n">workshop_update</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+             <span class="k">return</span> <span class="n">abort</span><span class="p">(</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">CONFLICT</span><span class="p">,</span>
+                        <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Workshop with name &quot;</span><span class="si">{</span><span class="n">workshop_update</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s1">&quot; already exists&#39;</span><span class="p">)</span>
+
+       <span class="n">updated_workshop</span> <span class="o">=</span> <span class="n">workshop_repository</span><span class="o">.</span><span class="n">update_workshop</span><span class="p">(</span><span class="n">workshop</span><span class="p">,</span> <span class="n">workshop_update</span><span class="p">)</span>
+       <span class="k">return</span> <span class="n">WorkshopSchema</span><span class="o">.</span><span class="n">from_workshop</span><span class="p">(</span><span class="n">updated_workshop</span><span class="p">)</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">bp</span>
+</pre></div>
+</div>
+<p>As you can see there are a few methods being used by our schemas and models that were previously left out, let’s fill those in.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file app/models/workshop_model.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">db</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span> <span class="c1"># avoids circular imports</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">app.schemas.workshop_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">WorkshopSchema</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Workshop</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="s2">&quot;WorkshopSchema&quot;</span><span class="p">):</span>
+      <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="o">**</span><span class="n">schema</span><span class="o">.</span><span class="n">model_dump</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file app/schemas/workshop_schema.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WorkshopSchema</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_workshop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workshop</span><span class="p">:</span> <span class="n">Workshop</span><span class="p">)</span>
+      <span class="n">workshop_data</span> <span class="o">=</span> <span class="p">{}</span>
+      <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_fields</span><span class="p">:</span>
+          <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">workshop</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+              <span class="n">member_data</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">workshop</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
+      <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">workshop_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now to tie it all up we just need to register the blueprint in our application factory.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file app/app.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">db</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repositories.workshop_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">WorkshopRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.controllers.workshop_controller</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_workshop_bp</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">(</span><span class="n">config_class</span><span class="o">=</span><span class="n">Config</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">workshop_repository</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">flask_app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">))</span>
+    <span class="n">flask_app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="n">config_class</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">workshop_repository</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">workshop_repository</span> <span class="o">=</span> <span class="n">WorkshopRepository</span><span class="p">(</span><span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">)</span>
+    <span class="n">workshop_bp</span> <span class="o">=</span> <span class="n">create_workshop_bp</span><span class="p">(</span><span class="n">workshop_repository</span><span class="o">=</span><span class="n">workshop_repository</span><span class="p">)</span>
+
+    <span class="n">flask_app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">workshop_bp</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">flask_app</span>
+</pre></div>
+</div>
+<p>Our endpoints should now be working, and expecting a JSON schema as declared in our schemas.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>⚠️ Since we’re using SQLAlchemy models directly as domain entities our models validation is only enforced at the database layer. This means input validation via schemas is crucial to have better control of our domain objects.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A decorator <code class="xref py py-func docutils literal notranslate"><span class="pre">app.decorators.transactional()</span></code> is available to do each controller’s operations in a single transaction and automatically commit or rollback on failure.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/workshop/&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">])</span>
+<span class="nd">@transactional</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_workshop</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="access">
+<h2>Access<a class="headerlink" href="#access" title="Link to this heading"></a></h2>
+<p>Now that we have working endpoints, we need to protect them. Our API requires <strong>authentication</strong>, as only HS members can use it, and it also includes a role-based <strong>authorization</strong> system.</p>
+<p>The codebase provides a class, <code class="xref py py-class docutils literal notranslate"><span class="pre">app.access.AccessController</span></code>, which offers some decorators we can use to protect our endpoints accordingly.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file app/controllers/workshop_controller.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.access</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccessController</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_workshop_blueprint</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">workshop_repository</span><span class="p">:</span> <span class="n">WorkshopRepository</span><span class="p">,</span> <span class="n">access_controller</span><span class="p">:</span> <span class="n">AccessController</span><span class="p">):</span>
+    <span class="n">bp</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s2">&quot;workshops&quot;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/workshops/&lt;name&gt;&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;POST&quot;</span><span class="p">])</span>
+    <span class="nd">@access_controller</span><span class="o">.</span><span class="n">requires_permission</span><span class="p">(</span><span class="n">general</span><span class="o">=</span><span class="s2">&quot;workshop:update&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_workshop</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>The permission must also be defined in our permission configuration file for it to take effect.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">scopes</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">general</span>
+<span class="w">  </span><span class="nt">roles</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sysadmin</span>
+<span class="w">    </span><span class="nt">privilege</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">    </span><span class="nt">permissions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">workshop:update</span><span class="w">  </span><span class="c1"># added here</span>
+</pre></div>
+</div>
+<p>This configuration grants users with the <cite>sysadmin</cite> role permission to access the <em>update_workshop</em> endpoint. The decorator also enforces login validation, so authentication is also taken care of.</p>
+<p>If an endpoint only requires authentication you can also use the <code class="xref py py-func docutils literal notranslate"><span class="pre">app.access.AccessController.requires_login()</span></code> decorator.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/me&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">])</span>
+<span class="nd">@access_controller</span><span class="o">.</span><span class="n">requires_login</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">me</span><span class="p">():</span>
+    <span class="o">....</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="testing">
+<h1>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h1>
+<p>In this section we will add tests for each layer of the Workshop entity. We use <strong>Pytest</strong> to write our tests and ensure the application is not broken!</p>
+<section id="id1">
+<h2>Models<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>To test our models, we need to activate the Flask application context. We’ll define a pytest fixture to ensure the context is available when running our tests.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file tests/models/test_workshop_model.py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">app</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">app</span><span class="p">():</span>
+    <span class="n">flask</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">flask</span><span class="o">.</span><span class="n">app_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">ctx</span><span class="p">:</span>
+        <span class="k">yield</span>
+</pre></div>
+</div>
+<p>With the fixture in place, we can include the <code class="docutils literal notranslate"><span class="pre">app</span></code> fixture as a test parameter and safely instantiate models.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">app.models.workshop_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Workshop</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_workshop_init</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="n">workshop</span> <span class="o">=</span> <span class="n">Workshop</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">workshop</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;name</span>
+    <span class="k">assert</span> <span class="n">workshop</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="mi">30</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_workshop_invalid_init</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc_info</span><span class="p">:</span>
+        <span class="n">workshop</span> <span class="o">=</span> <span class="n">Workshop</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">duration</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="s2">&quot;Invalid duration&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc_info</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="repositories">
+<h2>Repositories<a class="headerlink" href="#repositories" title="Link to this heading"></a></h2>
+<p>Testing the repository layer requires a working database. For simplicity and isolation, we’ll use an <strong>in-memory SQLite database</strong>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file tests/repositories/test_workshop_repository.py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">app</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">db</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.respoitories.workshop_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">WorkshopRepository</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">app</span><span class="p">():</span>
+    <span class="n">Config</span><span class="o">.</span><span class="n">DATABASE_PATH</span> <span class="o">=</span> <span class="s2">&quot;sqlite:///:memory:&quot;</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">create_all</span><span class="p">()</span>
+        <span class="k">yield</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span> <span class="c1"># flush transactions or it won&#39;t be able to drop</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">drop_all</span><span class="p">()</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">workshop_repo</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">WorkshopRepository</span><span class="p">(</span><span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can now use the <code class="docutils literal notranslate"><span class="pre">workshop_repo</span></code> fixture in our tests to verify the repository methods behave correctly.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_get_workshop_by_name</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">workshop_repo</span><span class="p">:</span> <span class="n">WorkshopRepository</span><span class="p">)</span>
+    <span class="n">workshop</span> <span class="o">=</span> <span class="n">Workshop</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">workshop</span><span class="p">)</span>
+    <span class="n">gotten_workshop</span> <span class="o">=</span> <span class="n">member_repository</span><span class="o">.</span><span class="n">get_workshop_by_name</span><span class="p">(</span><span class="n">workshop</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">gotten_workshop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="n">gotten_workshop</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">workshop</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">assert</span> <span class="n">gotten_workshop</span><span class="o">.</span><span class="n">duration</span> <span class="o">==</span> <span class="n">workshop</span><span class="o">.</span><span class="n">duration</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_create_workshop</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">workshop_repo</span><span class="p">:</span> <span class="n">WorkshopRepository</span><span class="p">):</span>
+    <span class="n">workshop</span> <span class="o">=</span> <span class="n">Workshop</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">workshop_repo</span><span class="o">.</span><span class="n">create_workshop</span><span class="p">(</span><span class="n">workshop</span><span class="p">)</span>
+    <span class="n">created_workshop</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Workshop</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Workshop</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">workshop</span><span class="o">.</span><span class="n">name</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">one_or_none</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">created_workshop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="n">created_workshop</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">workshop</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">assert</span> <span class="n">created_workshop</span><span class="o">.</span><span class="n">duration</span> <span class="o">==</span> <span class="n">workshop</span><span class="o">.</span><span class="n">duration</span>
+</pre></div>
+</div>
+</section>
+<section id="controllers">
+<h2>Controllers<a class="headerlink" href="#controllers" title="Link to this heading"></a></h2>
+<p>To test the controllers, we’ll use Flask’s testing utilities alongside Python’s <code class="xref py py-mod docutils literal notranslate"><span class="pre">unittest.mock</span></code> module to mock dependencies. This is where injecting repositories into our controllers gives us flexibility.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file: tests/controllers/test_workshop_controller.py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">MagicMock</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask.testing</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlaskClient</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">app</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mock_workshop_repo</span><span class="p">():</span>
+    <span class="n">mock</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">mock</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">client</span><span class="p">(</span><span class="n">mock_workshop_repo</span><span class="p">):</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">(</span><span class="n">workshop_repo</span><span class="o">=</span><span class="n">mock_workshop_repo</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;TESTING&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">test_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">client</span>
+</pre></div>
+</div>
+<p>We now use our <code class="docutils literal notranslate"><span class="pre">client</span></code> fixture to request our controllers.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_get_workshop_name</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">FlaskClient</span><span class="p">,</span> <span class="n">mock_workshop_repo</span><span class="p">:</span> <span class="n">WorkshopRepoisotyr</span><span class="p">):</span>
+    <span class="n">mock_workshop_repo</span><span class="o">.</span><span class="n">get_workshop_by_name</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">Workshop</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">rsp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/workshop/name&quot;</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">rsp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+    <span class="k">assert</span> <span class="n">rsp</span><span class="o">.</span><span class="n">mimetype</span> <span class="o">==</span> <span class="s2">&quot;application/json&quot;</span>
+
+    <span class="k">assert</span> <span class="s2">&quot;name&quot;</span> <span class="ow">in</span> <span class="n">rsp</span><span class="o">.</span><span class="n">json</span> <span class="ow">and</span> <span class="n">rsp</span><span class="o">.</span><span class="n">json</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;name&quot;</span>
+    <span class="k">assert</span> <span class="s2">&quot;duration&quot;</span> <span class="ow">in</span> <span class="n">rsp</span><span class="o">.</span><span class="n">json</span> <span class="ow">and</span> <span class="n">rsp</span><span class="o">.</span><span class="n">json</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">30</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h2>Schemas<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>Testing schemas will be easier, as we only need to test our custom validators. For the Workshop entity example provided we didn’t set any
+custom validation, so let’s add one.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file app/schemas/workshop_schema.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_valid_datestring</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WorkshopSchema</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">gt</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;date&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_date</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid_datestring</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Invalid date format: &quot;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">&quot;. Expected format is &quot;YYYY-MM-DD&quot;&#39;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># file test/schemas/test_workshop_schema.py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schemas.workshop_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">WorkshopSchema</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_datestring</span><span class="p">():</span>
+    <span class="n">workshop_data</span> <span class="o">=</span> <span class="n">WorkshopSchema</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="s2">&quot;1970-01-01&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">workshop_data</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="s2">&quot;1970-01-01&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_invalid_datestring</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc_info</span><span class="p">:</span>
+        <span class="n">workshop_data</span> <span class="o">=</span> <span class="n">WorkshopSchema</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="s2">&quot;invalid date&quot;</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">exc_info</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">ValidationError</span>
+    <span class="k">assert</span> <span class="s2">&quot;Invalid date format&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc_info</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">errors</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ctx&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2>Access<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>You will not need to test the access layer if you do not add any new functionality to it and simply use the decorators.
+If you add functionality, then testing it will be similar to testing the controllers, after all, the access layer is still controller logic,
+simply made separate to facilitate the development of new controllers.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, goncalorazevedo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
