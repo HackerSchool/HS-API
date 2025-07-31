@@ -5,9 +5,9 @@ __pycache__/
 .vscode/
 .idea/
 
-data/flask_sessions/
-data/logs/
-data/photos/
+resources/flask_sessions/
+resources/logs/
+resources/photos/
 *.sqlite3
 
 .env
