@@ -33,7 +33,7 @@ class Config:
     if SESSION_TYPE == "cachelib":
         SESSION_CACHELIB = FileSystemCache(
             cache_dir=os.path.join(
-                basedir, _get_env_or_default("SESSION_DIR", "data/")
+                basedir, _get_env_or_default("SESSION_DIR", "resources/")
             ),
             threshold=500,
         )
@@ -45,16 +45,16 @@ class Config:
     )
 
     DATABASE_PATH = os.path.join(
-        basedir, _get_env_or_default("DATABASE_PATH", "data/hackerschool.sqlite3")
+        basedir, _get_env_or_default("DATABASE_PATH", "resources/hackerschool.sqlite3")
     )
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + DATABASE_PATH
 
     ROLES_PATH = os.path.join(
-        basedir, _get_env_or_default("ROLES_PATH", "data/roles.yaml")
+        basedir, _get_env_or_default("ROLES_PATH", "resources/roles.yaml")
     )
 
     STATIC_DIR = os.path.join(
-        basedir, _get_env_or_default("STATIC_DIR", "data/static/")
+        basedir, _get_env_or_default("STATIC_DIR", "resources/static/")
     ).rstrip("/")
     MAX_CONTENT_LENGTH = _get_int_env_or_default(
         "MAX_FILE_UPLOAD_LENGTH", 16 * 1024 * 1024
