@@ -75,8 +75,6 @@ valid_init_test_cases = [
 invalid_init_test_cases = [
     InitTestCase(data={**base_user}, override=True, field="ist_id", value=123, exc_type=ValueError,
                  exc_str=f'Invalid IST ID type: "{type(123)}"'),
-    InitTestCase(data={**base_user}, override=True, field="ist_id", value=None, exc_type=ValueError,
-                 exc_str=f'Invalid IST ID type: "{type(None)}"'),
     InitTestCase(data={**base_user}, override=True, field="ist_id", value="", exc_type=ValueError,
                  exc_str='Invalid IST ID pattern: ""'),
     InitTestCase(data={**base_user}, override=True, field="ist_id", value="ist999999999999", exc_type=ValueError,

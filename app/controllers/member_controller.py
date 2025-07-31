@@ -4,18 +4,22 @@ from flask import Blueprint
 from flask import request
 from flask import abort
 
+from app.access import AccessController
 from app.schemas.member_schema import MemberSchema
 from app.schemas.update_member_schema import UpdateMemberSchema
 
 from app.repositories.member_repository import MemberRepository
 
 from app.models.member_model import Member
+from app.decorators import transactional
 
 
-def create_member_bp(*, member_repo: MemberRepository):
+def create_member_bp(*, member_repo: MemberRepository, access_controller: AccessController):
     bp = Blueprint("member", __name__)
 
     @bp.route("/members", methods=["POST"])
+    @access_controller.requires_permission(general="member:create")
+    @transactional
     def create_member():
         member_data = MemberSchema(**request.json)
         if member_data.ist_id and member_repo.get_member_by_ist_id(member_data.ist_id) is not None:
@@ -27,16 +31,20 @@ def create_member_bp(*, member_repo: MemberRepository):
         return MemberSchema.from_member(member).model_dump()
 
     @bp.route("/members", methods=["GET"])
+    @access_controller.requires_permission(general="member:read")
     def get_members():
         return [MemberSchema.from_member(x).model_dump() for x in member_repo.get_members()]
 
     @bp.route("/members/<username>", methods=["GET"])
+    @access_controller.requires_permission(general="member:read")
     def get_member_by_username(username):
         if (member := member_repo.get_member_by_username(username=username)) is None:
             return abort(HTTPStatus.NOT_FOUND, description=f'Member with username "{username}" not found')
         return MemberSchema.from_member(member).model_dump()
 
     @bp.route("/members/<username>", methods=["PUT"])
+    @access_controller.requires_permission(general="member:update", allow_self_action=True)
+    @transactional
     def update_member_by_username(username):
         if (member := member_repo.get_member_by_username(username)) is None:
             return abort(HTTPStatus.NOT_FOUND, description=f'Member with username "{username}" not found')
@@ -50,6 +58,8 @@ def create_member_bp(*, member_repo: MemberRepository):
         return MemberSchema.from_member(updated_member).model_dump()
 
     @bp.route("/members/<username>", methods=["DELETE"])
+    @access_controller.requires_permission(general="member:delete", allow_self_action=True)
+    @transactional
     def delete_member_by_username(username):
         if (member := member_repo.get_member_by_username(username)) is None:
             return abort(HTTPStatus.NOT_FOUND, description=f'Member with username "{username}" not found')

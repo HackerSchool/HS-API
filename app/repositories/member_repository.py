@@ -18,6 +18,9 @@ class MemberRepository:
     def get_members(self) -> List[Member]:
         return self.db.session.execute(select(Member)).scalars().fetchall()
 
+    def get_member_by_id(self, id: int) -> Member | None:
+        return self.db.session.execute(select(Member).where(Member.id == id)).scalars().one_or_none()
+
     def get_member_by_ist_id(self, ist_id: str) -> Member | None:
         return self.db.session.execute(select(Member).where(Member.ist_id == ist_id)).scalars().one_or_none()
 

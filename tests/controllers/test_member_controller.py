@@ -23,8 +23,10 @@ def mock_member_repo():
 
 @pytest.fixture
 def client(mock_member_repo):
+    from app.config import Config
+    Config.ENABLED_ACCESS_CONTROL = False
+
     app = create_app(member_repo=mock_member_repo)
-    app.config["TESTING"] = True
     with app.test_client() as client:
         yield client
 

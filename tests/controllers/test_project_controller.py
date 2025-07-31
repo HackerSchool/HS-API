@@ -28,6 +28,9 @@ def mock_project_repo():
 
 @pytest.fixture
 def app(mock_project_repo):
+    from app.config import Config
+    Config.ENABLED_ACCESS_CONTROL = False
+
     app = create_app(project_repo=mock_project_repo)
     app.config["TESTING"] = True
     with app.app_context():

@@ -6,18 +6,22 @@ from flask import Flask
 from app.config import Config
 from app.errors import handle_validation_error, handle_http_exception
 
+from app.access import AccessController
+from app.access.permissions.permission_handler import PermissionHandler
+
 from app.extensions import session
 from app.extensions import db
 from app.extensions import migrate
 
 from app.controllers.member_controller import create_member_bp
 from app.controllers.project_controller import create_project_bp
+from app.controllers.auth_controller import create_auth_bp
 
 from app.repositories.member_repository import MemberRepository
 from app.repositories.project_repository import ProjectRepository
 
 
-def create_app(config_class=Config, *, member_repo=None, project_repo=None, access_control=False):
+def create_app(config_class=Config, *, member_repo=None, project_repo=None, access_controller=None):
     flask_app = Flask(__name__)
     flask_app.config.from_object(config_class)
 
@@ -27,18 +31,29 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, acce
 
     if member_repo is None:
         member_repo = MemberRepository(db=db)
-    member_bp = create_member_bp(member_repo=member_repo)
-    flask_app.register_blueprint(member_bp)
-
     if project_repo is None:
         project_repo = ProjectRepository(db=db)
-    project_bp = create_project_bp(project_repo=project_repo)
+
+    if access_controller is None:
+        access_controller = AccessController(
+            enabled=flask_app.config["ENABLED_ACCESS_CONTROL"],
+            permission_handler=PermissionHandler.from_yaml_config(flask_app.config["ROLES_PATH"]),
+            member_repo=member_repo,
+        )
+
+    member_bp = create_member_bp(member_repo=member_repo, access_controller=access_controller)
+    flask_app.register_blueprint(member_bp)
+
+    project_bp = create_project_bp(project_repo=project_repo, access_controller=access_controller)
     flask_app.register_blueprint(project_bp)
+
+    auth_bp = create_auth_bp(member_repo=member_repo, access_controller=access_controller)
+    flask_app.register_blueprint(auth_bp)
 
     from werkzeug.exceptions import HTTPException
     flask_app.register_error_handler(HTTPException, handle_http_exception)
     from pydantic import ValidationError
-    flask_app.register_error_handler(ValidationError, handle_http_exception)
+    flask_app.register_error_handler(ValidationError, handle_validation_error)
 
     return flask_app
 

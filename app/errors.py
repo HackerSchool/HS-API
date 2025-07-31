@@ -1,6 +1,10 @@
 import json
 
 from pydantic import ValidationError
+
+from http import HTTPStatus
+
+from flask import Response
 from werkzeug.exceptions import HTTPException
 
 
@@ -18,17 +22,17 @@ def handle_http_exception(e: HTTPException):
 
 def handle_validation_error(e: ValidationError):
     error = e.errors()[0]
-    if "error" not in error["ctx"]:
-        description = error["msg"]
-    else:
-        description = str(error["ctx"]["error"])  # extracting original exception
-
+    if "ctx" in error:
+        del error["ctx"]
+    if "url" in error:
+        del error["url"]
     return Response(
         response=json.dumps(
             {
                 "error": HTTPStatus.UNPROCESSABLE_ENTITY,
                 "name": "Unprocessable Entity",
-                "description": description,
+                "description": "Validation error",
+                "details": error
             }
         ),
         status=HTTPStatus.UNPROCESSABLE_ENTITY,

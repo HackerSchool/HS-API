@@ -22,10 +22,10 @@ class Member(db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(unique=True)
-    ist_id: Mapped[str] = mapped_column(unique=True, nullable=True)
     name: Mapped[str] = mapped_column()
-    email: Mapped[str] = mapped_column(unique=True)
+    email: Mapped[str] = mapped_column()
 
+    ist_id: Mapped[str] = mapped_column(unique=True, nullable=True)
     _password: Mapped[str | None] = mapped_column("password", nullable=True)
     _roles: Mapped[str] = mapped_column("roles")
     member_number: Mapped[int] = mapped_column(nullable=True)
@@ -37,13 +37,14 @@ class Member(db.Model):
 
     @classmethod
     def from_schema(self, schema: "MemberSchema"):
-        self(**schema.model_dump())
+        return self(**schema.model_dump())
 
-    def __init__(self, *, ist_id=None, username=None, name=None, email=None, password=None, member_number=None, course=None, roles=None, join_date=None, exit_date=None, description=None, extra=None):
+    def __init__(self, *, ist_id=None, username=None, name=None, email=None, password=None, member_number=None,
+                 course=None, roles=None, join_date=None, exit_date=None, description=None, extra=None):
         self.ist_id = ist_id
         self.username = username
         self.name = name
-        self.email= email
+        self.email = email
         self.password = password
         self.member_number = member_number
         self.course = course
@@ -85,6 +86,8 @@ class Member(db.Model):
 
     @validates("ist_id")
     def validate_ist_id(self, k, v):
+        if v is None:
+            return None
         if not isinstance(v, str):
             raise ValueError(f'Invalid IST ID type: "{type(v)}"')
         if not re.match(r"^ist1[0-9]{5,7}$", v):

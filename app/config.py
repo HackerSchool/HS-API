@@ -50,7 +50,7 @@ class Config:
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + DATABASE_PATH
 
     ROLES_PATH = os.path.join(
-        basedir, _get_env_or_default("ROLES_PATH", "data/roles.json")
+        basedir, _get_env_or_default("ROLES_PATH", "data/roles.yaml")
     )
 
     STATIC_DIR = os.path.join(
@@ -64,8 +64,7 @@ class Config:
 
     FRONTEND_URI = _get_env_or_default("FRONTEND_URI", "http://localhost:3000")
 
-    ADMIN_USERNAME = _get_env_or_default("ADMIN_USERNAME", "")
-    ADMIN_PASSWORD = _get_env_or_default("ADMIN_PASSWORD", "")
+    ENABLED_ACCESS_CONTROL = _get_env_or_default("ENABLED_ACCESS_CONTROL", False)
 
     CLIENT_ID = _get_env_or_default("CLIENT_ID", "")
     CLIENT_SECRET = _get_env_or_default("CLIENT_SECRET", "")

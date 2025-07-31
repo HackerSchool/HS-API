@@ -16,11 +16,11 @@ class ProjectSchema(BaseModel):
     end_date: Optional[str] = Field(default=None)
     description: Optional[str] = Field(default=None)
 
-    @classmethod
     @field_validator("start_date")
-    def validate_datestring(cls, v: str):
+    @classmethod
+    def validate_start_datestring(cls, v: str):
         if v is None:
-            raise None
+            raise ValueError(f'Invalid start_date type: "{type(None)}"')
         if not is_valid_datestring(v):
             raise ValueError(
                 f'Invalid date format: "{v}". Expected format is "YYYY-MM-DD"'
@@ -29,7 +29,7 @@ class ProjectSchema(BaseModel):
 
     @field_validator("end_date")
     @classmethod
-    def validate_datestring(cls, v: str):
+    def validate_end_datestring(cls, v: str):
         if v is None:
             return None
         if not is_valid_datestring(v):

@@ -52,12 +52,6 @@ class Project(db.Model):
             raise ValueError(f'Invalid name length, minimum 2 and maximum 64 characters: "{v}"')
         return v
 
-    @validates("slug")
-    def validate_slug(self, k, v):
-        if db.session.execute(select(Project).where(Project.slug == v)).one_or_none() is not None:
-            raise ValueError(f'A slug already exists for this name, please pick a new one: "{v}"')
-        return v
-
     @validates("state")
     def validate_state(self, k, v):
         if not isinstance(v, ProjectStateEnum):

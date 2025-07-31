@@ -4,8 +4,6 @@ from app import create_app
 from app.models.project_model import Project
 from app.utils import ProjectStateEnum
 
-from app.extensions import db
-
 base_project = {
     "name": "project name",
     "state": ProjectStateEnum.ACTIVE,
@@ -76,18 +74,13 @@ invalid_init_test_cases = [
                  exc_str=f'Invalid description length, minimum 0 and maximum 2048 characters: "{"a" * 2049}"'),
 ]
 
-app = create_app()
-app.config.update({"TESTING": True})
-
 
 # Because our model and ORM are coupled, and we do DB checks on the model, we need db context
 @pytest.fixture
 def app():
     flask = create_app()
     with flask.app_context() as ctx:
-        db.create_all()
         yield
-        db.drop_all()
 
 
 @pytest.mark.parametrize("test_case", valid_init_test_cases)
@@ -111,14 +104,3 @@ def test_invalid_init(app, test_case: InitTestCase):
 
     assert test_case.exc_str in str(exc_info.value)
 
-
-def test_taken_slug(app):
-    existing_project = Project(**base_project)
-    db.session.add(existing_project)
-    db.session.commit()
-
-    project = {**base_project, "name": "project-name"}
-    with pytest.raises(ValueError) as exc_info:
-        Project(**base_project)
-
-    assert 'A slug already exists for this name, please pick a new one: "project-name"' in str(exc_info.value)

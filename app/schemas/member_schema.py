@@ -37,6 +37,7 @@ class MemberSchema(BaseModel):
         for field in cls.model_fields:
             if hasattr(member, field):
                 member_data[field] = getattr(member, field)
-        member_data.pop("password", None)
         return cls(**member_data)
 
+    def model_dump(self, *args, **kwargs):
+        return super().model_dump(*args, **kwargs, exclude="password")
