@@ -1,5 +1,5 @@
-from typing import TYPE_CHECKING
-from sqlalchemy.orm import Mapped, mapped_column, validates
+from typing import TYPE_CHECKING, List
+from sqlalchemy.orm import Mapped, mapped_column, validates, relationship
 from sqlalchemy import select, Enum
 
 from app.extensions import db
@@ -8,6 +8,7 @@ from app.utils import is_valid_datestring, slugify, ProjectStateEnum
 
 if TYPE_CHECKING:
     from app.schemas.project_schema import ProjectSchema
+    from app.models.project_participation_model import ProjectParticipation
 
 class Project(db.Model):
     __tablename__ = "projects"
@@ -20,6 +21,8 @@ class Project(db.Model):
 
     end_date: Mapped[str] = mapped_column(nullable=True)
     description: Mapped[str] = mapped_column(nullable=True)
+
+    project_participations: Mapped[List["ProjectParticipation"]] = relationship("ProjectParticipation", back_populates="project")
 
     @classmethod
     def from_schema(cls, schema: "ProjectSchema"):

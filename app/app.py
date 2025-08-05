@@ -15,13 +15,16 @@ from app.extensions import migrate
 
 from app.controllers.member_controller import create_member_bp
 from app.controllers.project_controller import create_project_bp
+from app.controllers.project_participation_controller import create_pp_bp
 from app.controllers.auth_controller import create_auth_bp
 
 from app.repositories.member_repository import MemberRepository
 from app.repositories.project_repository import ProjectRepository
+from app.repositories.project_participation_repository import ProjectParticipationRepository
 
 
-def create_app(config_class=Config, *, member_repo=None, project_repo=None, access_controller=None):
+def create_app(config_class=Config, *, member_repo=None, project_repo=None, pp_repo = None,
+                access_controller=None):
     flask_app = Flask(__name__)
     flask_app.config.from_object(config_class)
 
@@ -33,6 +36,8 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, acce
         member_repo = MemberRepository(db=db)
     if project_repo is None:
         project_repo = ProjectRepository(db=db)
+    if pp_repo is None:
+        pp_repo = ProjectParticipationRepository(db=db)
 
     if access_controller is None:
         access_controller = AccessController(
@@ -46,6 +51,10 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, acce
 
     project_bp = create_project_bp(project_repo=project_repo, access_controller=access_controller)
     flask_app.register_blueprint(project_bp)
+
+    pp_bp = create_pp_bp(pp_repo=pp_repo, 
+                        project_repo = project_repo, member_repo = member_repo, access_controller=access_controller)
+    flask_app.register_blueprint(pp_bp)
 
     auth_bp = create_auth_bp(member_repo=member_repo, access_controller=access_controller)
     flask_app.register_blueprint(auth_bp)

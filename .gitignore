@@ -4,10 +4,12 @@ __pycache__/
 .scripts/
 .vscode/
 .idea/
+migrations/
 
 resources/flask_sessions/
 resources/logs/
 resources/photos/
+data/flask_sessions/
 *.sqlite3
 
 .env
