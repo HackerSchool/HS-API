@@ -1,5 +1,4 @@
 import os
-import logging
 
 from flask import Flask
 
@@ -8,8 +7,10 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 import logging
 
-
+from app.auth.auth_controller import AuthController
 from app.auth.fenix.fenix_service import FenixService
+from app.auth.scopes.system_scopes import SystemScopes
+
 from app.config import Config
 from app.errors import handle_validation_error, handle_http_exception
 from app.commands import register_cli_commands
@@ -20,16 +21,16 @@ from app.extensions import migrate
 
 from app.repositories.member_repository import MemberRepository
 from app.repositories.project_repository import ProjectRepository
+from app.repositories.project_participation_repository import ProjectParticipationRepository
 
 from app.controllers.member_controller import create_member_bp
 from app.controllers.project_controller import create_project_bp
-from app.controllers.login_controller import create_auth_bp
-
-from app.auth import AuthController
-from app.auth.scopes.system_scopes import SystemScopes
+from app.controllers.project_participation_controller import create_pp_bp
+from app.controllers.login_controller import create_login_bp
 
 
-def create_app(config_class=Config, *, member_repo=None, project_repo=None, auth_controller=None, fenix_service=None):
+def create_app(config_class=Config, *, member_repo=None, project_repo=None, pp_repo=None,
+               fenix_service=None, auth_controller=None):
     flask_app = Flask(__name__)
     flask_app.config.from_object(config_class)
 
@@ -54,6 +55,8 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, auth
         member_repo = MemberRepository(db=db)
     if project_repo is None:
         project_repo = ProjectRepository(db=db)
+    if pp_repo is None:
+        pp_repo = ProjectParticipationRepository(db=db)
 
     if fenix_service is None:
         fenix_service = FenixService(
@@ -76,8 +79,12 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, auth
     project_bp = create_project_bp(project_repo=project_repo, auth_controller=auth_controller)
     flask_app.register_blueprint(project_bp)
 
-    auth_bp = create_auth_bp(member_repo=member_repo, auth_controller=auth_controller, fenix_service=fenix_service)
-    flask_app.register_blueprint(auth_bp)
+    pp_bp = create_pp_bp(pp_repo=pp_repo, project_repo=project_repo, member_repo=member_repo,
+                         auth_controller=auth_controller)
+    flask_app.register_blueprint(pp_bp)
+
+    login_bp = create_login_bp(member_repo=member_repo, auth_controller=auth_controller, fenix_service=fenix_service)
+    flask_app.register_blueprint(login_bp)
 
     from werkzeug.exceptions import HTTPException
     flask_app.register_error_handler(HTTPException, handle_http_exception)

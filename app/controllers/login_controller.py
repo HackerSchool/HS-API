@@ -21,7 +21,7 @@ from app.schemas.fenix_user_schema import FenixUserSchema
 from app.auth.utils import current_member
 
 
-def create_auth_bp(*, member_repo: MemberRepository, auth_controller: AuthController, fenix_service: FenixService):
+def create_login_bp(*, member_repo: MemberRepository, auth_controller: AuthController, fenix_service: FenixService):
     bp = Blueprint("auth", __name__)
 
     @bp.route("/login", methods=["POST"])
