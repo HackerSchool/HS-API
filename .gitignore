@@ -12,3 +12,5 @@ resources/photos/
 
 .env
 ruff.toml
+docs/
+.coverage

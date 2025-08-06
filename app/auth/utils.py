@@ -12,5 +12,3 @@ def _get_current_member():
         return g.get("current_member", None)
     return None
 
-
-

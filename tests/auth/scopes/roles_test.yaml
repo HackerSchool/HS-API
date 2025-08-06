@@ -8,11 +8,11 @@ scopes:
         - member:create
         - member:update
         - member:delete
-    - name: money
+    - name: finance
       privilege: 50
       permissions:
         - member:read
-    - name: lab
+    - name: member
       privilege: 50
       permissions:
         - member:read

@@ -18,8 +18,11 @@ base_member = {
 
 @pytest.fixture
 def mock_member_repo():
-    mock = MagicMock()
-    return mock
+    return MagicMock()
+
+@pytest.fixture
+def mock_system_roles():
+    return MagicMock()
 
 @pytest.fixture
 def client(mock_member_repo):

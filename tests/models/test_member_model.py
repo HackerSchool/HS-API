@@ -38,6 +38,7 @@ class ValidPasswordTestCase:
 # {**base_user} is similar to a deep copy but more 🌠 pythonic 🌠
 valid_init_test_cases = [
     InitTestCase(data={**base_user}),
+    InitTestCase(data={**base_user}, override=True, field="ist_id", value=None),
     InitTestCase(data={**base_user}, override=True, field="member_number", value=1),
     InitTestCase(data={**base_user}, override=True, field="course", value="LEIC"),
     InitTestCase(data={**base_user}, override=True, field="roles", value=["admin", "member"]),

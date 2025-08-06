@@ -3,25 +3,33 @@ import logging
 
 from flask import Flask
 
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
+import logging
+
+
+from app.auth.fenix.fenix_service import FenixService
 from app.config import Config
 from app.errors import handle_validation_error, handle_http_exception
-
-from app.access import AccessController
-from app.access.permissions.permission_handler import PermissionHandler
+from app.commands import register_cli_commands
 
 from app.extensions import session
 from app.extensions import db
 from app.extensions import migrate
 
-from app.controllers.member_controller import create_member_bp
-from app.controllers.project_controller import create_project_bp
-from app.controllers.auth_controller import create_auth_bp
-
 from app.repositories.member_repository import MemberRepository
 from app.repositories.project_repository import ProjectRepository
 
+from app.controllers.member_controller import create_member_bp
+from app.controllers.project_controller import create_project_bp
+from app.controllers.login_controller import create_auth_bp
 
-def create_app(config_class=Config, *, member_repo=None, project_repo=None, access_controller=None):
+from app.auth import AuthController
+from app.auth.scopes.system_scopes import SystemScopes
+
+
+def create_app(config_class=Config, *, member_repo=None, project_repo=None, auth_controller=None, fenix_service=None):
     flask_app = Flask(__name__)
     flask_app.config.from_object(config_class)
 
@@ -29,31 +37,54 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, acce
     db.init_app(flask_app)
     migrate.init_app(flask_app, db)
 
+    if flask_app.config["SENTRY_DSN"]:
+        sentry_logging = LoggingIntegration(
+            level=logging.INFO,  # capture info and above as breadcrumbs
+            event_level=logging.ERROR  # send errors and above as events to Sentry
+        )
+        sentry_sdk.init(
+            dsn=flask_app.config["SENTRY_DSN"],
+            integrations=[
+                FlaskIntegration(),
+                sentry_logging,
+            ],
+        )
+
     if member_repo is None:
         member_repo = MemberRepository(db=db)
     if project_repo is None:
         project_repo = ProjectRepository(db=db)
 
-    if access_controller is None:
-        access_controller = AccessController(
+    if fenix_service is None:
+        fenix_service = FenixService(
+            client_id=flask_app.config["CLIENT_ID"],
+            client_secret=flask_app.config["CLIENT_SECRET"],
+            root_uri=flask_app.config["ROOT_URI"],
+            redirect_endpoint=flask_app.config["FENIX_REDIRECT_ENDPOINT"],
+        )
+
+    if auth_controller is None:
+        auth_controller = AuthController(
             enabled=flask_app.config["ENABLED_ACCESS_CONTROL"],
-            permission_handler=PermissionHandler.from_yaml_config(flask_app.config["ROLES_PATH"]),
+            system_scopes=SystemScopes.from_yaml_config(flask_app.config["ROLES_PATH"]),
             member_repo=member_repo,
         )
 
-    member_bp = create_member_bp(member_repo=member_repo, access_controller=access_controller)
+    member_bp = create_member_bp(member_repo=member_repo, auth_controller=auth_controller)
     flask_app.register_blueprint(member_bp)
 
-    project_bp = create_project_bp(project_repo=project_repo, access_controller=access_controller)
+    project_bp = create_project_bp(project_repo=project_repo, auth_controller=auth_controller)
     flask_app.register_blueprint(project_bp)
 
-    auth_bp = create_auth_bp(member_repo=member_repo, access_controller=access_controller)
+    auth_bp = create_auth_bp(member_repo=member_repo, auth_controller=auth_controller, fenix_service=fenix_service)
     flask_app.register_blueprint(auth_bp)
 
     from werkzeug.exceptions import HTTPException
     flask_app.register_error_handler(HTTPException, handle_http_exception)
     from pydantic import ValidationError
     flask_app.register_error_handler(ValidationError, handle_validation_error)
+
+    register_cli_commands(flask_app)
 
     return flask_app
 

@@ -1,15 +1,16 @@
-import inspect
 from http import HTTPStatus
 
 from flask import session, abort, g
 from functools import wraps
 
-from app.access.utils import current_member
 from app.repositories.member_repository import MemberRepository
-from app.access.permissions.permission_handler import PermissionHandler
+from app.auth.scopes.system_scopes import SystemScopes
 from app.schemas.member_schema import MemberSchema
 
-class AccessController:
+from app.auth.permission_strategies import Ctx, indexed_permission_evaluators
+
+
+class AuthController:
     """
     Enforces authentication and authorization on controllers using `flask-session`.
 
@@ -28,10 +29,11 @@ class AccessController:
     :param permission_handler: Service that validates roles' permissions.
     :type permission_handler: ``app.access.permission_handler.PermissionHandler``
     """
-    def __init__(self, *, enabled: bool, member_repo: MemberRepository, permission_handler: PermissionHandler):
+
+    def __init__(self, *, enabled: bool, member_repo: MemberRepository, system_scopes: SystemScopes):
         self.enabled = enabled
         self.member_repo = member_repo
-        self.permission_handler = permission_handler
+        self.system_scopes = system_scopes
 
     def login_member(self, fn):
         """
@@ -54,16 +56,18 @@ class AccessController:
         :param fn: Authentication function
         :return func:
         """
+
         @wraps(fn)
         def wrapper(*args, **kwargs):
             if not self.enabled:
-                return abort(HTTPStatus.NOT_FOUND)
+                return abort(HTTPStatus.NOT_IMPLEMENTED)
 
             member = fn(*args, **kwargs)
             if member is None:
                 return abort(HTTPStatus.UNAUTHORIZED)
             session["id"] = member.id
-            return {"message": "Logged in successfully!", "member": MemberSchema.from_member(member).model_dump()}
+            return {"message": "Logged in successfully!", "member": MemberSchema.from_member(member).model_dump(exclude="password")}
+
         return wrapper
 
     def requires_login(self, fn):
@@ -80,17 +84,19 @@ class AccessController:
                 if current_member.username == username:
                     pass
         """
+
         @wraps(fn)
         def wrapper(*args, **kwargs):
             if not self.enabled:
                 return fn(*args, **kwargs)
             if "id" not in session:
-                return abort(HTTPStatus.UNAUTHORIZED)
+                return abort(HTTPStatus.UNAUTHORIZED, description="You are not logged in")
             member = self.member_repo.get_member_by_id(session["id"])
-            if member is None: # member deleted while session was still valid
-                return abort(HTTPStatus.UNAUTHORIZED)
+            if member is None:  # member deleted while session was still valid
+                return abort(HTTPStatus.UNAUTHORIZED, description="You are not logged in")
             g.current_member = member
             return fn(*args, **kwargs)
+
         return wrapper
 
     def logout_member(self, fn):
@@ -106,19 +112,20 @@ class AccessController:
         :param fn: Decorated controller.
         :type fn: function
         """
+
         @wraps(fn)
         @self.requires_login
         def wrapper(*args, **kwargs):
             if not self.enabled:
-                return abort(HTTPStatus.NOT_FOUND)
+                return abort(HTTPStatus.NOT_IMPLEMENTED)
             r = fn(*args, **kwargs)
             session.clear()
             g.current_member = None
             return r
+
         return wrapper
 
-
-    def requires_permission(self, *, allow_self_action=False, **scopes_permissions):
+    def requires_permission(self, **scoped_permissions):
         """
         Decorator to enforce scoped permission checks on route handlers.
 
@@ -140,22 +147,18 @@ class AccessController:
             when a ``username`` parameter is present and matches their identity.
         :type allow_self_action: bool
 
-        :param scopes_permissions: Mapping of scope names to required permission strings.
+        :param scoped_permissions: Mapping of scope names to required permission strings.
             Example: ``general="member:update"``, ``project="project:delete"``
-        :type scopes_permissions: dict[str, str]
+        :type scoped_permissions: dict[str, str]
 
         :raises ValueError: If an undefined scope is passed.
         :raises ValueError: If ``allow_self_action`` is set but the controller does not accept a ``username`` parameter.
         """
-        for scope in scopes_permissions:
-            if not self.permission_handler.system_scopes.get_scope(scope):
-                raise ValueError(f'Undefined scope "{scope}"')
+        for scope in scoped_permissions:
+            if not indexed_permission_evaluators:
+                raise ValueError(f'Undefined permission evaluator for scope "{scope}"')
 
         def decorator(fn):
-            if allow_self_action:
-                if "username" not in inspect.signature(fn).parameters.keys():
-                    raise ValueError(f'Usage of allow_self_action in controller without "username" parameter')
-
             @wraps(fn)
             @self.requires_login
             def wrapper(*args, **kwargs):
@@ -163,16 +166,13 @@ class AccessController:
                 if not self.enabled:
                     return fn(*args, **kwargs)
 
-                # skip if user performin self action
-                if allow_self_action and kwargs["username"] == current_member.username:
-                    return fn(*args, **kwargs)
-
                 # check if user has at least permissions in one scope
-                for scope in scopes_permissions:
-                    roles_retrieval_fn = self.permission_handler.get_scope_retrieval_strategy(scope)
-                    roles = roles_retrieval_fn(self, *args, **kwargs)
-                    if self.permission_handler.has_permission(scope_name=scope, permission=scopes_permissions[scope], subject_roles=roles):
+                for scope in scoped_permissions:
+                    has_perm_eval = indexed_permission_evaluators[scope]
+                    if has_perm_eval(Ctx(accessCtx=self, permission=scoped_permissions[scope], args=args, kwargs=kwargs)):
                         return fn(*args, **kwargs)
-                return abort(HTTPStatus.UNAUTHORIZED)
+                return abort(HTTPStatus.FORBIDDEN, description="You don't have permissions to perform this action")
+
             return wrapper
+
         return decorator

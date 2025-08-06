@@ -13,10 +13,8 @@ load_dotenv(os.path.join(basedir, ".env"))
 
 
 def _get_env_or_default(env: str, default: str, cast=None):
-    val = os.environ.get(env, "")
-    if not val:
+    if (val := os.environ.get(env, None)) is None:
         return default
-
     return cast(val) if cast is not None else val
 
 
@@ -25,6 +23,10 @@ def _get_int_env_or_default(env: str, default: str) -> int:
         return _get_env_or_default(env, default, int)
     except ValueError:
         return default
+
+
+def _get_bool_env_or_false(env: str) -> bool:
+    return os.environ.get(env, False) in ['True', 'true', 1]
 
 
 class Config:
@@ -44,28 +46,18 @@ class Config:
         "PERMANENT_SESSION_LIFETIME", timedelta(days=14)
     )
 
-    DATABASE_PATH = os.path.join(
-        basedir, _get_env_or_default("DATABASE_PATH", "resources/hackerschool.sqlite3")
-    )
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + DATABASE_PATH
+    SQLALCHEMY_DATABASE_URI = ("sqlite:///" + os.path.join(
+        basedir, _get_env_or_default("SQLALCHEMY_DATABASE_URI", "resources/hackerschool.sqlite3")))
 
     ROLES_PATH = os.path.join(
         basedir, _get_env_or_default("ROLES_PATH", "resources/roles.yaml")
     )
 
-    STATIC_DIR = os.path.join(
-        basedir, _get_env_or_default("STATIC_DIR", "resources/static/")
-    ).rstrip("/")
-    MAX_CONTENT_LENGTH = _get_int_env_or_default(
-        "MAX_FILE_UPLOAD_LENGTH", 16 * 1024 * 1024
-    )
+    ROOT_URI = _get_env_or_default("ROOT_URI", "http://localhost:5000")
 
-    LOGS_PATH = os.path.join(basedir, _get_env_or_default("LOGS_PATH", ""))
-
-    FRONTEND_URI = _get_env_or_default("FRONTEND_URI", "http://localhost:3000")
-
-    ENABLED_ACCESS_CONTROL = _get_env_or_default("ENABLED_ACCESS_CONTROL", False)
-
+    ENABLED_ACCESS_CONTROL = _get_bool_env_or_false("ENABLED_ACCESS_CONTROL")
     CLIENT_ID = _get_env_or_default("CLIENT_ID", "")
     CLIENT_SECRET = _get_env_or_default("CLIENT_SECRET", "")
-    FENIX_REDIRECT_URL = _get_env_or_default("FENIX_REDIRECT_URL", "")
+    FENIX_REDIRECT_ENDPOINT = _get_env_or_default("FENIX_REDIRECT_ENDPOINT", "/fenix-login-callback")
+
+    SENTRY_DSN = _get_env_or_default("SENTRY_DSN", "")
