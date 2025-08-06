@@ -1,7 +1,6 @@
 import re
 from typing import List, TYPE_CHECKING
 
-import bcrypt
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, validates, relationship
 
@@ -20,29 +19,20 @@ class ProjectParticipation(db.Model):
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    join_date: Mapped[str] = mapped_column(nullable=True)
-    _roles: Mapped[str] = mapped_column("roles", nullable=True)
+    join_date: Mapped[str] = mapped_column()
+    _roles: Mapped[str] = mapped_column("roles")
 
     member_id: Mapped[int] = mapped_column(ForeignKey("members.id"))
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
+
     member: Mapped["Member"] = relationship("Member", back_populates="project_participations")
     project: Mapped["Project"] = relationship("Project", back_populates="project_participations")
 
-
-    """ @classmethod
-    def from_schema(cls, schema: "ProjectParticipationSchema", member: "Member", project: "Project"):
-        return cls(
-            member=member,
-            project=project,
-            roles=schema.roles,
-            join_date=schema.join_date,
-        ) """
-
     def __init__(self, *, member: "Member", project: "Project", roles=None, join_date=None):
-        self.member_id = member.id
-        self.project_id = project.id
         self.member = member
         self.project = project
+        self.member_id = member.id
+        self.project_id = project.id
         self.roles = roles
         self.join_date = join_date
 
@@ -63,8 +53,6 @@ class ProjectParticipation(db.Model):
 
     @validates("join_date")
     def validate_datestring(self, k, v):
-        if v is None:
-            return None
         if not isinstance(v, str):
             raise ValueError(f'Invalid {k} type: "{type(v)}"')
         if not is_valid_datestring(v):

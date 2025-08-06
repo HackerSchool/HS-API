@@ -75,16 +75,12 @@ invalid_init_test_cases = [
 ]
 
 
-# Because our model and ORM are coupled, and we do DB checks on the model, we need db context
-@pytest.fixture
-def app():
-    flask = create_app()
-    with flask.app_context() as ctx:
-        yield
-
+# need to initialize the app because the models are coupled with flask-sqlalchemy
+app = create_app()
+app.config.update({"TESTING": True})
 
 @pytest.mark.parametrize("test_case", valid_init_test_cases)
-def test_valid_init(app, test_case: InitTestCase):
+def test_valid_init(test_case: InitTestCase):
     if test_case.override:
         test_case.data[test_case.field] = test_case.value
 
@@ -95,7 +91,7 @@ def test_valid_init(app, test_case: InitTestCase):
 
 
 @pytest.mark.parametrize("test_case", invalid_init_test_cases)
-def test_invalid_init(app, test_case: InitTestCase):
+def test_invalid_init(test_case: InitTestCase):
     if test_case.override:
         test_case.data[test_case.field] = test_case.value
 

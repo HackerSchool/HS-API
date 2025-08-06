@@ -19,7 +19,7 @@ base_member = {
 
 @pytest.fixture(scope="function")
 def app():
-    Config.DATABASE_PATH = "sqlite:///:memory:"
+    Config.SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     app = create_app()
     with app.app_context():
         db.create_all()
