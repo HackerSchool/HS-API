@@ -3,11 +3,15 @@ from http import HTTPStatus
 from flask import session, abort, g
 from functools import wraps
 
-from app.repositories.member_repository import MemberRepository
+from app.auth.permission_strategies import Ctx, indexed_permission_evaluators
 from app.auth.scopes.system_scopes import SystemScopes
+
+from app.repositories.member_repository import MemberRepository
+from app.repositories.project_participation_repository import ProjectParticipationRepository
+from app.repositories.project_repository import ProjectRepository
+
 from app.schemas.member_schema import MemberSchema
 
-from app.auth.permission_strategies import Ctx, indexed_permission_evaluators
 
 
 class AuthController:
@@ -30,9 +34,11 @@ class AuthController:
     :type permission_handler: ``app.access.permission_handler.PermissionHandler``
     """
 
-    def __init__(self, *, enabled: bool, member_repo: MemberRepository, system_scopes: SystemScopes):
+    def __init__(self, *, enabled: bool, member_repo: MemberRepository, project_repo: ProjectRepository, participation_repo: ProjectParticipationRepository,system_scopes: SystemScopes):
         self.enabled = enabled
         self.member_repo = member_repo
+        self.project_repo = project_repo
+        self.participation_repo = participation_repo
         self.system_scopes = system_scopes
 
     def login_member(self, fn):
@@ -155,8 +161,15 @@ class AuthController:
         :raises ValueError: If ``allow_self_action`` is set but the controller does not accept a ``username`` parameter.
         """
         for scope in scoped_permissions:
-            if not indexed_permission_evaluators:
-                raise ValueError(f'Undefined permission evaluator for scope "{scope}"')
+            if self.system_scopes.get_scope(scope) is None or scope not in indexed_permission_evaluators:
+                raise ValueError(f"Undefined scope or permission evaluator for scope '{scope}'")
+
+            permission = scoped_permissions[scope]
+            for role in self.system_scopes.get_scope(scope).roles:
+                if permission in role.permissions:
+                    break
+            else:
+                raise ValueError(f"Undefined permission '{permission}' in any role for scope '{scope}'")
 
         def decorator(fn):
             @wraps(fn)
@@ -169,7 +182,7 @@ class AuthController:
                 # check if user has at least permissions in one scope
                 for scope in scoped_permissions:
                     has_perm_eval = indexed_permission_evaluators[scope]
-                    if has_perm_eval(Ctx(accessCtx=self, permission=scoped_permissions[scope], args=args, kwargs=kwargs)):
+                    if has_perm_eval(Ctx(authCtx=self, permission=scoped_permissions[scope], args=args, kwargs=kwargs)):
                         return fn(*args, **kwargs)
                 return abort(HTTPStatus.FORBIDDEN, description="You don't have permissions to perform this action")
 

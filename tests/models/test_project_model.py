@@ -43,35 +43,35 @@ valid_init_test_cases = [
 
 invalid_init_test_cases = [
     InitTestCase(data={**base_project}, override=True, field="name", value=None, exc_type=ValueError,
-                 exc_str=f'Invalid name type: "{type(None)}"'),
+                 exc_str=f"Invalid name type: '{type(None)}'"),
     InitTestCase(data={**base_project}, override=True, field="name", value=123, exc_type=ValueError,
-                 exc_str=f'Invalid name type: "{type(123)}"'),
+                 exc_str=f"Invalid name type: '{type(123)}'"),
     InitTestCase(data={**base_project}, override=True, field="name", value="a", exc_type=ValueError,
-                 exc_str='Invalid name length, minimum 2 and maximum 64 characters: "a"'),
+                 exc_str="Invalid name length, minimum 2 and maximum 64 characters: 'a'"),
 
     InitTestCase(data={**base_project}, override=True, field="state", value=None, exc_type=ValueError,
-                 exc_str=f'Invalid state type: "{type(None)}"'),
+                 exc_str=f"Invalid state type: '{type(None)}'"),
     InitTestCase(data={**base_project}, override=True, field="state", value=123, exc_type=ValueError,
-                 exc_str=f'Invalid state type: "{type(123)}"'),
+                 exc_str=f"Invalid state type: '{type(123)}'"),
     InitTestCase(data={**base_project}, override=True, field="state", value="a", exc_type=ValueError,
-                 exc_str=f'Invalid state type: "{type("a")}"'),
+                 exc_str=f"Invalid state type: '{type('a')}'"),
 
     InitTestCase(data={**base_project}, override=True, field="start_date", value=None, exc_type=ValueError,
-                 exc_str=f'Invalid start_date type: "{type(None)}"'),
+                 exc_str=f"Invalid start_date type: '{type(None)}'"),
     InitTestCase(data={**base_project}, override=True, field="start_date", value=123, exc_type=ValueError,
-                 exc_str=f'Invalid start_date type: "{type(123)}"'),
+                 exc_str=f"Invalid start_date type: '{type(123)}'"),
     InitTestCase(data={**base_project}, override=True, field="start_date", value="start_date", exc_type=ValueError,
-                 exc_str='Invalid start_date format, expected "YYYY-MM-DD": "start_date"'),
+                 exc_str="Invalid start_date format, expected 'YYYY-MM-DD': 'start_date'"),
 
     InitTestCase(data={**base_project}, override=True, field="end_date", value=123, exc_type=ValueError,
-                 exc_str=f'Invalid end_date type: "{type(123)}"'),
+                 exc_str=f"Invalid end_date type: '{type(123)}'"),
     InitTestCase(data={**base_project}, override=True, field="end_date", value="end_date", exc_type=ValueError,
-                 exc_str='Invalid end_date format, expected "YYYY-MM-DD": "end_date"'),
+                 exc_str="Invalid end_date format, expected 'YYYY-MM-DD': 'end_date'"),
 
     InitTestCase(data={**base_project}, override=True, field="description", value=123, exc_type=ValueError,
-                 exc_str=f'Invalid description type: "{type(123)}"'),
+                 exc_str=f"Invalid description type: '{type(123)}'"),
     InitTestCase(data={**base_project}, override=True, field="description", value="a" * 2049, exc_type=ValueError,
-                 exc_str=f'Invalid description length, minimum 0 and maximum 2048 characters: "{"a" * 2049}"'),
+                 exc_str=f"Invalid description length, minimum 0 and maximum 2048 characters: '{'a' * 2049}'"),
 ]
 
 

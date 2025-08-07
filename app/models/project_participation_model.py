@@ -22,11 +22,15 @@ class ProjectParticipation(db.Model):
     join_date: Mapped[str] = mapped_column()
     _roles: Mapped[str] = mapped_column("roles")
 
-    member_id: Mapped[int] = mapped_column(ForeignKey("members.id"))
-    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
+    member_id: Mapped[int] = mapped_column(ForeignKey("members.id", ondelete="CASCADE"))
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id", ondelete="CASCADE"))
 
     member: Mapped["Member"] = relationship("Member", back_populates="project_participations")
     project: Mapped["Project"] = relationship("Project", back_populates="project_participations")
+
+    @classmethod
+    def from_schema(cls, *, member: "Member", project: "Project", schema: "ProjectParticipationSchema"):
+        return cls(member=member, project=project, **schema.model_dump(exclude=["username", "project_name"]))
 
     def __init__(self, *, member: "Member", project: "Project", roles=None, join_date=None):
         self.member = member

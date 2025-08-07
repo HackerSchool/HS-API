@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from app.schemas.project_schema import ProjectSchema
     from app.models.project_participation_model import ProjectParticipation
 
+
 class Project(db.Model):
     __tablename__ = "projects"
 
@@ -22,7 +23,10 @@ class Project(db.Model):
     end_date: Mapped[str] = mapped_column(nullable=True)
     description: Mapped[str] = mapped_column(nullable=True)
 
-    project_participations: Mapped[List["ProjectParticipation"]] = relationship("ProjectParticipation", back_populates="project")
+    project_participations: Mapped[List["ProjectParticipation"]] = relationship("ProjectParticipation",
+                                                                                back_populates="project",
+                                                                                cascade="all, delete-orphan",
+                                                                                passive_deletes=True)
 
     @classmethod
     def from_schema(cls, schema: "ProjectSchema"):
@@ -50,23 +54,23 @@ class Project(db.Model):
     @validates("name")
     def validate_name(self, k, v):
         if not isinstance(v, str):
-            raise ValueError(f'Invalid name type: "{type(v)}"')
+            raise ValueError(f"Invalid name type: '{type(v)}'")
         if isinstance(v, str) and not 2 <= len(v) <= 64:
-            raise ValueError(f'Invalid name length, minimum 2 and maximum 64 characters: "{v}"')
+            raise ValueError(f"Invalid name length, minimum 2 and maximum 64 characters: '{v}'")
         return v
 
     @validates("state")
     def validate_state(self, k, v):
         if not isinstance(v, ProjectStateEnum):
-            raise ValueError(f'Invalid state type: "{type(v)}"')
+            raise ValueError(f"Invalid state type: '{type(v)}'")
         return v
 
     @validates("start_date")
     def validate_start_date(self, k, v):
         if not isinstance(v, str):
-            raise ValueError(f'Invalid start_date type: "{type(v)}"')
+            raise ValueError(f"Invalid start_date type: '{type(v)}'")
         if not is_valid_datestring(v):
-            raise ValueError(f'Invalid start_date format, expected "YYYY-MM-DD": "{v}"')
+            raise ValueError(f"Invalid start_date format, expected 'YYYY-MM-DD': '{v}'")
         return v
 
     @validates("end_date")
@@ -74,9 +78,9 @@ class Project(db.Model):
         if v is None:
             return None
         if not isinstance(v, str):
-            raise ValueError(f'Invalid end_date type: "{type(v)}"')
+            raise ValueError(f"Invalid end_date type: '{type(v)}'")
         if not is_valid_datestring(v):
-            raise ValueError(f'Invalid end_date format, expected "YYYY-MM-DD": "{v}"')
+            raise ValueError(f"Invalid end_date format, expected 'YYYY-MM-DD': '{v}'")
         return v
 
     @validates("description")
@@ -84,12 +88,10 @@ class Project(db.Model):
         if v is None:
             return None
         if not isinstance(v, str):
-            raise ValueError(f'Invalid {k} type: "{type(v)}"')
+            raise ValueError(f"Invalid {k} type: '{type(v)}'")
         if len(v) > 2048:
-            raise ValueError(f'Invalid {k} length, minimum 0 and maximum 2048 characters: "{v}"')
+            raise ValueError(f"Invalid {k} length, minimum 0 and maximum 2048 characters: '{v}'")
         return v
 
     def __repr__(self):
         return f"<{self.__class__.__name__}({', '.join(f'{k}={v!r}' for k, v in self.__dict__.items())})>"
-
-

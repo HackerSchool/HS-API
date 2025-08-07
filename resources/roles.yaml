@@ -8,6 +8,14 @@ scopes:
         - member:create
         - member:update
         - member:delete
+        - project:read
+        - project:create
+        - project:update
+        - project:delete
+        - participation:read
+        - participation:create
+        - participation:update
+        - participation:delete
     - name: dev
       privilege: 95
       permissions:
@@ -15,6 +23,14 @@ scopes:
         - member:create
         - member:update
         - member:delete
+        - project:read
+        - project:create
+        - project:update
+        - project:delete
+        - participation:read
+        - participation:create
+        - participation:update
+        - participation:delete
     - name: president
       privilege: 95
       permissions:
@@ -22,6 +38,14 @@ scopes:
         - member:create
         - member:update
         - member:delete
+        - project:read
+        - project:create
+        - project:update
+        - project:delete
+        - participation:read
+        - participation:create
+        - participation:update
+        - participation:delete
     - name: vice
       privilege: 90
       permissions:
@@ -29,6 +53,14 @@ scopes:
         - member:create
         - member:update
         - member:delete
+        - project:read
+        - project:create
+        - project:update
+        - project:delete
+        - participation:read
+        - participation:create
+        - participation:update
+        - participation:delete
     - name: rh
       privilege: 85
       permissions:
@@ -36,40 +68,50 @@ scopes:
         - member:create
         - member:update
         - member:delete
+        - project:read
+        - project:create
+        - project:update
+        - project:delete
+        - participation:read
+        - participation:create
+        - participation:update
+        - participation:delete
     - name: finance
       privilege: 50
       permissions:
         - member:read
+        - project:read
+        - participation:read
     - name: marketing
       privilege: 50
       permissions:
         - member:read
+        - project:read
+        - participation:read
     - name: lab
       privilege: 50
       permissions:
         - member:read
+        - project:read
+        - participation:read
     - name: member
       privilege: 50
       permissions:
         - member:read
+        - project:read
+        - participation:read
 
   - name: project
     roles:
     - name: coordinator
       privilege: 100
       permissions:
-        - project:update
-        - project:delete
+        - update
+        - delete
+        - add-participant
+        - remove-participant
+        - edit-participant
     - name: participant
 
       privilege: 50
       permissions:
-
-  - name: workshop
-    roles:
-    - name: organizer
-      privilege: 100
-      permissions:
-        - workshop:update
-        - workshop:delete
-

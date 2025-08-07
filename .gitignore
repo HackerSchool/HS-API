@@ -1,18 +1,17 @@
 __pycache__/
-.coverage/
 .venv/
 .scripts/
 .vscode/
 .idea/
-migrations/
 
 resources/flask_sessions/
 resources/logs/
 resources/photos/
-data/flask_sessions/
 *.sqlite3
 
 .env
 ruff.toml
 docs/
+
 .coverage
+htmlcov/

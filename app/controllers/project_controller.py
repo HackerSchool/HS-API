@@ -4,7 +4,7 @@ from flask import Blueprint
 from flask import request
 from flask import abort
 
-from app.auth import AuthController
+from app.auth import AuthController, current_member
 from app.utils import slugify
 
 from app.schemas.project_schema import ProjectSchema
@@ -27,15 +27,14 @@ def create_project_bp(*, project_repo: ProjectRepository, auth_controller: AuthC
     def create_project():
         project_data = ProjectSchema(**request.json)
         if project_repo.get_project_by_name(project_data.name) is not None:
-            return abort(HTTPStatus.CONFLICT, description=f'Project with name "{project_data.name}" already exists')
+            return abort(HTTPStatus.CONFLICT, description=f"Project with name '{project_data.name}' already exists")
 
         slug = slugify(project_data.name)
         if project_repo.get_project_by_slug(slug):
             return abort(HTTPStatus.CONFLICT,
-                         description=f'A slug already exists for this name, please pick a new one: "{project_data.name}')
+                         description=f"A slug already exists for this name, please pick a new one: '{project_data.name}'")
 
         project = project_repo.create_project(Project.from_schema(project_data))
-        db.session.commit()
         return ProjectSchema.from_project(project).model_dump()
 
     @bp.route("/projects", methods=["GET"])
@@ -47,30 +46,30 @@ def create_project_bp(*, project_repo: ProjectRepository, auth_controller: AuthC
     @auth_controller.requires_permission(general="project:read")
     def get_project_by_slug(slug):
         if (project := project_repo.get_project_by_slug(slug)) is None:
-            return abort(HTTPStatus.NOT_FOUND, description=f'Project "{slug}" not found"')
+            return abort(HTTPStatus.NOT_FOUND, description=f"Project '{slug}' not found")
         return ProjectSchema.from_project(project).model_dump()
 
     @bp.route("/projects/<slug>", methods=["PUT"])
-    @auth_controller.requires_permission(general="project:update", project="project:update")
+    @auth_controller.requires_permission(general="project:update", project="update")
     @transactional
     def update_project_by_slug(slug):
         if (project := project_repo.get_project_by_slug(slug)) is None:
-            return abort(HTTPStatus.NOT_FOUND, description=f'Project "{slug}" not found')
+            return abort(HTTPStatus.NOT_FOUND, description=f"Project '{slug}' not found")
 
         project_update = UpdateProjectSchema(**request.json)
         if project_update.name and project_repo.get_project_by_slug(slugify(project_update.name)) is not None:
             return abort(HTTPStatus.CONFLICT,
-                         description=f'A slug already exists for this name, please pick a new one: "{project_update.name}')
+                         description=f"A slug already exists for this name, please pick a new one: '{project_update.name}'")
 
         updated_project = project_repo.update_project(project, project_update)
         return ProjectSchema.from_project(updated_project).model_dump()
 
     @bp.route("/projects/<slug>", methods=["DELETE"])
-    @auth_controller.requires_permission(general="project:delete", project="project:delete")
+    @auth_controller.requires_permission(general="project:delete", project="delete")
     @transactional
     def delete_project_by_slug(slug):
         if (project := project_repo.get_project_by_slug(slug)) is None:
-            return abort(HTTPStatus.NOT_FOUND, description=f'Project "{slug}" not found')
+            return abort(HTTPStatus.NOT_FOUND, description=f"Project '{slug}' not found")
 
         name = project_repo.delete_project(project)
         return {f"description": "Project deleted successfully", "name": name}

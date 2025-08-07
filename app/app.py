@@ -25,11 +25,11 @@ from app.repositories.project_participation_repository import ProjectParticipati
 
 from app.controllers.member_controller import create_member_bp
 from app.controllers.project_controller import create_project_bp
-from app.controllers.project_participation_controller import create_pp_bp
+from app.controllers.project_participation_controller import create_participation_bp
 from app.controllers.login_controller import create_login_bp
 
 
-def create_app(config_class=Config, *, member_repo=None, project_repo=None, pp_repo=None,
+def create_app(config_class=Config, *, member_repo=None, project_repo=None, participation_repo=None,
                fenix_service=None, auth_controller=None):
     flask_app = Flask(__name__)
     flask_app.config.from_object(config_class)
@@ -55,8 +55,8 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, pp_r
         member_repo = MemberRepository(db=db)
     if project_repo is None:
         project_repo = ProjectRepository(db=db)
-    if pp_repo is None:
-        pp_repo = ProjectParticipationRepository(db=db)
+    if participation_repo is None:
+        participation_repo = ProjectParticipationRepository(db=db)
 
     if fenix_service is None:
         fenix_service = FenixService(
@@ -71,6 +71,8 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, pp_r
             enabled=flask_app.config["ENABLED_ACCESS_CONTROL"],
             system_scopes=SystemScopes.from_yaml_config(flask_app.config["ROLES_PATH"]),
             member_repo=member_repo,
+            project_repo=project_repo,
+            participation_repo=participation_repo,
         )
 
     member_bp = create_member_bp(member_repo=member_repo, auth_controller=auth_controller)
@@ -79,9 +81,9 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, pp_r
     project_bp = create_project_bp(project_repo=project_repo, auth_controller=auth_controller)
     flask_app.register_blueprint(project_bp)
 
-    pp_bp = create_pp_bp(pp_repo=pp_repo, project_repo=project_repo, member_repo=member_repo,
+    participation_bp = create_participation_bp(participation_repo=participation_repo, project_repo=project_repo, member_repo=member_repo,
                          auth_controller=auth_controller)
-    flask_app.register_blueprint(pp_bp)
+    flask_app.register_blueprint(participation_bp)
 
     login_bp = create_login_bp(member_repo=member_repo, auth_controller=auth_controller, fenix_service=fenix_service)
     flask_app.register_blueprint(login_bp)
