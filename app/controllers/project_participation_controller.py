@@ -36,7 +36,7 @@ def create_participation_bp(*, participation_repo: ProjectParticipationRepositor
 
         if participation_repo.get_participation_by_project_and_member_id(project_id=project.id,
                                                                          member_id=member.id) is not None:
-            return abort(HTTPStatus.NOT_FOUND,
+            return abort(HTTPStatus.CONFLICT,
                          description=f"Participation for '{participation_data.username}' in '{participation_data.project_name}' already exists")
 
         participation = participation_repo.create_participation(
@@ -94,8 +94,8 @@ def create_participation_bp(*, participation_repo: ProjectParticipationRepositor
         participation_update = UpdateProjectParticipationSchema(**request.json)
         if (participation := participation_repo.get_participation_by_project_and_member_id(project_id=project.id,
                                                                                            member_id=member.id)) is None:
-            return abort(HTTPStatus.CONFLICT,
-                         description=f"Participation for '{username}' in '{slug}' already exists")
+            return abort(HTTPStatus.NOT_FOUND,
+                         description=f"Participation for '{username}' in '{slug}' not found")
 
         updated_participation = participation_repo.update_participation(participation=participation,
                                                                         update_values=participation_update)

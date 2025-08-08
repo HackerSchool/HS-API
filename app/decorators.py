@@ -8,7 +8,7 @@ def transactional(fn):
         try:
             r = fn(*args, **kwargs)
             db.session.commit()
-        except Exception:
+        except Exception as e:
             db.session.rollback()
             raise
         return r
