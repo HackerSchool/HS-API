@@ -12,9 +12,10 @@ if TYPE_CHECKING:
     from app.schemas.project_participation_schema import ProjectParticipationSchema
     from app.models.member_model import Member 
     from app.models.project_model import Project
+    from app.models.task_model import Task
 
 class ProjectParticipation(db.Model):
-    __tablename__ = "project_participation"
+    __tablename__ = "project_participations"
     __table_args__ = (
         UniqueConstraint("member_id", "project_id", name="uq_member_project"),
     )
@@ -27,6 +28,8 @@ class ProjectParticipation(db.Model):
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
     member: Mapped["Member"] = relationship("Member", back_populates="project_participations")
     project: Mapped["Project"] = relationship("Project", back_populates="project_participations")
+
+    tasks: Mapped[List["Task"]] = relationship("Task", back_populates="participation")
 
 
     """ @classmethod

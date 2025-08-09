@@ -16,15 +16,19 @@ from app.extensions import migrate
 from app.controllers.member_controller import create_member_bp
 from app.controllers.project_controller import create_project_bp
 from app.controllers.project_participation_controller import create_pp_bp
+from app.controllers.task_controller import create_task_bp
+from app.controllers.season_controller import create_season_bp
 from app.controllers.auth_controller import create_auth_bp
 
 from app.repositories.member_repository import MemberRepository
 from app.repositories.project_repository import ProjectRepository
 from app.repositories.project_participation_repository import ProjectParticipationRepository
+from app.repositories.task_repository import TaskRepository
+from app.repositories.season_repository import SeasonRepository
 
 
 def create_app(config_class=Config, *, member_repo=None, project_repo=None, pp_repo = None,
-                access_controller=None):
+                task_repo=None, season_repo=None, access_controller=None):
     flask_app = Flask(__name__)
     flask_app.config.from_object(config_class)
 
@@ -38,6 +42,10 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, pp_r
         project_repo = ProjectRepository(db=db)
     if pp_repo is None:
         pp_repo = ProjectParticipationRepository(db=db)
+    if task_repo is None:
+        task_repo = TaskRepository(db=db)
+    if season_repo is None:
+        season_repo = SeasonRepository(db=db)
 
     if access_controller is None:
         access_controller = AccessController(
@@ -55,6 +63,13 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, pp_r
     pp_bp = create_pp_bp(pp_repo=pp_repo, 
                         project_repo = project_repo, member_repo = member_repo, access_controller=access_controller)
     flask_app.register_blueprint(pp_bp)
+
+    task_bp = create_task_bp(task_repo=task_repo, participation_repo=pp_repo, season_repo=season_repo,
+                        project_repo=project_repo, member_repo=member_repo, access_controller=access_controller)
+    flask_app.register_blueprint(task_bp)
+
+    season_bp = create_season_bp(season_repo=season_repo, access_controller=access_controller)
+    flask_app.register_blueprint(season_bp)
 
     auth_bp = create_auth_bp(member_repo=member_repo, access_controller=access_controller)
     flask_app.register_blueprint(auth_bp)

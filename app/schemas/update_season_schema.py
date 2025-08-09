@@ -5,8 +5,8 @@ from app.utils import is_valid_datestring
 from app.models.season_model import Season
 
 
-class SeasonSchema(BaseModel):
-    season_number: int = Field(default=None, gt=0)
+class UpdateSeasonSchema(BaseModel):
+    season_number: Optional[int] = Field(default=None, gt=0)
     start_date: Optional[str] = Field(default=None)
     end_date: Optional[str] = Field(default=None)
 

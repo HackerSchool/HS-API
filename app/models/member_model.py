@@ -10,7 +10,6 @@ from app.utils import is_valid_datestring
 if TYPE_CHECKING:
     from app.schemas.member_schema import MemberSchema
     from app.models.project_participation_model import ProjectParticipation
-    #from app.models.point_model import Point
 
 
 def _hash_password(password) -> str:
@@ -38,7 +37,6 @@ class Member(db.Model):
     extra: Mapped[str] = mapped_column(nullable=True)
 
     project_participations: Mapped[List["ProjectParticipation"]] = relationship("ProjectParticipation", back_populates="member")
-    #points: Mapped["Point"] = relationship("Point", back_populates="member", uselist=False)
 
     @classmethod
     def from_schema(self, schema: "MemberSchema"):
