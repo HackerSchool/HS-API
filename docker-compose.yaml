@@ -7,19 +7,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - data:/hs-api/data/
-    environment:
-      - SESSION_TYPE=redis
-      - SESSION_REDIS=redis://redis:6379
-      - DATABASE_PATH=data/db/hackerschool.sqlite3
-      - STATIC_DIR=data/static/
-      - ROLES_PATH=data/roles.json
-      - LOGS_PATH=data/logs/
-      - CLIENT_ID=
-      - CLIENT_SECRET=
-      - FENIX_REDIRECT_URL=
+      - ./resources:/hs-api/resources/
+    env_file: ".env"
     depends_on:
       - "redis"
-
-volumes:
-  data:

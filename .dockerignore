@@ -3,6 +3,5 @@
 **/.git/
 
 README.md
-requirements.txt
 .env.example
 .env
