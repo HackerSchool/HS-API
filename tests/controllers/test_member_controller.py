@@ -21,10 +21,6 @@ def mock_member_repo():
     return MagicMock()
 
 @pytest.fixture
-def mock_system_roles():
-    return MagicMock()
-
-@pytest.fixture
 def client(mock_member_repo):
     from app.config import Config
     Config.ENABLED_ACCESS_CONTROL = False
