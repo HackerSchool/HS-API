@@ -2,6 +2,9 @@
 .venv/
 **/.git/
 
+resources/
+
 README.md
 .env.example
 .env
+

@@ -5,7 +5,7 @@ __pycache__/
 .idea/
 
 resources/flask_sessions/
-resources/*.logs
+resources/*.log
 resources/images/
 *.sqlite3
 
