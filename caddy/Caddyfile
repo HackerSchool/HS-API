@@ -11,6 +11,6 @@ api.hackerschool.dev {
         }
     }
 
-    reverse_proxy backend:5000
+    reverse_proxy hs-backend:5000
 }
 
