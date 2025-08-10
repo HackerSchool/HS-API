@@ -12,13 +12,19 @@ def register_cli_commands(app: Flask):
     @click.command("create-admin")
     @click.argument("username")
     @click.argument("password")
+    @click.argument("ist_id")
     @with_appcontext
-    def create_admin_member(username, password):
+    def create_admin_member(username, password, ist_id):
         if db.session.execute(select(Member).where(Member.username == username)).scalars().one_or_none() is not None:
             click.echo(f'Member with name {username} already exists')
             return
 
-        db.session.add(Member(username=username, password=password, name="admin", email="admin", roles=["sysadmin"]))
+        if db.session.execute(select(Member).where(Member.username == username)).scalars().one_or_none() is not None:
+            click.echo(f'Member with ist_id {ist_id} already exists')
+            return
+
+
+        db.session.add(Member(username=username, password=password, ist_id=ist_id, name="admin", email="admin", roles=["sysadmin"]))
         db.session.commit()
         click.echo(f"Admin member '{username}' created successfully.")
 
