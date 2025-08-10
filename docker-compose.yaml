@@ -1,8 +1,10 @@
 services:
   redis:
+    container_name: hs-redis
     image: redis:6.2-alpine
     restart: unless-stopped 
   backend:
+    container_name: hs-backend
     build: .
     ports:
       - "5000:5000"
@@ -11,3 +13,16 @@ services:
     env_file: ".env"
     depends_on:
       - "redis"
+  caddy:
+    container_name: hs-reverse-proxy
+    build: ./caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./caddy:/etc/caddy
+      - caddy_data:/data
+volumes:
+  caddy_data:

@@ -1,0 +1,16 @@
+{
+    order rate_limit before respond
+}
+
+api.hackerschool.dev {
+    rate_limit {
+        zone global_limit {
+            key {http.request.remote_ip}
+            events 20
+            window 1m
+        }
+    }
+
+    reverse_proxy backend:5000
+}
+
