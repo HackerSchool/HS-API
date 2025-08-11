@@ -48,10 +48,13 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = ("sqlite:///" + os.path.join(
         basedir, _get_env_or_default("SQLALCHEMY_DATABASE_URI", "resources/hackerschool.sqlite3")))
-
     ROLES_PATH = os.path.join(
         basedir, _get_env_or_default("ROLES_PATH", "resources/roles.yaml")
     )
+    IMAGES_PATH = os.path.join(
+        basedir, _get_env_or_default("IMAGES_PATH", "resources/images/")
+    )
+
 
     ROOT_URI = _get_env_or_default("ROOT_URI", "http://localhost:5000")
 
