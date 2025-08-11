@@ -35,7 +35,7 @@ class Config:
     if SESSION_TYPE == "cachelib":
         SESSION_CACHELIB = FileSystemCache(
             cache_dir=os.path.join(
-                basedir, _get_env_or_default("SESSION_DIR", "resources/")
+                basedir, _get_env_or_default("SESSION_DIR", "resources/flask_sessions")
             ),
             threshold=500,
         )
