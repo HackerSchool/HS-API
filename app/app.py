@@ -27,6 +27,7 @@ from app.controllers.member_controller import create_member_bp
 from app.controllers.project_controller import create_project_bp
 from app.controllers.project_participation_controller import create_participation_bp
 from app.controllers.login_controller import create_login_bp
+from app.controllers.image_controller import create_images_bp
 
 
 def create_app(config_class=Config, *, member_repo=None, project_repo=None, participation_repo=None,
@@ -81,9 +82,14 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, part
     project_bp = create_project_bp(project_repo=project_repo, auth_controller=auth_controller)
     flask_app.register_blueprint(project_bp)
 
-    participation_bp = create_participation_bp(participation_repo=participation_repo, project_repo=project_repo, member_repo=member_repo,
-                         auth_controller=auth_controller)
+    participation_bp = create_participation_bp(participation_repo=participation_repo, project_repo=project_repo,
+                                               member_repo=member_repo,
+                                               auth_controller=auth_controller)
     flask_app.register_blueprint(participation_bp)
+
+    images_bp = create_images_bp(flask_app.config["IMAGES_PATH"], member_repo=member_repo, project_repo=project_repo,
+                                 auth_controller=auth_controller)
+    flask_app.register_blueprint(images_bp)
 
     login_bp = create_login_bp(member_repo=member_repo, auth_controller=auth_controller, fenix_service=fenix_service)
     flask_app.register_blueprint(login_bp)
