@@ -2,6 +2,8 @@ import os
 
 from flask import Flask
 
+from flask_cors import CORS
+
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
@@ -34,6 +36,7 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, part
                fenix_service=None, auth_controller=None):
     flask_app = Flask(__name__)
     flask_app.config.from_object(config_class)
+    CORS(flask_app)
 
     session.init_app(flask_app)
     db.init_app(flask_app)
