@@ -30,6 +30,8 @@ def _get_bool_env_or_false(env: str) -> bool:
 
 
 class Config:
+    MAX_CONTENT_LENGTH = 16 * 1000 * 1000 # max for file uplaods
+
     # see https://flask-session.readthedocs.io/en/latest/config.html#
     SESSION_TYPE = _get_env_or_default("SESSION_TYPE", "cachelib")
     if SESSION_TYPE == "cachelib":
