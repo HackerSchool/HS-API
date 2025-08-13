@@ -75,7 +75,7 @@ def create_images_bp(images_path: str, member_repo: MemberRepository, project_re
 
         _, ext = os.path.splitext(file.filename)
         file.save(os.path.join(members_images_path, member.ist_id + ext))
-        return {"message": "Member image uploaded successfully", "username": member.username}
+        return {"description": "Member image uploaded successfully", "username": member.username}
 
     @bp.route("/projects/<slug>/image", methods=["POST"])
     @auth_controller.requires_permission(general="project:update", project="update")
@@ -92,6 +92,6 @@ def create_images_bp(images_path: str, member_repo: MemberRepository, project_re
 
         _, ext = os.path.splitext(file.filename)
         file.save(os.path.join(projects_images_path, project.slug + ext))
-        return {"message": "Project image uploaded successfully", "name": project.name}
+        return {"description": "Project image uploaded successfully", "name": project.name}
 
     return bp

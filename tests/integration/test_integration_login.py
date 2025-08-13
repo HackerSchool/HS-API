@@ -59,7 +59,7 @@ def test_login_sysadmin(client: FlaskClient):
     assert rsp.status_code == 200
     assert rsp.mimetype == "application/json"
 
-    assert "message" in rsp.json and rsp.json["message"] == "Logged in successfully!"
+    assert "description" in rsp.json and rsp.json["description"] == "Logged in successfully!"
     assert "member" in rsp.json and "username" in rsp.json["member"] and rsp.json["member"]["username"] == "sysadmin"
 
 def test_login_fenix_auth_member(client: FlaskClient):

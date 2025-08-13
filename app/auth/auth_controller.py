@@ -73,9 +73,9 @@ class AuthController:
 
             member = fn(*args, **kwargs)
             if member is None:
-                return abort(HTTPStatus.UNAUTHORIZED)
+                return abort(HTTPStatus.UNAUTHORIZED, description=f"Failed authentication")
             session["id"] = member.id
-            return {"message": "Logged in successfully!", "member": MemberSchema.from_member(member).model_dump(exclude="password")}
+            return {"description": "Logged in successfully!", "member": MemberSchema.from_member(member).model_dump(exclude="password")}
         return wrapper
 
     def requires_login(self, fn):
@@ -129,7 +129,7 @@ class AuthController:
         @self.requires_login
         def wrapper(*args, **kwargs):
             if not self.enabled:
-                return abort(HTTPStatus.NOT_IMPLEMENTED)
+                return abort(HTTPStatus.NOT_IMPLEMENTED, description="Access control disabled")
             r = fn(*args, **kwargs)
             session.clear()
             g.current_member = None
