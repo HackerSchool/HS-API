@@ -36,8 +36,8 @@ class Task(db.Model):
         return cls(season=season, participation=participation, 
                 **schema.model_dump(exclude=["username", "project_name", "season_number"]))
 
-    def __init__(self, *, season: "Season", participation: "ProjectParticipation", point_type: None, points: None, 
-                description: None, finished_at: None):
+    def __init__(self, *, season=None, participation=None, point_type=None, points=None, 
+                description=None, finished_at=None):
         self.season = season
         self.participation = participation
         self.point_type = point_type
