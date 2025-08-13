@@ -3,6 +3,8 @@ name: docs
 on:
   pull_request:
     branches: [ "main" ]
+  push:
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -31,11 +33,16 @@ jobs:
     - name: Build HTML
       run: uv run make -C docs html
 
-    - name: Push to build branch
+  push-docs:
+    needs: build
+    if: github.event_name == 'push'  # only run after merge/push to main
+    runs-on: ubuntu-latest
+    steps:
+    - name: Push to docs build to branch
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
         git checkout --orphan docs-build
         git --work-tree docs/_build/html add --all
-        git --work-tree docs/_build/html commit -m "Update docs [skip ci]"
+        git --work-tree docs/_build/html commit -m "update docs [skip ci]"
         git push origin HEAD:docs-build --force
