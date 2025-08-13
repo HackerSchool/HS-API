@@ -1,0 +1,26 @@
+app.schemas package
+===================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   app.schemas.fenix_callback_schema
+   app.schemas.fenix_user_schema
+   app.schemas.login_schema
+   app.schemas.member_schema
+   app.schemas.project_participation_schema
+   app.schemas.project_schema
+   app.schemas.update_member_schema
+   app.schemas.update_project_participation_schema
+   app.schemas.update_project_schema
+
+Module contents
+---------------
+
+.. automodule:: app.schemas
+   :members:
+   :show-inheritance:
+   :undoc-members:

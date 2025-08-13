@@ -1,0 +1,7 @@
+app.decorators module
+=====================
+
+.. automodule:: app.decorators
+   :members:
+   :show-inheritance:
+   :undoc-members:
