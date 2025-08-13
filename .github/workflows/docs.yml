@@ -2,8 +2,7 @@ name: docs
 
 on:
   pull_request:
-    branches:
-      - ["main"]
+    branches: [ "main" ]
 
 jobs:
   build:
