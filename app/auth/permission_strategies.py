@@ -1,5 +1,7 @@
 from typing import List, Dict, TYPE_CHECKING
 
+import inspect
+
 from dataclasses import dataclass
 
 from app.auth.utils import current_member
@@ -28,6 +30,9 @@ def general_scope_evaluator(ctx: Ctx) -> bool:
             return True
     return False
 
+def assert_valid_general_scope_endpoint(fn) -> None:
+    """ Validates the controller function for the evaluator """
+    pass
 
 def project_scope_evaluator(ctx: Ctx):
     # if performing self action
@@ -48,7 +53,18 @@ def project_scope_evaluator(ctx: Ctx):
             return True
     return False
 
+def assert_valid_project_scope_endpoint(fn) -> None:
+    """ Validates the controller function for the evaluator """
+    sig = inspect.signature(fn)
+    if "slug" not in sig.parameters:
+        raise ValueError(f'Missing argument "slug" in endpoint "{fn.__name__}"')
+
 indexed_permission_evaluators = {
     "general": general_scope_evaluator,
     "project": project_scope_evaluator,
+}
+
+indexed_endpoint_validators = {
+    "general": assert_valid_general_scope_endpoint,
+    "project": assert_valid_project_scope_endpoint
 }

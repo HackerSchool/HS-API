@@ -1,10 +1,10 @@
-HS-API
+Development Guide
 ======
 
-Welcome to the HS-API developer documentation. If you are not directly developing the HS-API but rather using it please refer to the following documentation HS-API usage.
+If you are not directly developing the HS-API but rather using it please refer to usage section.
 
 Overview
-========
+--------
 This project follows a layered architecture, organized into the following core layers:
 
 - **Controller** – Responsible for handling requests and orchestrating business logic.
@@ -14,7 +14,7 @@ This project follows a layered architecture, organized into the following core l
 Each layer has its own dedicated directory in the project structure.
 
 Core Libraries
-==============
+--------------
 
 This API is built using the following core Python libraries:
 
@@ -23,12 +23,29 @@ This API is built using the following core Python libraries:
     - `Pydantic <https://docs.pydantic.dev/latest/>`_ - Data validation and serialization
     - `Pytest <https://pytest.org/>`_ - Unit, component and integration testing
 
-Developing
-==========
-In this section, we’ll demonstrate how to add the **Workshop** feature into the existing codebase, covering models, repositories, schemas, controllers and access modules.
+Setup
+------
+Use `uv` for easy setup
+
+.. code-block:: sh
+
+    pip install uv
+    uv venv
+    uv sync
+
+
+Then you can start the development server py running ``uv run flask run``.
+To create an admin user in the database you can use ``flask create-admin <name> <password>``.
+
+The default ``.env.example`` contains the default configuration values, which are ideal for development.
+Check out the :mod:`app.config.py` for more information.
+
+Development
+----------
+In this section, we’ll demonstrate how to add the **Workshop** feature into the existing codebase, covering models, repositories, schemas, controllers and auth modules.
 
 Models
-------
+~~~~~~~~
 We begin by creating the **SQLAlchemy model**, which also serves as our domain entity.
 
 .. code-block:: python
@@ -70,7 +87,7 @@ We use ``mapped_column()`` to define attributes and SQL constraints, and the ``@
     The domain logic is tightly coupled with SQLAlchemy here, which limits flexibility.
 
 Repository
-----------
+~~~~~~~~~~~
 Next, we define a **repository** to handle data access and mutations for the Workshop entity.
 
 .. code-block:: python
@@ -109,7 +126,7 @@ Next, we define a **repository** to handle data access and mutations for the Wor
     The repository can be injected into our controllers (which we’ll see next), making the application more modular, testable, and decoupled from the ORM.
 
 Schemas
--------
+~~~~~~~~~~~
 
 Before we implement the controller layer, we need to define the **schemas** that describe the structure of incoming and outgoing data. These schemas act as the interface between the client and the application, enforcing data shape and validation rules.
 
@@ -140,7 +157,7 @@ We use **Pydantic** to define and validate the schema data. In this example, we 
     Our current design uses Pydantic strictly for request validation, but it’s worth noting that Pydantic can also be used to define true domain models. This could help decouple the domain logic from the ORM entirely.
 
 Controller
-----------
+~~~~~~~~~~~
 Now we can finally move into the **controller** layer. We will implement a Flask Blueprint factory.
 
 .. code-block:: python
@@ -258,7 +275,7 @@ Our endpoints should now be working, and expecting a JSON schema as declared in 
 
 
 Access
-------
+~~~~~~~
 
 Now that we have working endpoints, we need to protect them. Our API requires **authentication**, as only HS members can use it, and it also includes a role-based **authorization** system.
 
@@ -301,12 +318,12 @@ If an endpoint only requires authentication you can also use the :func:`app.acce
         ....
 
 Testing
-=======
+--------
 
 In this section we will add tests for each layer of the Workshop entity. We use **Pytest** to write our tests and ensure the application is not broken!
 
 Models
-------
+~~~~~~~
 
 To test our models, we need to activate the Flask application context. We’ll define a pytest fixture to ensure the context is available when running our tests.
 
@@ -341,7 +358,7 @@ With the fixture in place, we can include the ``app`` fixture as a test paramete
         assert "Invalid duration" in str(exc_info)
 
 Repositories
-------------
+~~~~~~~~~~~~
 
 Testing the repository layer requires a working database. For simplicity and isolation, we’ll use an **in-memory SQLite database**.
 
@@ -389,7 +406,7 @@ We can now use the ``workshop_repo`` fixture in our tests to verify the reposito
         assert created_workshop.duration == workshop.duration
 
 Controllers
------------
+~~~~~~~~~~~~
 
 To test the controllers, we’ll use Flask’s testing utilities alongside Python’s :mod:`unittest.mock` module to mock dependencies. This is where injecting repositories into our controllers gives us flexibility.
 
@@ -430,7 +447,7 @@ We now use our ``client`` fixture to request our controllers.
         assert "duration" in rsp.json and rsp.json["duration"] == 30
 
 Schemas
--------
+~~~~~~~~
 Testing schemas will be easier, as we only need to test our custom validators. For the Workshop entity example provided we didn't set any
 custom validation, so let's add one.
 
@@ -472,8 +489,8 @@ custom validation, so let's add one.
         assert exc_info.type == pydantic.ValidationError
         assert "Invalid date format" in str(exc_info.value.errors()[0].get("ctx", {}).get("error", None))
 
-Access
+
+Extra
 ------
-You will not need to test the access layer if you do not add any new functionality to it and simply use the decorators.
-If you add functionality, then testing it will be similar to testing the controllers, after all, the access layer is still controller logic,
-simply made separate to facilitate the development of new controllers.
+Now we have the workshop entity! However, there is something still missing. The workshop will have someone who is organizing it, so
+we will need to connect it to a member! That will be left as a challenge to the developer who will be looking to follow this guide. :)

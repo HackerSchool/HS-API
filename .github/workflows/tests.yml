@@ -1,5 +1,5 @@
 
-name: Tests
+name: tests
 
 on:
   push:
@@ -28,4 +28,3 @@ jobs:
     - name: Run tests
       run: |
         uv run python -m pytest
-

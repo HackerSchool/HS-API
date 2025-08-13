@@ -3,7 +3,7 @@ from http import HTTPStatus
 from flask import session, abort, g
 from functools import wraps
 
-from app.auth.permission_strategies import Ctx, indexed_permission_evaluators
+from app.auth.permission_strategies import Ctx, indexed_permission_evaluators, indexed_endpoint_validators
 from app.auth.scopes.system_scopes import SystemScopes
 
 from app.repositories.member_repository import MemberRepository
@@ -30,8 +30,12 @@ class AuthController:
     :type enabled: bool
     :param member_repo: Repository interface to retrieve member data.
     :type member_repo: ``app.repositories.member_repository.MemberRepository``
-    :param permission_handler: Service that validates roles' permissions.
-    :type permission_handler: ``app.access.permission_handler.PermissionHandler``
+    :param project_repo: Repository interface to retrieve member data.
+    :type project_repo: ``app.repositories.project_repository.ProjectRepository``
+    :param participation_repo: Repository interface to retrieve member data.
+    :type participation_repo: ``app.repositories.project_participation_repository.ProjectParticipationRepository``
+    :param system_scopes: Class with system scopes.
+    :type participation_repo: ``app.auth.scopes.system_scopes.SystemScopes``
     """
 
     def __init__(self, *, enabled: bool, member_repo: MemberRepository, project_repo: ProjectRepository, participation_repo: ProjectParticipationRepository,system_scopes: SystemScopes):
@@ -59,10 +63,9 @@ class AuthController:
             def oauth_callback():
                 return Member()
 
-        :param fn: Authentication function
-        :return func:
+        :param fn: Function that authenticates a user and returns its model.
+        :type fn: function
         """
-
         @wraps(fn)
         def wrapper(*args, **kwargs):
             if not self.enabled:
@@ -73,7 +76,6 @@ class AuthController:
                 return abort(HTTPStatus.UNAUTHORIZED)
             session["id"] = member.id
             return {"message": "Logged in successfully!", "member": MemberSchema.from_member(member).model_dump(exclude="password")}
-
         return wrapper
 
     def requires_login(self, fn):
@@ -82,6 +84,7 @@ class AuthController:
         This decorator enables ``current_member`` global to be accessed in controllers.
 
         Example::
+
             from app.access import current_member
 
             @bp.route("/members/<username>", methods=["PUT"])
@@ -89,6 +92,9 @@ class AuthController:
             def update_member(username):
                 if current_member.username == username:
                     pass
+
+        :param fn: Decorated controller.
+        :type fn: function
         """
 
         @wraps(fn)
@@ -138,27 +144,18 @@ class AuthController:
         Example::
 
             @bp.route("/projects/<name>", methods=["PUT"])
-            @requires_permission(general="project:update", project="project:update")
+            @requires_permission(general="project:update", project="edit")
             def update_project(name):
                 pass
 
         Each keyword argument represents a scope, and its value is the required permission
         for that scope. If any one scope grants the required permission, access is allowed.
 
-        If ``allow_self_action`` is True, and the route includes a ``username`` argument,
-        the current member is allowed to proceed without matching a permission if the
-        ``username`` matches their own.
-
-        :param allow_self_action: If True, allows the current user to act on their own resource
-            when a ``username`` parameter is present and matches their identity.
-        :type allow_self_action: bool
-
         :param scoped_permissions: Mapping of scope names to required permission strings.
-            Example: ``general="member:update"``, ``project="project:delete"``
         :type scoped_permissions: dict[str, str]
 
         :raises ValueError: If an undefined scope is passed.
-        :raises ValueError: If ``allow_self_action`` is set but the controller does not accept a ``username`` parameter.
+        :raises ValueError: If and undefined permission is passed for the corresponding scope.
         """
         for scope in scoped_permissions:
             if self.system_scopes.get_scope(scope) is None or scope not in indexed_permission_evaluators:
@@ -172,6 +169,10 @@ class AuthController:
                 raise ValueError(f"Undefined permission '{permission}' in any role for scope '{scope}'")
 
         def decorator(fn):
+            for scope in scoped_permissions:
+                assert_valid_endpoint = indexed_endpoint_validators[scope]
+                assert_valid_endpoint(fn) # raises error if invalid endpoint signature
+
             @wraps(fn)
             @self.requires_login
             def wrapper(*args, **kwargs):
@@ -187,5 +188,4 @@ class AuthController:
                 return abort(HTTPStatus.FORBIDDEN, description="You don't have permissions to perform this action")
 
             return wrapper
-
         return decorator

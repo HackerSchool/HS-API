@@ -22,8 +22,8 @@ scopes:
     - name: coordinator
       privilege: 100
       permissions:
-        - project:update
-        - project:delete
+        - update
+        - delete
     - name: participant
       privilege: 50
       permissions:

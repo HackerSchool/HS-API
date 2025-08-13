@@ -12,7 +12,7 @@ roles_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "./scopes/
 
 @pytest.fixture
 def app():
-    app = create_app()
+    app = Flask(__name__)
     yield app
 
 @pytest.fixture
@@ -25,6 +25,7 @@ def test_requires_permission_decorator_invalid_scope(app: Flask, auth_controller
         @auth_controller.requires_permission(invalid_scope="read")
         def endpoint():
             pass
+
     assert "Undefined scope" in str(exc_info)
 
 def test_requires_permission_decorator_invalid_permission(app: Flask, auth_controller: AuthController):
@@ -35,3 +36,12 @@ def test_requires_permission_decorator_invalid_permission(app: Flask, auth_contr
             pass
 
     assert "Undefined permission" in str(exc_info)
+
+def test_invalid_project_scope_endpoint(app: Flask, auth_controller: AuthController):
+    with pytest.raises(ValueError) as exc_info:
+        @app.route("/route")
+        @auth_controller.requires_permission(project="update")
+        def no_slug_endpoint():
+            pass
+
+    assert 'Missing argument "slug"' in str(exc_info)

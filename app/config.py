@@ -30,6 +30,8 @@ def _get_bool_env_or_false(env: str) -> bool:
 
 
 class Config:
+    MAX_CONTENT_LENGTH = 16 * 1000 * 1000 # max for file uplaods
+
     # see https://flask-session.readthedocs.io/en/latest/config.html#
     SESSION_TYPE = _get_env_or_default("SESSION_TYPE", "cachelib")
     if SESSION_TYPE == "cachelib":
@@ -48,10 +50,13 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = ("sqlite:///" + os.path.join(
         basedir, _get_env_or_default("SQLALCHEMY_DATABASE_URI", "resources/hackerschool.sqlite3")))
-
     ROLES_PATH = os.path.join(
         basedir, _get_env_or_default("ROLES_PATH", "resources/roles.yaml")
     )
+    IMAGES_PATH = os.path.join(
+        basedir, _get_env_or_default("IMAGES_PATH", "resources/images/")
+    )
+
 
     ROOT_URI = _get_env_or_default("ROOT_URI", "http://localhost:5000")
 
