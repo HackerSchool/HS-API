@@ -1,0 +1,7 @@
+app.errors module
+=================
+
+.. automodule:: app.errors
+   :members:
+   :show-inheritance:
+   :undoc-members:
