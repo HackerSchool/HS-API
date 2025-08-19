@@ -1,17 +1,19 @@
 from http import HTTPStatus
 
 from flask import Blueprint
-from flask import request
 from flask import abort
+from flask import request
 
 from app.auth import AuthController, current_member
-from app.schemas.member_schema import MemberSchema
-from app.schemas.update_member_schema import UpdateMemberSchema
+
+from app.decorators import transactional
+
+from app.models.member_model import Member
 
 from app.repositories.member_repository import MemberRepository
 
-from app.models.member_model import Member
-from app.decorators import transactional
+from app.schemas.member_schema import MemberSchema
+from app.schemas.update_member_schema import UpdateMemberSchema
 
 
 def create_member_bp(*, member_repo: MemberRepository, auth_controller: AuthController):
