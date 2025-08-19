@@ -1,7 +1,7 @@
+from functools import wraps
 from http import HTTPStatus
 
-from flask import session, abort, g
-from functools import wraps
+from flask import session, abort, g, redirect
 
 from app.auth.permission_strategies import Ctx, indexed_permission_evaluators, indexed_endpoint_validators
 from app.auth.scopes.system_scopes import SystemScopes
@@ -11,7 +11,6 @@ from app.repositories.project_participation_repository import ProjectParticipati
 from app.repositories.project_repository import ProjectRepository
 
 from app.schemas.member_schema import MemberSchema
-
 
 
 class AuthController:
@@ -48,20 +47,20 @@ class AuthController:
     def login_member(self, fn):
         """
         This is meant to act as the controller to start member sessions. Should be used to decorate functions that authenticate
-        a member and return it to start the session.
+        a member and return it to start the session, an optional URL for a redirect value can also be returned.
         It's not a controller decorator, it is the controller, the functions should simply provide the member model.
 
         Example::
 
-            @app.route("login/")
+            @app.route("/login")
             @login_member
             def login():
-                return Member() # return the authenticated member here
+                return Member(), None # return the authenticated member and doesn't redirect
 
-            @app.route("oauth-callback/")
+            @app.route("/oauth-callback")
             @login_member
             def oauth_callback():
-                return Member()
+                return Member(), "https://frontend.com/dashboard" # redirects to frontend with params ?login=success&username=member_username
 
         :param fn: Function that authenticates a user and returns its model.
         :type fn: function
@@ -71,11 +70,19 @@ class AuthController:
             if not self.enabled:
                 return abort(HTTPStatus.NOT_IMPLEMENTED)
 
-            member = fn(*args, **kwargs)
+            member, redirect_uri = fn(*args, **kwargs)
+            session.clear()
+            if redirect_uri:
+                if member is None:
+                    return redirect_uri(redirect_uri + f"?login=fail")
+                session["id"] = member.id
+                return redirect(redirect_uri + f"?login=success&username={member.username}")
+
             if member is None:
                 return abort(HTTPStatus.UNAUTHORIZED, description=f"Failed authentication")
             session["id"] = member.id
             return {"description": "Logged in successfully!", "member": MemberSchema.from_member(member).model_dump(exclude="password")}
+
         return wrapper
 
     def requires_login(self, fn):
@@ -116,7 +123,7 @@ class AuthController:
         Decorate controllers meant to end a user session.
         Example::
 
-            @app.route("login/")
+            @app.route("/login")
             @access_controller.logout_member
             def logout():
                 return {"message": "Logged out successfully!"}

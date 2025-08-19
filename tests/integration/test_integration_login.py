@@ -85,7 +85,7 @@ def test_logout(client: FlaskClient):
     assert rsp.status_code == 200
     assert rsp.mimetype == "application/json"
     assert "username" in rsp.json and rsp.json["username"] == "sysadmin"
-    assert "message" in rsp.json and "Logout successful!" in rsp.json["message"]
+    assert "description" in rsp.json and "Logout successful!" in rsp.json["description"]
 
 def test_login_me(client: FlaskClient):
     with client.session_transaction() as session:

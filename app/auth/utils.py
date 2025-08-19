@@ -1,5 +1,6 @@
-from werkzeug.local import LocalProxy
 from flask import g, has_app_context
+
+from werkzeug.local import LocalProxy
 
 current_member = LocalProxy(lambda: _get_current_member())
 

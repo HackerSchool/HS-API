@@ -1,8 +1,8 @@
-from typing import List, Dict, TYPE_CHECKING
-
 import inspect
 
 from dataclasses import dataclass
+
+from typing import List, Dict, TYPE_CHECKING
 
 from app.auth.utils import current_member
 

@@ -1,20 +1,21 @@
 from http import HTTPStatus
 
 from flask import Blueprint
-from flask import request
 from flask import abort
+from flask import request
 
-from app.auth import current_member
 from app.auth.auth_controller import AuthController
-from app.schemas.project_participation_schema import ProjectParticipationSchema
-from app.schemas.update_project_participation_schema import UpdateProjectParticipationSchema
 
-from app.repositories.project_participation_repository import ProjectParticipationRepository
-from app.repositories.member_repository import MemberRepository
-from app.repositories.project_repository import ProjectRepository
+from app.decorators import transactional
 
 from app.models.project_participation_model import ProjectParticipation
-from app.decorators import transactional
+
+from app.repositories.member_repository import MemberRepository
+from app.repositories.project_participation_repository import ProjectParticipationRepository
+from app.repositories.project_repository import ProjectRepository
+
+from app.schemas.project_participation_schema import ProjectParticipationSchema
+from app.schemas.update_project_participation_schema import UpdateProjectParticipationSchema
 
 
 def create_participation_bp(*, participation_repo: ProjectParticipationRepository, auth_controller: AuthController,
