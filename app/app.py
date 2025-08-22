@@ -24,16 +24,20 @@ from app.extensions import migrate
 from app.repositories.member_repository import MemberRepository
 from app.repositories.project_repository import ProjectRepository
 from app.repositories.project_participation_repository import ProjectParticipationRepository
+from app.repositories.task_repository import TaskRepository
+from app.repositories.season_repository import SeasonRepository
 
 from app.controllers.member_controller import create_member_bp
 from app.controllers.project_controller import create_project_bp
 from app.controllers.project_participation_controller import create_participation_bp
 from app.controllers.login_controller import create_login_bp
 from app.controllers.image_controller import create_images_bp
+from app.controllers.task_controller import create_task_bp
+from app.controllers.season_controller import create_season_bp
 
 
-def create_app(config_class=Config, *, member_repo=None, project_repo=None, participation_repo=None,
-               fenix_service=None, auth_controller=None):
+def create_app(config_class=Config, *, member_repo=None, project_repo=None, participation_repo=None, task_repo=None,
+               season_repo=None, fenix_service=None, auth_controller=None):
     flask_app = Flask(__name__)
     flask_app.config.from_object(config_class)
     CORS(flask_app)
@@ -62,6 +66,11 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, part
     if participation_repo is None:
         participation_repo = ProjectParticipationRepository(db=db)
 
+    if task_repo is None:
+        task_repo = TaskRepository(db=db)
+    if season_repo is None:
+        season_repo = SeasonRepository(db=db)
+
     if fenix_service is None:
         fenix_service = FenixService(
             client_id=flask_app.config["CLIENT_ID"],
@@ -89,6 +98,13 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, part
                                                member_repo=member_repo,
                                                auth_controller=auth_controller)
     flask_app.register_blueprint(participation_bp)
+
+    task_bp = create_task_bp(task_repo=task_repo, participation_repo=participation_repo, season_repo=season_repo,
+                        project_repo=project_repo, member_repo=member_repo, access_controller=auth_controller)
+    flask_app.register_blueprint(task_bp)
+
+    season_bp = create_season_bp(season_repo=season_repo, access_controller=auth_controller)
+    flask_app.register_blueprint(season_bp)
 
     images_bp = create_images_bp(flask_app.config["IMAGES_PATH"], member_repo=member_repo, project_repo=project_repo,
                                  auth_controller=auth_controller)

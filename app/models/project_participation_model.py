@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from app.models.project_model import Project
 
 class ProjectParticipation(db.Model):
-    __tablename__ = "project_participation"
+    __tablename__ = "project_participations"
     __table_args__ = (
         UniqueConstraint("member_id", "project_id", name="uq_member_project"),
     )
@@ -27,6 +27,8 @@ class ProjectParticipation(db.Model):
 
     member: Mapped["Member"] = relationship("Member", back_populates="project_participations")
     project: Mapped["Project"] = relationship("Project", back_populates="project_participations")
+
+    tasks: Mapped[List["Task"]] = relationship("Task", back_populates="participation")
 
     @classmethod
     def from_schema(cls, *, member: "Member", project: "Project", schema: "ProjectParticipationSchema"):

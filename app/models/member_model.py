@@ -10,8 +10,6 @@ from app.utils import is_valid_datestring
 if TYPE_CHECKING:
     from app.schemas.member_schema import MemberSchema
     from app.models.project_participation_model import ProjectParticipation
-    # from app.models.point_model import Point
-
 
 def _hash_password(password) -> str:
     # salted encrypted password
@@ -43,8 +41,8 @@ class Member(db.Model):
                                                                                 passive_deletes=True)
 
     @classmethod
-    def from_schema(self, schema: "MemberSchema"):
-        return self(**schema.model_dump())
+    def from_schema(cls, schema: "MemberSchema"):
+        return cls(**schema.model_dump())
 
     def __init__(self, *, ist_id=None, username=None, name=None, email=None, password=None, member_number=None,
                  course=None, roles=None, join_date=None, exit_date=None, description=None, extra=None):
