@@ -38,6 +38,3 @@ class MemberSchema(BaseModel):
             if hasattr(member, field):
                 member_data[field] = getattr(member, field)
         return cls(**member_data)
-
-    def model_dump(self, *args, **kwargs):
-        return super().model_dump(*args, **kwargs, exclude="password")

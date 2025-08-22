@@ -19,7 +19,7 @@ base_member = {
 
 @pytest.fixture(scope="function")
 def app():
-    Config.DATABASE_PATH = "sqlite:///:memory:"
+    Config.SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     app = create_app()
     with app.app_context():
         db.create_all()
@@ -40,6 +40,17 @@ def test_create_member(app, member_repository: MemberRepository):
     assert new_member.username == created_member.username
     assert new_member.name == created_member.name
     assert new_member.email == created_member.email
+
+def test_get_member_by_id(app, member_repository: MemberRepository):
+    member = Member(**base_member)
+    member.id = 1
+    db.session.add(member)
+    gotten_member = member_repository.get_member_by_id(member.id)
+    assert gotten_member is not None
+    assert member.ist_id == gotten_member.ist_id
+    assert member.username == gotten_member.username
+    assert member.name == gotten_member.name
+    assert member.email == gotten_member.email
 
 def test_get_member_by_ist_id(app, member_repository: MemberRepository):
     member = Member(**base_member)

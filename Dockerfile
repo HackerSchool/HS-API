@@ -1,11 +1,9 @@
 FROM python:3.11-slim
 
 WORKDIR /hs-api
-COPY requirements-prod.txt .
-RUN pip install --no-cache-dir -r requirements-prod.txt
+RUN python -m pip install --upgrade pip
+RUN pip install uv
 COPY . .
 EXPOSE 5000
-RUN chmod u+x entrypoint.sh
 
-ENTRYPOINT [ "./entrypoint.sh" ]
-CMD ["gunicorn", "-c", "gunicorn_conf.py", "app:create_app()"]
+CMD ["uv", "run", "gunicorn", "-c", "gunicorn_conf.py", "app:create_app()"]

@@ -29,7 +29,7 @@ def handle_validation_error(e: ValidationError):
     return Response(
         response=json.dumps(
             {
-                "error": HTTPStatus.UNPROCESSABLE_ENTITY,
+                "code": HTTPStatus.UNPROCESSABLE_ENTITY,
                 "name": "Unprocessable Entity",
                 "description": "Validation error",
                 "details": error

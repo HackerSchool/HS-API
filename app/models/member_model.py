@@ -11,7 +11,6 @@ if TYPE_CHECKING:
     from app.schemas.member_schema import MemberSchema
     from app.models.project_participation_model import ProjectParticipation
 
-
 def _hash_password(password) -> str:
     # salted encrypted password
     hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
@@ -36,11 +35,14 @@ class Member(db.Model):
     description: Mapped[str] = mapped_column(nullable=True)
     extra: Mapped[str] = mapped_column(nullable=True)
 
-    project_participations: Mapped[List["ProjectParticipation"]] = relationship("ProjectParticipation", back_populates="member")
+    project_participations: Mapped[List["ProjectParticipation"]] = relationship("ProjectParticipation",
+                                                                                back_populates="member",
+                                                                                cascade="all, delete-orphan",
+                                                                                passive_deletes=True)
 
     @classmethod
-    def from_schema(self, schema: "MemberSchema"):
-        return self(**schema.model_dump())
+    def from_schema(cls, schema: "MemberSchema"):
+        return cls(**schema.model_dump())
 
     def __init__(self, *, ist_id=None, username=None, name=None, email=None, password=None, member_number=None,
                  course=None, roles=None, join_date=None, exit_date=None, description=None, extra=None):
@@ -67,7 +69,7 @@ class Member(db.Model):
             self._password = None
             return
         if not isinstance(v, str):
-            raise ValueError(f'Invalid password type: "{type(v)}"')
+            raise ValueError(f"Invalid password type: '{type(v)}'")
         if not 6 <= len(v) <= 256:
             raise ValueError("Invalid password length, minimum 6 and maximum 256 characters")
         self._password = _hash_password(v)
@@ -84,7 +86,7 @@ class Member(db.Model):
             self._roles = ""
             return
         if not isinstance(v, list):
-            raise ValueError(f'Invalid roles type: "{type(v)}"')
+            raise ValueError(f"Invalid roles type: '{type(v)}'")
         self._roles = ",".join(v)
 
     @validates("ist_id")
@@ -92,27 +94,27 @@ class Member(db.Model):
         if v is None:
             return None
         if not isinstance(v, str):
-            raise ValueError(f'Invalid IST ID type: "{type(v)}"')
+            raise ValueError(f"Invalid IST ID type: '{type(v)}'")
         if not re.match(r"^ist1[0-9]{5,7}$", v):
-            raise ValueError(f'Invalid IST ID pattern: "{v}"')
+            raise ValueError(f"Invalid IST ID pattern: '{v}'")
         return v
 
     @validates("username")
     def validate_username(self, k, v):
         if not isinstance(v, str):
-            raise ValueError(f'Invalid username type: "{type(v)}"')
+            raise ValueError(f"Invalid username type: '{type(v)}'")
         if not isinstance(v, str) or not 3 <= len(v) <= 32:
-            raise ValueError(f'Invalid username length, minimum 3 and maximum 32 characters: "{v}"')
+            raise ValueError(f"Invalid username length, minimum 3 and maximum 32 characters: '{v}'")
         if not re.match(r"^[a-zA-Z0-9]*$", v):
-            raise ValueError(f'Invalid characters in username: "{v}"')
+            raise ValueError(f"Invalid characters in username: '{v}'")
         return v
 
     @validates("name", "email")
     def validate_name(self, k, v):
         if not isinstance(v, str):
-            raise ValueError(f'Invalid {k} type: "{type(v)}"')
+            raise ValueError(f"Invalid {k} type: '{type(v)}'")
         if not (1 <= len(v) <= 256):
-            raise ValueError(f'Invalid {k} length, minimum 1 and maximum 256 characters: "{v}"')
+            raise ValueError(f"Invalid {k} length, minimum 1 and maximum 256 characters: '{v}'")
         return v
 
     @validates("course")
@@ -120,9 +122,9 @@ class Member(db.Model):
         if v is None:
             return None
         if not isinstance(v, str):
-            raise ValueError(f'Invalid course type: "{type(v)}"')
+            raise ValueError(f"Invalid course type: '{type(v)}'")
         if not (1 <= len(v) <= 8):
-            raise ValueError(f'Invalid course length, minimum 1 and maximum 8 characters: "{v}"')
+            raise ValueError(f"Invalid course length, minimum 1 and maximum 8 characters: '{v}'")
         return v
 
     @validates("member_number")
@@ -130,7 +132,7 @@ class Member(db.Model):
         if v is None:
             return None
         if not isinstance(v, int):
-            raise ValueError(f'Invalid member_number type: "{type(v)}"')
+            raise ValueError(f"Invalid member_number type: '{type(v)}'")
         if v < 1:
             raise ValueError(f"Invalid member_number, expected integer greater than 0: Got {v}")
         return v
@@ -140,9 +142,9 @@ class Member(db.Model):
         if v is None:
             return None
         if not isinstance(v, str):
-            raise ValueError(f'Invalid {k} type: "{type(v)}"')
+            raise ValueError(f"Invalid {k} type: '{type(v)}'")
         if not is_valid_datestring(v):
-            raise ValueError(f'Invalid {k} format, expected "YYYY-MM-DD": "{v}"')
+            raise ValueError(f"Invalid {k} format, expected 'YYYY-MM-DD': '{v}'")
         return v
 
     @validates("description", "extra")
@@ -150,9 +152,9 @@ class Member(db.Model):
         if v is None:
             return None
         if not isinstance(v, str):
-            raise ValueError(f'Invalid {k} type: "{type(v)}"')
+            raise ValueError(f"Invalid {k} type: '{type(v)}'")
         if len(v) > 2048:
-            raise ValueError(f'Invalid {k} length, minimum 0 and maximum 2048 characters: "{v}"')
+            raise ValueError(f"Invalid {k} length, minimum 0 and maximum 2048 characters: '{v}'")
         return v
 
     def matches_password(self, password: str):

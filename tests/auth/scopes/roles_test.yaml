@@ -1,0 +1,38 @@
+scopes:
+  - name: general
+    roles:
+    - name: sysadmin
+      privilege: 100
+      permissions:
+        - member:read
+        - member:create
+        - member:update
+        - member:delete
+    - name: finance
+      privilege: 50
+      permissions:
+        - member:read
+    - name: member
+      privilege: 50
+      permissions:
+        - member:read
+
+  - name: project
+    roles:
+    - name: coordinator
+      privilege: 100
+      permissions:
+        - update
+        - delete
+    - name: participant
+      privilege: 50
+      permissions:
+
+  - name: workshop
+    roles:
+    - name: organizer
+      privilege: 100
+      permissions:
+        - workshop:update
+        - workshop:delete
+

@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from flask import Blueprint, request, abort
 
-from app.access import AccessController
+from app.auth.auth_controller import AuthController
 from app.schemas.task_schema import TaskSchema
 from app.schemas.update_task_schema import UpdateTaskSchema
 
@@ -17,7 +17,7 @@ from app.decorators import transactional
 
 def create_task_bp(*, task_repo: TaskRepository, participation_repo: ProjectParticipationRepository, 
                     season_repo: SeasonRepository, member_repo: MemberRepository,
-                    project_repo: ProjectRepository, access_controller: AccessController):
+                    project_repo: ProjectRepository, access_controller: AuthController):
     bp = Blueprint("task", __name__)
 
     def _resolve_targets(username: str, project_name: str, season_number: int):

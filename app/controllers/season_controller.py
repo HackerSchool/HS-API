@@ -4,7 +4,7 @@ from flask import Blueprint
 from flask import request
 from flask import abort
 
-from app.access import AccessController
+from app.auth.auth_controller import AuthController
 from app.models.season_model import Season
 from app.repositories.season_repository import SeasonRepository
 from app.schemas.season_schema import SeasonSchema
@@ -14,7 +14,7 @@ from app.utils import is_valid_datestring
 from app.decorators import transactional
 
 
-def create_season_bp(*, season_repo: SeasonRepository, access_controller: AccessController):
+def create_season_bp(*, season_repo: SeasonRepository, access_controller: AuthController):
     bp = Blueprint("season", __name__)
 
     @bp.route("/seasons", methods=["POST"])

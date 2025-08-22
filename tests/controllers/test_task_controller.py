@@ -83,7 +83,7 @@ def client(mock_repos):
         task_repo=mock_repos["task_repo"],
         member_repo=mock_repos["member_repo"],
         project_repo=mock_repos["project_repo"],
-        pp_repo=mock_repos["participation_repo"],
+        participation_repo=mock_repos["participation_repo"],
         season_repo=mock_repos["season_repo"],
     )
     with app.test_client() as client:

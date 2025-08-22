@@ -9,15 +9,13 @@ from app.models.project_participation_model import ProjectParticipation
 
 class ProjectParticipationSchema(BaseModel):
     username: str = Field(..., min_length=3, max_length=32, pattern="^[a-zA-Z0-9]*$")
-    project_name: str = Field(..., min_length=2, max_length=255)
+    join_date: str = Field(default=None)
+    project_name: Optional[str] = Field(default=None, min_length=2, max_length=255)
     roles: Optional[List[str]] = Field(default=None)
-    join_date: Optional[str] = Field(default=None)
 
     @field_validator("join_date")
     @classmethod
     def validate_datestring(cls, v: str):
-        if v is None:
-            return None
         if not is_valid_datestring(v):
             raise ValueError(
                 f'Invalid date format: "{v}". Expected format is "YYYY-MM-DD"'
@@ -25,9 +23,13 @@ class ProjectParticipationSchema(BaseModel):
         return v
 
     @classmethod
-    def from_pp(cls, pp: ProjectParticipation):
-        data = {"username": pp.member.username, "project_name": pp.project.name, 
-        "roles": pp.roles, "join_date": pp.join_date}
-        
-        return cls(**data)
+    def from_participation(cls, participation: ProjectParticipation):
+        participation_data = {
+            "username": participation.member.username,
+            "project_name": participation.project.name
+        }
+        for field in {*cls.model_fields.keys()} - {"username", "project_name"}:
+            if hasattr(participation, field):
+                participation_data[field] = getattr(participation, field)
+        return cls(**participation_data)
 
