@@ -6,7 +6,7 @@ from app.models.task_model import Task
 
 
 class UpdateTaskSchema(BaseModel):
-    point_type: Optional[PointTypeEnum] = Field(...)
+    point_type: Optional[PointTypeEnum] = Field(defualt=None)
     points: Optional[int] = Field(default=None, gt=0)
     description: Optional[str] = Field(default=None)
     finished_at: Optional[str] = Field(default=None)
