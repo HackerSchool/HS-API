@@ -14,12 +14,6 @@ from app.auth.scopes.system_scopes import SystemScopes
 from app.commands import register_cli_commands
 from app.config import Config
 
-from app.controllers.image_controller import create_images_bp
-from app.controllers.login_controller import create_login_bp
-from app.controllers.member_controller import create_member_bp
-from app.controllers.project_controller import create_project_bp
-from app.controllers.project_participation_controller import create_participation_bp
-
 from app.errors import handle_validation_error, handle_http_exception
 
 from app.extensions import db
@@ -28,10 +22,18 @@ from app.extensions import session
 
 from app.repositories.member_repository import MemberRepository
 from app.repositories.project_participation_repository import ProjectParticipationRepository
+from app.repositories.task_repository import TaskRepository
 from app.repositories.project_repository import ProjectRepository
 
+from app.controllers.member_controller import create_member_bp
+from app.controllers.project_controller import create_project_bp
+from app.controllers.project_participation_controller import create_participation_bp
+from app.controllers.login_controller import create_login_bp
+from app.controllers.image_controller import create_images_bp
+from app.controllers.task_controller import create_task_bp
 
-def create_app(config_class=Config, *, member_repo=None, project_repo=None, participation_repo=None,
+
+def create_app(config_class=Config, *, member_repo=None, project_repo=None, participation_repo=None, task_repo=None,
                fenix_service=None, auth_controller=None):
     flask_app = Flask(__name__)
     flask_app.config.from_object(config_class)
@@ -61,6 +63,9 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, part
     if participation_repo is None:
         participation_repo = ProjectParticipationRepository(db=db)
 
+    if task_repo is None:
+        task_repo = TaskRepository(db=db)
+
     if fenix_service is None:
         fenix_service = FenixService(
             client_id=flask_app.config["CLIENT_ID"],
@@ -88,6 +93,10 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, part
                                                member_repo=member_repo,
                                                auth_controller=auth_controller)
     flask_app.register_blueprint(participation_bp)
+
+    task_bp = create_task_bp(task_repo=task_repo, participation_repo=participation_repo,
+                        project_repo=project_repo, member_repo=member_repo, auth_controller=auth_controller)
+    flask_app.register_blueprint(task_bp)
 
     images_bp = create_images_bp(flask_app.config["IMAGES_PATH"], member_repo=member_repo, project_repo=project_repo,
                                  auth_controller=auth_controller)

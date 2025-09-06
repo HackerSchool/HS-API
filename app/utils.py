@@ -11,6 +11,12 @@ class ProjectStateEnum(str, Enum):
     UNDEFINED = "undefined"
 
 
+class PointTypeEnum(str, Enum):
+    PJ = "pj"
+    PCC = "pcc"
+    PS = "ps"
+
+
 def slugify(text):
     # GPT GENERATED!!
     text = unicodedata.normalize("NFKD", text)
