@@ -16,6 +16,10 @@ scopes:
         - participation:create
         - participation:update
         - participation:delete
+        - task:read
+        - task:create
+        - task:update
+        - task:delete
     - name: dev
       privilege: 95
       permissions:
@@ -31,6 +35,10 @@ scopes:
         - participation:create
         - participation:update
         - participation:delete
+        - task:read
+        - task:create
+        - task:update
+        - task:delete
     - name: president
       privilege: 95
       permissions:
@@ -46,6 +54,10 @@ scopes:
         - participation:create
         - participation:update
         - participation:delete
+        - task:read
+        - task:create
+        - task:update
+        - task:delete
     - name: vice
       privilege: 90
       permissions:
@@ -61,6 +73,10 @@ scopes:
         - participation:create
         - participation:update
         - participation:delete
+        - task:read
+        - task:create
+        - task:update
+        - task:delete
     - name: rh
       privilege: 85
       permissions:
@@ -76,30 +92,42 @@ scopes:
         - participation:create
         - participation:update
         - participation:delete
+        - task:read
+        - task:create
+        - task:update
+        - task:delete
     - name: finance
       privilege: 50
       permissions:
         - member:read
         - project:read
         - participation:read
+        - task:read
     - name: marketing
       privilege: 50
       permissions:
         - member:read
         - project:read
         - participation:read
+        - task:read
     - name: lab
       privilege: 50
       permissions:
         - member:read
         - project:read
         - participation:read
+        - task:read
     - name: member
       privilege: 50
       permissions:
         - member:read
         - project:read
         - participation:read
+        - task:read
+    - name: hook
+      privilege: 50
+      permissions:
+        - task:create
 
   - name: project
     roles:
@@ -112,6 +140,5 @@ scopes:
         - remove-participant
         - edit-participant
     - name: participant
-
       privilege: 50
       permissions:

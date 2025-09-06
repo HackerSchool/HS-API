@@ -15,36 +15,31 @@ if TYPE_CHECKING:
 
 class Task(db.Model):
     __tablename__ = "tasks"
-    __table_args__ = (
-        UniqueConstraint("participation_id", "season_id", name="uq_task_participation_season"),
-    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    
-    point_type: Mapped[PointTypeEnum] = mapped_column(Enum(PointTypeEnum, native_enum=False))
-    points: Mapped[int] = mapped_column(nullable=True)
+
+    point_type: Mapped[PointTypeEnum] = mapped_column(Enum(PointTypeEnum, native_enum=False), nullable=False)
+    points: Mapped[int] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=True)
     finished_at: Mapped[str] = mapped_column(nullable=True)
 
     participation_id: Mapped[int] = mapped_column(ForeignKey("project_participations.id"))
-    season_id: Mapped[int] = mapped_column(ForeignKey("seasons.id"), unique=True)
-    participation: Mapped["ProjectParticipation"] = relationship("ProjectParticipation", back_populates="tasks")
-    season: Mapped["Season"] = relationship("Season", back_populates="task", uselist=False)
+
+    participation: Mapped["ProjectParticipation"] = relationship("ProjectParticipation", back_populates="tasks", lazy="joined")
 
     @classmethod
-    def from_schema(cls, *, season: "Season", participation: "ProjectParticipation", schema: "TaskSchema"):
-        return cls(season=season, participation=participation, 
-                **schema.model_dump(exclude=["username", "project_name", "season_number"]))
+    def from_schema(cls, *, participation: "ProjectParticipation", schema: "TaskSchema"):
+        return cls(participation=participation,
+                   **schema.model_dump(exclude=["id", "username", "project_name"]))
 
-    def __init__(self, *, season=None, participation=None, point_type=None, points=None, 
-                description=None, finished_at=None):
+    def __init__(self, *, season=None, participation=None, point_type=None, points=None,
+                 description=None, finished_at=None):
         self.season = season
         self.participation = participation
         self.point_type = point_type
         self.points = points
         self.description = description
         self.finished_at = finished_at
-
 
     @validates("point_type")
     def validate_state(self, k, v):

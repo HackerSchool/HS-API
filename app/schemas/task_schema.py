@@ -6,6 +6,8 @@ from app.models.task_model import Task
 
 
 class TaskSchema(BaseModel):
+    id: Optional[int] = Field(None, gt=0)
+
     point_type: PointTypeEnum = Field(...)
     points: int = Field(default=None)
     description: str = Field(default=None)
@@ -13,7 +15,6 @@ class TaskSchema(BaseModel):
 
     username: str = Field(default=None, min_length=3, max_length=32, pattern="^[a-zA-Z0-9]*$")
     project_name: str = Field(default=None)
-    season_number: int = Field(default=None, gt=0)
 
     @field_validator("finished_at")
     @classmethod
@@ -28,9 +29,14 @@ class TaskSchema(BaseModel):
 
     @classmethod
     def from_task(cls, task: Task):
-        data = {"point_type": task.point_type, "points": task.points, "description": task.description,
-        "finished_at": task.finished_at, "username": task.participation.member.username, 
-        "project_name": task.participation.project.name, "season_number": task.season.season_number}
-        
+        data = {
+            "id": task.id,
+            "point_type": task.point_type,
+            "points": task.points,
+            "description": task.description,
+            "finished_at": task.finished_at,
+            "username": task.participation.member.username,
+            "project_name": task.participation.project.name,
+        }
         return cls(**data)
 

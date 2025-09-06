@@ -5,7 +5,6 @@ from app.utils import ProjectStateEnum, PointTypeEnum
 
 from app.models.member_model import Member
 from app.models.project_model import Project
-from app.models.season_model import Season
 from app.models.project_participation_model import ProjectParticipation
 from app.models.task_model import Task
 
@@ -28,12 +27,6 @@ base_project = {
 
 base_participation = {
     "join_date": "1970-01-01",
-}
-
-base_season = {
-    "season_number": 1,
-    "start_date": "1970-01-01",
-    "end_date": "1970-12-31",
 }
 
 base_task = {
@@ -113,28 +106,23 @@ def participation(member, project):
     return ProjectParticipation(member=member, project=project, **base_participation)
 
 
-@pytest.fixture
-def season():
-    return Season(**base_season)
-
-
 @pytest.mark.parametrize("test_case", valid_init_test_cases)
-def test_valid_init(season, participation, test_case: InitTestCase):
+def test_valid_init(participation, test_case: InitTestCase):
     if test_case.override:
         test_case.data[test_case.field] = test_case.value
 
-    task = Task(season=season, participation=participation, **test_case.data)
+    task = Task(participation=participation, **test_case.data)
 
     for k, v in test_case.data.items():
         assert getattr(task, k) == v
 
 
 @pytest.mark.parametrize("test_case", invalid_init_test_cases)
-def test_invalid_init(season, participation, test_case: InitTestCase):
+def test_invalid_init(participation, test_case: InitTestCase):
     if test_case.override:
         test_case.data[test_case.field] = test_case.value
 
     with pytest.raises(test_case.exc_type) as exc_info:
-        Task(season=season, participation=participation, **test_case.data)
+        Task(participation=participation, **test_case.data)
 
     assert test_case.exc_str in str(exc_info.value)

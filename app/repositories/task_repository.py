@@ -1,10 +1,12 @@
-from app.models.task_model import Task
-from app.models.project_participation_model import ProjectParticipation
-from app.schemas.update_task_schema import UpdateTaskSchema
+from typing import List
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import select, delete
-from typing import List
+from sqlalchemy.orm import joinedload
+
+from app.models.project_participation_model import ProjectParticipation
+from app.models.task_model import Task
+from app.schemas.update_task_schema import UpdateTaskSchema
 
 
 class TaskRepository:
@@ -17,53 +19,6 @@ class TaskRepository:
 
     def get_tasks(self) -> List[Task]:
         return self.db.session.execute(select(Task)).scalars().fetchall()
-
-    def get_tasks_by_season(self, season_id: int) -> List[Task]:
-        return self.db.session.execute(
-            select(Task).where(Task.season_id == season_id)
-        ).scalars().fetchall()
-
-    def get_tasks_by_member(self, member_id: int) -> List[Task]:
-        return self.db.session.execute(
-            select(Task)
-            .join(ProjectParticipation)
-            .where(ProjectParticipation.member_id == member_id)
-        ).scalars().fetchall()
-
-    def get_tasks_by_project(self, project_id: int) -> List[Task]:
-        return self.db.session.execute(
-            select(Task)
-            .join(ProjectParticipation)
-            .where(ProjectParticipation.project_id == project_id)
-        ).scalars().fetchall()
-
-    def get_tasks_by_member_and_season(self, member_id: int, season_id: int) -> List[Task]:
-        return self.db.session.execute(
-            select(Task)
-            .join(ProjectParticipation)
-            .where(
-                ProjectParticipation.member_id == member_id,
-                Task.season_id == season_id
-            )
-        ).scalars().fetchall()
-
-    def get_tasks_by_project_and_season(self, project_id: int, season_id: int) -> List[Task]:
-        return self.db.session.execute(
-            select(Task)
-            .join(ProjectParticipation)
-            .where(
-                ProjectParticipation.project_id == project_id,
-                Task.season_id == season_id
-            )
-        ).scalars().fetchall()
-
-    def get_task_by_participation_and_season(self, participation_id: int, season_id: int) -> Task | None:
-        return self.db.session.execute(
-            select(Task).where(
-                Task.participation_id == participation_id,
-                Task.season_id == season_id
-            )
-        ).scalars().one_or_none()
 
     def get_task_by_id(self, id: int) -> Task | None:
         return self.db.session.execute(

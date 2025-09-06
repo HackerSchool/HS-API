@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from app.schemas.project_participation_schema import ProjectParticipationSchema
     from app.models.member_model import Member 
     from app.models.project_model import Project
+    from app.models.task_model import Task
 
 class ProjectParticipation(db.Model):
     __tablename__ = "project_participations"
@@ -25,8 +26,8 @@ class ProjectParticipation(db.Model):
     member_id: Mapped[int] = mapped_column(ForeignKey("members.id", ondelete="CASCADE"))
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id", ondelete="CASCADE"))
 
-    member: Mapped["Member"] = relationship("Member", back_populates="project_participations")
-    project: Mapped["Project"] = relationship("Project", back_populates="project_participations")
+    member: Mapped["Member"] = relationship("Member", back_populates="project_participations", lazy="joined")
+    project: Mapped["Project"] = relationship("Project", back_populates="project_participations",lazy="joined")
 
     tasks: Mapped[List["Task"]] = relationship("Task", back_populates="participation")
 
