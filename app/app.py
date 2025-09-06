@@ -1,30 +1,29 @@
+import logging
 import os
 
-from flask import Flask
-
-from flask_cors import CORS
-
 import sentry_sdk
+from flask import Flask
+from flask_cors import CORS
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
-import logging
 
 from app.auth.auth_controller import AuthController
 from app.auth.fenix.fenix_service import FenixService
 from app.auth.scopes.system_scopes import SystemScopes
 
-from app.config import Config
-from app.errors import handle_validation_error, handle_http_exception
 from app.commands import register_cli_commands
+from app.config import Config
 
-from app.extensions import session
+from app.errors import handle_validation_error, handle_http_exception
+
 from app.extensions import db
 from app.extensions import migrate
+from app.extensions import session
 
 from app.repositories.member_repository import MemberRepository
-from app.repositories.project_repository import ProjectRepository
 from app.repositories.project_participation_repository import ProjectParticipationRepository
 from app.repositories.task_repository import TaskRepository
+from app.repositories.project_repository import ProjectRepository
 
 from app.controllers.member_controller import create_member_bp
 from app.controllers.project_controller import create_project_bp
@@ -38,7 +37,7 @@ def create_app(config_class=Config, *, member_repo=None, project_repo=None, part
                fenix_service=None, auth_controller=None):
     flask_app = Flask(__name__)
     flask_app.config.from_object(config_class)
-    CORS(flask_app)
+    CORS(flask_app, supports_credentials=True, resources={r"/*": {"origins": config_class.ORIGINS_WHITELIST}})
 
     session.init_app(flask_app)
     db.init_app(flask_app)

@@ -1,21 +1,21 @@
 from http import HTTPStatus
 
 from flask import Blueprint
-from flask import request
 from flask import abort
+from flask import request
 
-from app.auth import AuthController, current_member
-from app.utils import slugify
+from app.auth import AuthController
+
+from app.decorators import transactional
+
+from app.models.project_model import Project
+
+from app.repositories.project_repository import ProjectRepository
 
 from app.schemas.project_schema import ProjectSchema
 from app.schemas.update_project_schema import UpdateProjectSchema
 
-from app.repositories.project_repository import ProjectRepository
-
-from app.models.project_model import Project
-
-from app.decorators import transactional
-from app.extensions import db
+from app.utils import slugify
 
 
 def create_project_bp(*, project_repo: ProjectRepository, auth_controller: AuthController):

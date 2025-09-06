@@ -44,7 +44,7 @@ def create_images_bp(images_path: str, member_repo: MemberRepository, project_re
             if os.path.exists(path):
                 return send_file(path, mimetype=MIMETYPES[ext])
 
-        return abort(HTTPStatus.NOT_FOUND, description=f"Member {username} image not found")
+        return abort(HTTPStatus.NOT_FOUND, description=f"Member '{username}' image not found")
 
     @bp.route("/projects/<slug>/image", methods=["GET"])
     @auth_controller.requires_permission(general="project:read")

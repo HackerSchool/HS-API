@@ -2,11 +2,12 @@ import logging
 
 from typing import Dict
 
+from urllib.parse import urlencode
+
 import requests
+
 from requests.exceptions import HTTPError
 from requests.exceptions import JSONDecodeError
-
-from urllib.parse import urlencode
 
 logger = logging.getLogger(__name__)
 

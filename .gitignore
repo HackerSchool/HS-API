@@ -3,6 +3,7 @@ __pycache__/
 .scripts/
 .vscode/
 .idea/
+.scripts/
 
 resources/flask_sessions/
 resources/*.log
