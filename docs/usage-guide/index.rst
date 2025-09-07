@@ -46,7 +46,7 @@ Members
 ----
 
 ``GET    /members``
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
     **Description**
         Retrieve a list of all registered members.
 
@@ -59,7 +59,7 @@ Members
 ----
 
 ``GET    /members/<username>``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     **Description**
         Retrieve member by username.
 
@@ -72,7 +72,7 @@ Members
 ----
 
 ``PUT    /members/<username>``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     **Description**
         Update an existing member’s information by their username.
 
@@ -122,7 +122,7 @@ Members
 ----
 
 ``GET    /members/<username>/image``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     **Description**
         Retrieve the profile image of a member by their username.
 
@@ -135,7 +135,7 @@ Members
 ----
 
 ``POST   /members/<username>/image``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     **Description**
         Update the profile image of a member by their username.
 
@@ -156,7 +156,7 @@ Members
 ----
 
 ``GET    /members/<username>/participations/``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     **Description**
         Get list of member's participations by username.
 
@@ -214,7 +214,7 @@ Projects
 ----
 
 ``GET    /projects``
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
     **Description**
         Retrieve a list of all projects.
 
@@ -226,7 +226,7 @@ Projects
 ----
 
 ``GET    /projects/<slug>``
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     **Description**
         Get a project by slug.
 
@@ -284,7 +284,7 @@ Projects
 ----
 
 ``GET    /projects/<slug>/image``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     **Description**
         Retrieve the profile image of a member by their username.
 
@@ -362,7 +362,7 @@ Projects
 
 
 ``GET    /projects/<slug>/participations/<username>``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     **Description**
         Retrieve details about a specific member’s participation in a project, identified by project slug and member username.
 
@@ -372,8 +372,133 @@ Projects
     **Response format**
         A participation object.
 
+----
+
+Tasks
+------
+
+``POST   /projects/<slug>/tasks``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    **Description**
+        Create a new task for a member participating in a project.
+
+    **Request format**
+
+        .. code-block:: json
+
+            {
+                "point_type": "pj",               // required, enum: ["pj", "pcc"]
+                "points": 1,                      // required, int
+                "description": "Fix login issue", // optional, string
+                "finished_at": null,              // optional, string, ISO 8601 date (YYYY-MM-DD)
+                "username": "alice"               // required, string, 3-32 chars, alphanumeric only
+            }
+
+    **Response format**
+        Returns the created task object, as follows:
+
+        .. code-block:: json
+
+            {
+                "id": 1,
+                "point_type": "pj",
+                "points": 1,
+                "description": "Fix login issue",
+                "finished_at": null,
+                "username": "alice",
+                "project_name": "HS API"
+            }
 
 ----
+
+``GET    /tasks``
+~~~~~~~~~~~~~~~~~~
+    **Description**
+        Retrieve a list of all tasks across all projects.
+
+    **Request format**
+        No request body required.
+
+    **Response format**
+        List of task objects.
+
+----
+
+``GET    /tasks/<task_id>``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    **Description**
+        Retrieve a task by its ID.
+
+    **Request format**
+        No request body required.
+
+    **Response format**
+        The task object with given ID.
+
+``PUT    /tasks/<task_id>``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    **Description**
+        Update an existing task by its ID.
+
+    **Request format**
+        Updated task object.
+
+        .. code-block:: json
+
+            {
+                "point_type": "pj",                   // optional, enum: ["pj", "pcc"]
+                "points": 10,                         // optional, int
+                "description": "Implement dashboard", // optional, string
+                "finished_at": "2025-08-20"           // optional, string, ISO 8601 date (YYYY-MM-DD)
+            }
+
+    **Response format**
+        Updated task object.
+
+----
+
+``DELETE /tasks/<task_id>``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    **Description**
+        Delete a task by its ID.
+
+    **Request format**
+        No request body required.
+
+    **Response format**
+
+        .. code-block:: json
+
+            {
+                "description": "Task deleted successfully",
+                "id": 123
+            }
+
+----
+
+``GET    /projects/<slug>/tasks``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    **Description**
+        Retrieve all tasks associated with a specific project.
+
+    **Request format**
+        No request body required.
+
+    **Response format**
+        List of tasks belonging to the given project.
+
+----
+
+``GET    /members/<username>/tasks``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    **Description**
+        Retrieve all tasks assigned to a specific member across all projects.
+
+    **Request format**
+        No request body required.
+
+    **Response format**
+        List of tasks done by given member.
 
 Authentication
 ----------------
@@ -383,7 +508,7 @@ server side and a cookie is sent back with the session ID to identify the client
 
 You can initiate a session with a traditional login password or through Fenix.
 
-``POST /login```
+``POST /login``
 ~~~~~~~~~~~~~~~~~~~
     **Description**
         Login with username and password
@@ -406,12 +531,12 @@ You can initiate a session with a traditional login password or through Fenix.
 
 ----
 
-``GET  /fenix-login```
-~~~~~~~~~~~~~~~~~~~
-The Fenix authentication is made using OAuth 2.0 and the ``/fenix-login`` endpoint starts the OAuth Flow.
+``GET  /fenix-login``
+~~~~~~~~~~~~~~~~~~~~~~~
+The Fenix authentication is made using OAuth 2.0 and the ``/fenix-login`` endpoint starts the OAuth Flow. Provide a ``?next=`` query parameter with the
+URL to where the user should be redirected to on the frontend once the flow is completed.
 
-Once the flow is complete and if the user's IST ID is also present in the database, then the authentication is complete and the
-the same response as ``POST /login`` is sent.
+When the flow is complete and, if the user's IST ID is also present in the database, then the authentication is complete and the user is redirected to the ``next`` param provided. The user is redirected with the following query parameters: ``?login=success&username=<username>`` or simply ``?login=fail`` if the authentication fails.
 
 ----
 
