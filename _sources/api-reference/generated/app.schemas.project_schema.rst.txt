@@ -1,0 +1,7 @@
+app.schemas.project\_schema module
+==================================
+
+.. automodule:: app.schemas.project_schema
+   :members:
+   :show-inheritance:
+   :undoc-members:
