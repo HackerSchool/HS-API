@@ -1,0 +1,7 @@
+app.models.project\_model module
+================================
+
+.. automodule:: app.models.project_model
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,21 @@
+app.models package
+==================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   app.models.member_model
+   app.models.project_model
+   app.models.project_participation_model
+   app.models.task_model
+
+Module contents
+---------------
+
+.. automodule:: app.models
+   :members:
+   :show-inheritance:
+   :undoc-members:

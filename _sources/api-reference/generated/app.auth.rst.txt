@@ -1,0 +1,29 @@
+app.auth package
+================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   app.auth.fenix
+   app.auth.scopes
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   app.auth.auth_controller
+   app.auth.permission_strategies
+   app.auth.utils
+
+Module contents
+---------------
+
+.. automodule:: app.auth
+   :members:
+   :show-inheritance:
+   :undoc-members:
