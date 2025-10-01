@@ -1,0 +1,34 @@
+app package
+===========
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   app.auth
+   app.models
+   app.schemas
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   app.app
+   app.commands
+   app.config
+   app.decorators
+   app.errors
+   app.extensions
+   app.utils
+
+Module contents
+---------------
+
+.. automodule:: app
+   :members:
+   :show-inheritance:
+   :undoc-members:

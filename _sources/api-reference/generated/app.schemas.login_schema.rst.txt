@@ -1,0 +1,7 @@
+app.schemas.login\_schema module
+================================
+
+.. automodule:: app.schemas.login_schema
+   :members:
+   :show-inheritance:
+   :undoc-members:

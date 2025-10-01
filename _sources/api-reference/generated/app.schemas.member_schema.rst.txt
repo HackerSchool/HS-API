@@ -1,0 +1,7 @@
+app.schemas.member\_schema module
+=================================
+
+.. automodule:: app.schemas.member_schema
+   :members:
+   :show-inheritance:
+   :undoc-members:

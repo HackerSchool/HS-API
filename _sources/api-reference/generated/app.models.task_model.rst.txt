@@ -1,0 +1,7 @@
+app.models.task\_model module
+=============================
+
+.. automodule:: app.models.task_model
+   :members:
+   :show-inheritance:
+   :undoc-members:

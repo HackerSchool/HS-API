@@ -1,0 +1,7 @@
+app.schemas.project\_participation\_schema module
+=================================================
+
+.. automodule:: app.schemas.project_participation_schema
+   :members:
+   :show-inheritance:
+   :undoc-members:

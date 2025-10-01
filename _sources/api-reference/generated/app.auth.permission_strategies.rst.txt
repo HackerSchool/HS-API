@@ -1,0 +1,7 @@
+app.auth.permission\_strategies module
+======================================
+
+.. automodule:: app.auth.permission_strategies
+   :members:
+   :show-inheritance:
+   :undoc-members:
