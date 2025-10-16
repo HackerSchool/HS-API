@@ -1,0 +1,7 @@
+app.commands module
+===================
+
+.. automodule:: app.commands
+   :members:
+   :show-inheritance:
+   :undoc-members:

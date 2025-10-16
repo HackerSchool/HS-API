@@ -1,0 +1,18 @@
+app.auth.fenix package
+======================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   app.auth.fenix.fenix_service
+
+Module contents
+---------------
+
+.. automodule:: app.auth.fenix
+   :members:
+   :show-inheritance:
+   :undoc-members:

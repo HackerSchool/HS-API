@@ -1,0 +1,175 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>app.config &mdash; HS-API  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            HS-API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage-guide/index.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../development-guide/index.html">Development Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api-reference/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">HS-API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">app.config</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for app.config</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">secrets</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">cachelib</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileSystemCache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dotenv</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dotenv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">redis</span><span class="w"> </span><span class="kn">import</span> <span class="n">Redis</span>
+
+<span class="n">basedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;/..&quot;</span>
+<span class="p">)</span>  <span class="c1"># the repositories folder</span>
+
+<span class="n">load_dotenv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basedir</span><span class="p">,</span> <span class="s2">&quot;.env&quot;</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_env_or_default</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cast</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">val</span> <span class="o">:=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">default</span>
+    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">if</span> <span class="n">cast</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">val</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_int_env_or_default</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_get_env_or_default</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">default</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_bool_env_or_false</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Config">
+<a class="viewcode-back" href="../../api-reference/generated/app.config.html#app.config.Config">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
+    <span class="n">SECRET_KEY</span> <span class="o">=</span> <span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">()</span>
+
+    <span class="n">MAX_CONTENT_LENGTH</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">*</span> <span class="mi">1000</span> <span class="c1"># max for file uplaods</span>
+
+    <span class="c1"># see https://flask-session.readthedocs.io/en/latest/config.html#</span>
+    <span class="n">SESSION_TYPE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_get_env_or_default</span><span class="p">(</span><span class="s2">&quot;SESSION_TYPE&quot;</span><span class="p">,</span> <span class="s2">&quot;cachelib&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">SESSION_TYPE</span> <span class="o">==</span> <span class="s2">&quot;cachelib&quot;</span><span class="p">:</span>
+        <span class="n">SESSION_CACHELIB</span> <span class="o">=</span> <span class="n">FileSystemCache</span><span class="p">(</span>
+            <span class="n">cache_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basedir</span><span class="p">,</span> <span class="n">_get_env_or_default</span><span class="p">(</span><span class="s2">&quot;SESSION_DIR&quot;</span><span class="p">,</span> <span class="s2">&quot;resources/flask_sessions&quot;</span><span class="p">)),</span>
+            <span class="n">threshold</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">SESSION_TYPE</span> <span class="o">==</span> <span class="s2">&quot;redis&quot;</span><span class="p">:</span>
+        <span class="n">SESSION_REDIS</span> <span class="o">=</span> <span class="n">Redis</span><span class="o">.</span><span class="n">from_url</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">_get_env_or_default</span><span class="p">(</span><span class="s2">&quot;SESSION_REDIS&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+    <span class="n">PERMANENT_SESSION_LIFETIME</span> <span class="o">=</span> <span class="n">_get_int_env_or_default</span><span class="p">(</span><span class="s2">&quot;PERMANENT_SESSION_LIFETIME&quot;</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">14</span><span class="p">))</span>
+
+    <span class="n">SQLALCHEMY_DATABASE_URI</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;sqlite:///&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basedir</span><span class="p">,</span> <span class="n">_get_env_or_default</span><span class="p">(</span><span class="s2">&quot;SQLALCHEMY_DATABASE_URI&quot;</span><span class="p">,</span> <span class="s2">&quot;resources/hackerschool.sqlite3&quot;</span><span class="p">)))</span>
+
+    <span class="n">ROLES_PATH</span><span class="p">:</span>  <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basedir</span><span class="p">,</span> <span class="n">_get_env_or_default</span><span class="p">(</span><span class="s2">&quot;ROLES_PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;resources/roles.yaml&quot;</span><span class="p">))</span>
+    <span class="n">IMAGES_PATH</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basedir</span><span class="p">,</span> <span class="n">_get_env_or_default</span><span class="p">(</span><span class="s2">&quot;IMAGES_PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;resources/images/&quot;</span><span class="p">))</span>
+
+    <span class="n">ROOT_URI</span> <span class="o">=</span> <span class="n">_get_env_or_default</span><span class="p">(</span><span class="s2">&quot;ROOT_URI&quot;</span><span class="p">,</span> <span class="s2">&quot;http://localhost:5000&quot;</span><span class="p">)</span>
+
+    <span class="n">ENABLED_ACCESS_CONTROL</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">_get_bool_env_or_false</span><span class="p">(</span><span class="s2">&quot;ENABLED_ACCESS_CONTROL&quot;</span><span class="p">)</span>
+    <span class="n">ORIGINS_WHITELIST</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="n">_get_env_or_default</span><span class="p">(</span><span class="s2">&quot;ORIGINS_WHITELIST&quot;</span><span class="p">,</span> <span class="s2">&quot;http://localhost:5173&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+    <span class="n">CLIENT_ID</span><span class="p">:</span>     <span class="nb">str</span> <span class="o">=</span>           <span class="n">_get_env_or_default</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">CLIENT_SECRET</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span>           <span class="n">_get_env_or_default</span><span class="p">(</span><span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">FENIX_REDIRECT_ENDPOINT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_get_env_or_default</span><span class="p">(</span><span class="s2">&quot;FENIX_REDIRECT_ENDPOINT&quot;</span><span class="p">,</span> <span class="s2">&quot;/fenix-login-callback&quot;</span><span class="p">)</span>
+
+    <span class="n">SESSION_COOKIE_SAMESITE</span> <span class="o">=</span> <span class="n">_get_env_or_default</span><span class="p">(</span><span class="s2">&quot;SESSION_COOKIE_SAMESITE&quot;</span><span class="p">,</span> <span class="s2">&quot;Lax&quot;</span><span class="p">)</span>
+    <span class="n">SESSION_COOKIE_HTTPONLY</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">SESSION_COOKIE_SECURE</span>   <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">SENTRY_DSN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_get_env_or_default</span><span class="p">(</span><span class="s2">&quot;SENTRY_DSN&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, goncalorazevedo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+app.auth.fenix.fenix\_service module
+====================================
+
+.. automodule:: app.auth.fenix.fenix_service
+   :members:
+   :show-inheritance:
+   :undoc-members:

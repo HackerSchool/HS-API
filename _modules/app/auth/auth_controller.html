@@ -1,0 +1,316 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>app.auth.auth_controller &mdash; HS-API  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            HS-API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage-guide/index.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../development-guide/index.html">Development Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api-reference/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">HS-API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">app.auth.auth_controller</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for app.auth.auth_controller</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">http</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPStatus</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">session</span><span class="p">,</span> <span class="n">abort</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">redirect</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.auth.permission_strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ctx</span><span class="p">,</span> <span class="n">indexed_permission_evaluators</span><span class="p">,</span> <span class="n">indexed_endpoint_validators</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.auth.scopes.system_scopes</span><span class="w"> </span><span class="kn">import</span> <span class="n">SystemScopes</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repositories.member_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemberRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repositories.project_participation_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProjectParticipationRepository</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.repositories.project_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProjectRepository</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.schemas.member_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemberSchema</span>
+
+
+<div class="viewcode-block" id="AuthController">
+<a class="viewcode-back" href="../../../api-reference/generated/app.auth.auth_controller.html#app.auth.auth_controller.AuthController">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AuthController</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enforces authentication and authorization on controllers using `flask-session`.</span>
+
+<span class="sd">    This class provides decorators to:</span>
+
+<span class="sd">    - Log in members via :func:`login_member`.</span>
+<span class="sd">    - Log out members via :func:`logout_member`.</span>
+<span class="sd">    - Enforce authentication on controllers via :func:`requires_login` and populate the ``current_member`` global proxy.</span>
+<span class="sd">    - Enforce authorization checks on controllers via ``requires_permission``. This also enforces authentication</span>
+<span class="sd">      by using :func`requires_login`, making ``current_member`` also available.</span>
+
+<span class="sd">    :param enabled: Flag to enable or disable access control enforcement.</span>
+<span class="sd">    :type enabled: bool</span>
+<span class="sd">    :param member_repo: Repository interface to retrieve member data.</span>
+<span class="sd">    :type member_repo: ``app.repositories.member_repository.MemberRepository``</span>
+<span class="sd">    :param project_repo: Repository interface to retrieve member data.</span>
+<span class="sd">    :type project_repo: ``app.repositories.project_repository.ProjectRepository``</span>
+<span class="sd">    :param participation_repo: Repository interface to retrieve member data.</span>
+<span class="sd">    :type participation_repo: ``app.repositories.project_participation_repository.ProjectParticipationRepository``</span>
+<span class="sd">    :param system_scopes: Class with system scopes.</span>
+<span class="sd">    :type participation_repo: ``app.auth.scopes.system_scopes.SystemScopes``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">member_repo</span><span class="p">:</span> <span class="n">MemberRepository</span><span class="p">,</span> <span class="n">project_repo</span><span class="p">:</span> <span class="n">ProjectRepository</span><span class="p">,</span> <span class="n">participation_repo</span><span class="p">:</span> <span class="n">ProjectParticipationRepository</span><span class="p">,</span><span class="n">system_scopes</span><span class="p">:</span> <span class="n">SystemScopes</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="n">enabled</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">member_repo</span> <span class="o">=</span> <span class="n">member_repo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_repo</span> <span class="o">=</span> <span class="n">project_repo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">participation_repo</span> <span class="o">=</span> <span class="n">participation_repo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system_scopes</span> <span class="o">=</span> <span class="n">system_scopes</span>
+
+<div class="viewcode-block" id="AuthController.login_member">
+<a class="viewcode-back" href="../../../api-reference/generated/app.auth.auth_controller.html#app.auth.auth_controller.AuthController.login_member">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">login_member</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is meant to act as the controller to start member sessions. Should be used to decorate functions that authenticate</span>
+<span class="sd">        a member and return it to start the session, an optional URL for a redirect value can also be returned.</span>
+<span class="sd">        It&#39;s not a controller decorator, it is the controller, the functions should simply provide the member model.</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            @app.route(&quot;/login&quot;)</span>
+<span class="sd">            @login_member</span>
+<span class="sd">            def login():</span>
+<span class="sd">                return Member(), None # return the authenticated member and doesn&#39;t redirect</span>
+
+<span class="sd">            @app.route(&quot;/oauth-callback&quot;)</span>
+<span class="sd">            @login_member</span>
+<span class="sd">            def oauth_callback():</span>
+<span class="sd">                return Member(), &quot;https://frontend.com/dashboard&quot; # redirects to frontend with params ?login=success&amp;username=member_username</span>
+
+<span class="sd">        :param fn: Function that authenticates a user and returns its model.</span>
+<span class="sd">        :type fn: function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">abort</span><span class="p">(</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">NOT_IMPLEMENTED</span><span class="p">)</span>
+
+            <span class="n">member</span><span class="p">,</span> <span class="n">redirect_uri</span> <span class="o">=</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">redirect_uri</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">member</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">redirect_uri</span><span class="p">(</span><span class="n">redirect_uri</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;?login=fail&quot;</span><span class="p">)</span>
+                <span class="n">session</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">member</span><span class="o">.</span><span class="n">id</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">redirect_uri</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;?login=success&amp;username=</span><span class="si">{</span><span class="n">member</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">member</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">abort</span><span class="p">(</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">UNAUTHORIZED</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Failed authentication&quot;</span><span class="p">)</span>
+            <span class="n">session</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">member</span><span class="o">.</span><span class="n">id</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Logged in successfully!&quot;</span><span class="p">,</span> <span class="s2">&quot;member&quot;</span><span class="p">:</span> <span class="n">MemberSchema</span><span class="o">.</span><span class="n">from_member</span><span class="p">(</span><span class="n">member</span><span class="p">)</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;password&quot;</span><span class="p">)}</span>
+
+        <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="AuthController.requires_login">
+<a class="viewcode-back" href="../../../api-reference/generated/app.auth.auth_controller.html#app.auth.auth_controller.AuthController.requires_login">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">requires_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decorate controllers that require a logged-in user.</span>
+<span class="sd">        This decorator enables ``current_member`` global to be accessed in controllers.</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            from app.access import current_member</span>
+
+<span class="sd">            @bp.route(&quot;/members/&lt;username&gt;&quot;, methods=[&quot;PUT&quot;])</span>
+<span class="sd">            @requires_login</span>
+<span class="sd">            def update_member(username):</span>
+<span class="sd">                if current_member.username == username:</span>
+<span class="sd">                    pass</span>
+
+<span class="sd">        :param fn: Decorated controller.</span>
+<span class="sd">        :type fn: function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">abort</span><span class="p">(</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">UNAUTHORIZED</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;You are not logged in&quot;</span><span class="p">)</span>
+            <span class="n">member</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_repo</span><span class="o">.</span><span class="n">get_member_by_id</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">member</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># member deleted while session was still valid</span>
+                <span class="k">return</span> <span class="n">abort</span><span class="p">(</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">UNAUTHORIZED</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;You are not logged in&quot;</span><span class="p">)</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">current_member</span> <span class="o">=</span> <span class="n">member</span>
+            <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="AuthController.logout_member">
+<a class="viewcode-back" href="../../../api-reference/generated/app.auth.auth_controller.html#app.auth.auth_controller.AuthController.logout_member">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">logout_member</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decorate controllers meant to end a user session.</span>
+<span class="sd">        Example::</span>
+
+<span class="sd">            @app.route(&quot;/login&quot;)</span>
+<span class="sd">            @access_controller.logout_member</span>
+<span class="sd">            def logout():</span>
+<span class="sd">                return {&quot;message&quot;: &quot;Logged out successfully!&quot;}</span>
+
+<span class="sd">        :param fn: Decorated controller.</span>
+<span class="sd">        :type fn: function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+        <span class="nd">@self</span><span class="o">.</span><span class="n">requires_login</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">abort</span><span class="p">(</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">NOT_IMPLEMENTED</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Access control disabled&quot;</span><span class="p">)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">current_member</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="n">r</span>
+
+        <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="AuthController.requires_permission">
+<a class="viewcode-back" href="../../../api-reference/generated/app.auth.auth_controller.html#app.auth.auth_controller.AuthController.requires_permission">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">requires_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">scoped_permissions</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decorator to enforce scoped permission checks on route handlers.</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            @bp.route(&quot;/projects/&lt;name&gt;&quot;, methods=[&quot;PUT&quot;])</span>
+<span class="sd">            @requires_permission(general=&quot;project:update&quot;, project=&quot;edit&quot;)</span>
+<span class="sd">            def update_project(name):</span>
+<span class="sd">                pass</span>
+
+<span class="sd">        Each keyword argument represents a scope, and its value is the required permission</span>
+<span class="sd">        for that scope. If any one scope grants the required permission, access is allowed.</span>
+
+<span class="sd">        :param scoped_permissions: Mapping of scope names to required permission strings.</span>
+<span class="sd">        :type scoped_permissions: dict[str, str]</span>
+
+<span class="sd">        :raises ValueError: If an undefined scope is passed.</span>
+<span class="sd">        :raises ValueError: If and undefined permission is passed for the corresponding scope.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">scope</span> <span class="ow">in</span> <span class="n">scoped_permissions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_scopes</span><span class="o">.</span><span class="n">get_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">scope</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">indexed_permission_evaluators</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Undefined scope or permission evaluator for scope &#39;</span><span class="si">{</span><span class="n">scope</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+            <span class="n">permission</span> <span class="o">=</span> <span class="n">scoped_permissions</span><span class="p">[</span><span class="n">scope</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">role</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_scopes</span><span class="o">.</span><span class="n">get_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">roles</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">role</span><span class="o">.</span><span class="n">permissions</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Undefined permission &#39;</span><span class="si">{</span><span class="n">permission</span><span class="si">}</span><span class="s2">&#39; in any role for scope &#39;</span><span class="si">{</span><span class="n">scope</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">scope</span> <span class="ow">in</span> <span class="n">scoped_permissions</span><span class="p">:</span>
+                <span class="n">assert_valid_endpoint</span> <span class="o">=</span> <span class="n">indexed_endpoint_validators</span><span class="p">[</span><span class="n">scope</span><span class="p">]</span>
+                <span class="n">assert_valid_endpoint</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span> <span class="c1"># raises error if invalid endpoint signature</span>
+
+            <span class="nd">@wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+            <span class="nd">@self</span><span class="o">.</span><span class="n">requires_login</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="c1"># skip authorization if access control is disabled</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+                <span class="c1"># check if user has at least permissions in one scope</span>
+                <span class="k">for</span> <span class="n">scope</span> <span class="ow">in</span> <span class="n">scoped_permissions</span><span class="p">:</span>
+                    <span class="n">has_perm_eval</span> <span class="o">=</span> <span class="n">indexed_permission_evaluators</span><span class="p">[</span><span class="n">scope</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">has_perm_eval</span><span class="p">(</span><span class="n">Ctx</span><span class="p">(</span><span class="n">authCtx</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">permission</span><span class="o">=</span><span class="n">scoped_permissions</span><span class="p">[</span><span class="n">scope</span><span class="p">],</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)):</span>
+                        <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">abort</span><span class="p">(</span><span class="n">HTTPStatus</span><span class="o">.</span><span class="n">FORBIDDEN</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;You don&#39;t have permissions to perform this action&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">wrapper</span>
+        <span class="k">return</span> <span class="n">decorator</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, goncalorazevedo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

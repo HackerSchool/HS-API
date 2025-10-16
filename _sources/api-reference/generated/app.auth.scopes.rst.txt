@@ -1,0 +1,18 @@
+app.auth.scopes package
+=======================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   app.auth.scopes.system_scopes
+
+Module contents
+---------------
+
+.. automodule:: app.auth.scopes
+   :members:
+   :show-inheritance:
+   :undoc-members:

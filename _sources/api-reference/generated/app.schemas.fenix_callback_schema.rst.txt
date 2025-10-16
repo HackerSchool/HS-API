@@ -1,0 +1,7 @@
+app.schemas.fenix\_callback\_schema module
+==========================================
+
+.. automodule:: app.schemas.fenix_callback_schema
+   :members:
+   :show-inheritance:
+   :undoc-members:

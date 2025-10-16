@@ -1,0 +1,7 @@
+app.extensions module
+=====================
+
+.. automodule:: app.extensions
+   :members:
+   :show-inheritance:
+   :undoc-members:

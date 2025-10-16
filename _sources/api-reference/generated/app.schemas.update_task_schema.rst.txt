@@ -1,0 +1,7 @@
+app.schemas.update\_task\_schema module
+=======================================
+
+.. automodule:: app.schemas.update_task_schema
+   :members:
+   :show-inheritance:
+   :undoc-members:

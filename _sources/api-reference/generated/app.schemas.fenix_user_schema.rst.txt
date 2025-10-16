@@ -1,0 +1,7 @@
+app.schemas.fenix\_user\_schema module
+======================================
+
+.. automodule:: app.schemas.fenix_user_schema
+   :members:
+   :show-inheritance:
+   :undoc-members:

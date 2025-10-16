@@ -1,0 +1,7 @@
+app.auth.scopes.system\_scopes module
+=====================================
+
+.. automodule:: app.auth.scopes.system_scopes
+   :members:
+   :show-inheritance:
+   :undoc-members:

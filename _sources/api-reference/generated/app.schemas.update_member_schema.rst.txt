@@ -1,0 +1,7 @@
+app.schemas.update\_member\_schema module
+=========================================
+
+.. automodule:: app.schemas.update_member_schema
+   :members:
+   :show-inheritance:
+   :undoc-members:

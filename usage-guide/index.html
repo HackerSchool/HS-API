@@ -1,0 +1,745 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usage Guide &mdash; HS-API  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Development Guide" href="../development-guide/index.html" />
+    <link rel="prev" title="HS-API Documentation" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            HS-API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#members">Members</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#post-members"><code class="docutils literal notranslate"><span class="pre">POST</span>&#160;&#160; <span class="pre">/members</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-members"><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/members</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-members-username"><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/members/&lt;username&gt;</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#put-members-username"><code class="docutils literal notranslate"><span class="pre">PUT</span>&#160;&#160;&#160; <span class="pre">/members/&lt;username&gt;</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#delete-members-username"><code class="docutils literal notranslate"><span class="pre">DELETE</span> <span class="pre">/members/&lt;username&gt;</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-members-username-image"><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/members/&lt;username&gt;/image</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#post-members-username-image"><code class="docutils literal notranslate"><span class="pre">POST</span>&#160;&#160; <span class="pre">/members/&lt;username&gt;/image</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-members-username-participations"><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/members/&lt;username&gt;/participations/</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#projects">Projects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#post-projects"><code class="docutils literal notranslate"><span class="pre">POST</span>&#160;&#160; <span class="pre">/projects</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-projects"><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/projects</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-projects-slug"><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/projects/&lt;slug&gt;</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#put-projects-slug"><code class="docutils literal notranslate"><span class="pre">PUT</span>&#160;&#160;&#160; <span class="pre">/projects/&lt;slug&gt;</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#delete-projects-slug"><code class="docutils literal notranslate"><span class="pre">DELETE</span> <span class="pre">/projects/&lt;slug&gt;</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-projects-slug-image"><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/projects/&lt;slug&gt;/image</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#post-projects-slug-image"><code class="docutils literal notranslate"><span class="pre">POST</span>&#160;&#160; <span class="pre">/projects/&lt;slug&gt;/image</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#post-projects-slug-participations"><code class="docutils literal notranslate"><span class="pre">POST</span>&#160;&#160; <span class="pre">/projects/&lt;slug&gt;/participations</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-projects-slug-participations"><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/projects/&lt;slug&gt;/participations</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-projects-slug-participations-username"><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/projects/&lt;slug&gt;/participations/&lt;username&gt;</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#tasks">Tasks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#post-projects-slug-tasks"><code class="docutils literal notranslate"><span class="pre">POST</span>&#160;&#160; <span class="pre">/projects/&lt;slug&gt;/tasks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-tasks"><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/tasks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-tasks-task-id"><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/tasks/&lt;task_id&gt;</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#put-tasks-task-id"><code class="docutils literal notranslate"><span class="pre">PUT</span>&#160;&#160;&#160; <span class="pre">/tasks/&lt;task_id&gt;</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#delete-tasks-task-id"><code class="docutils literal notranslate"><span class="pre">DELETE</span> <span class="pre">/tasks/&lt;task_id&gt;</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-projects-slug-tasks"><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/projects/&lt;slug&gt;/tasks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-members-username-tasks"><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/members/&lt;username&gt;/tasks</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#authentication">Authentication</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#post-login"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/login</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-fenix-login"><code class="docutils literal notranslate"><span class="pre">GET</span>&#160; <span class="pre">/fenix-login</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#errors">Errors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../development-guide/index.html">Development Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api-reference/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">HS-API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Usage Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/usage-guide/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="usage-guide">
+<h1>Usage Guide<a class="headerlink" href="#usage-guide" title="Link to this heading"></a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h2>
+<p>This API offers CRUD operations over members, projects and participations in the context of HackerSchool.</p>
+<p><strong>Notes</strong>: In the requests examples we will be using <cite>null</cite> values for optional fields, but keep in mind that a null value will
+attempt to set the entity value to null, if you wish to skip those optional fields don’t include them in the JSON body.</p>
+</section>
+<section id="members">
+<h2>Members<a class="headerlink" href="#members" title="Link to this heading"></a></h2>
+<section id="post-members">
+<h3><code class="docutils literal notranslate"><span class="pre">POST</span>&#160;&#160; <span class="pre">/members</span></code><a class="headerlink" href="#post-members" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Create a member</p>
+</dd>
+</dl>
+<p><strong>Request format</strong></p>
+<blockquote>
+<div><p>A member object, as follows</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user123&quot;</span><span class="p">,</span><span class="w">             </span><span class="c1">// required, string, 3-32 chars, alphanumeric only</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Alice Johnson&quot;</span><span class="p">,</span><span class="w">           </span><span class="c1">// required, string, 1-512 chars</span>
+<span class="w">  </span><span class="nt">&quot;email&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alice@example.com&quot;</span><span class="p">,</span><span class="w">      </span><span class="c1">// required, string, 1-512 chars</span>
+
+<span class="w">  </span><span class="nt">&quot;ist_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ist1123456&quot;</span><span class="p">,</span><span class="w">            </span><span class="c1">// optional, string, pattern: ^ist1[0-9]{5,7}$</span>
+<span class="w">  </span><span class="nt">&quot;password&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;secret123&quot;</span><span class="p">,</span><span class="w">           </span><span class="c1">// optional, string, 6-256 chars</span>
+<span class="w">  </span><span class="nt">&quot;member_number&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span><span class="w">               </span><span class="c1">// optional, int &gt; 0</span>
+<span class="w">  </span><span class="nt">&quot;course&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LEIC&quot;</span><span class="p">,</span><span class="w">                  </span><span class="c1">// optional, string, 1-8 chars</span>
+<span class="w">  </span><span class="nt">&quot;roles&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;member&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;rh&quot;</span><span class="p">],</span><span class="w">         </span><span class="c1">// optional, list of strings</span>
+<span class="w">  </span><span class="nt">&quot;join_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2023-01-15&quot;</span><span class="p">,</span><span class="w">         </span><span class="c1">// optional, string, ISO 8601 date (YYYY-MM-DD)</span>
+<span class="w">  </span><span class="nt">&quot;exit_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">                 </span><span class="c1">// optional, string, ISO 8601 date (YYYY-MM-DD)</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A long description here...&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">// optional, string, max 2048 chars</span>
+<span class="w">  </span><span class="nt">&quot;extra&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">                      </span><span class="c1">// optional, string, max 2048 chars</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<dl class="simple">
+<dt><strong>Response format</strong></dt><dd><p>The created member object without the <cite>password</cite> key</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="get-members">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/members</span></code><a class="headerlink" href="#get-members" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Retrieve a list of all registered members.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>No request body required.</p>
+</dd>
+<dt><strong>Response format</strong></dt><dd><p>List of member objects without the <cite>password</cite> key.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="get-members-username">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/members/&lt;username&gt;</span></code><a class="headerlink" href="#get-members-username" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Retrieve member by username.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>No request body required.</p>
+</dd>
+<dt><strong>Response format</strong></dt><dd><p>Member object without the <cite>password</cite> key.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="put-members-username">
+<h3><code class="docutils literal notranslate"><span class="pre">PUT</span>&#160;&#160;&#160; <span class="pre">/members/&lt;username&gt;</span></code><a class="headerlink" href="#put-members-username" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Update an existing member’s information by their username.</p>
+</dd>
+</dl>
+<p><strong>Request format</strong></p>
+<blockquote>
+<div><p>Update member object, as follows</p>
+<blockquote>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user123&quot;</span><span class="p">,</span><span class="w">               </span><span class="cm">/* optional, string, 3-32 chars, alphanumeric only */</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Alice Johnson&quot;</span><span class="p">,</span><span class="w">             </span><span class="cm">/* optional, string, 1-512 chars */</span>
+<span class="w">  </span><span class="nt">&quot;email&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alice@example.com&quot;</span><span class="p">,</span><span class="w">        </span><span class="cm">/* optional, string, 1-512 chars */</span>
+<span class="w">  </span><span class="nt">&quot;password&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;secret123&quot;</span><span class="p">,</span><span class="w">             </span><span class="cm">/* optional, string, 6-256 chars */</span>
+<span class="w">  </span><span class="nt">&quot;member_number&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span><span class="w">                 </span><span class="cm">/* optional, int &gt; 0 */</span>
+<span class="w">  </span><span class="nt">&quot;course&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LEIC&quot;</span><span class="p">,</span><span class="w">                    </span><span class="cm">/* optional, string, 1-8 chars */</span>
+<span class="w">  </span><span class="nt">&quot;roles&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;member&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;rh&quot;</span><span class="p">],</span><span class="w">           </span><span class="cm">/* optional, list of strings */</span>
+<span class="w">  </span><span class="nt">&quot;join_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2023-01-15&quot;</span><span class="p">,</span><span class="w">           </span><span class="cm">/* optional, string, ISO 8601 date (YYYY-MM-DD) */</span>
+<span class="w">  </span><span class="nt">&quot;exit_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">                   </span><span class="cm">/* optional, string, ISO 8601 date (YYYY-MM-DD) */</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A long description here...&quot;</span><span class="p">,</span><span class="w"> </span><span class="cm">/* optional, string,max 2048 chars */</span>
+<span class="w">  </span><span class="nt">&quot;extra&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">                       </span><span class="cm">/* optional, string, max 2048 chars */</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+<dl class="simple">
+<dt><strong>Response format</strong></dt><dd><p>Updated member object without the <cite>password</cite> key</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="delete-members-username">
+<h3><code class="docutils literal notranslate"><span class="pre">DELETE</span> <span class="pre">/members/&lt;username&gt;</span></code><a class="headerlink" href="#delete-members-username" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Delete member by username.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>No request body required.</p>
+</dd>
+</dl>
+<p><strong>Response format</strong></p>
+<blockquote>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Member deleted successfully&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;username&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="get-members-username-image">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/members/&lt;username&gt;/image</span></code><a class="headerlink" href="#get-members-username-image" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Retrieve the profile image of a member by their username.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>No request body required.</p>
+</dd>
+<dt><strong>Response format</strong></dt><dd><p>Binary image data with content type <code class="docutils literal notranslate"><span class="pre">image/jpeg</span></code> or <code class="docutils literal notranslate"><span class="pre">image/png</span></code> depending on the stored image format.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="post-members-username-image">
+<h3><code class="docutils literal notranslate"><span class="pre">POST</span>&#160;&#160; <span class="pre">/members/&lt;username&gt;/image</span></code><a class="headerlink" href="#post-members-username-image" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl>
+<dt><strong>Description</strong></dt><dd><p>Update the profile image of a member by their username.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">multipart/form-data</span></code> containing the image file with a <code class="docutils literal notranslate"><span class="pre">.png</span></code>, <code class="docutils literal notranslate"><span class="pre">.jpg</span></code>, or <code class="docutils literal notranslate"><span class="pre">.jpeg</span></code> extension.</p>
+<p>The image is included in the multipart body as a part named <code class="docutils literal notranslate"><span class="pre">file</span></code>, with the appropriate content type (<code class="docutils literal notranslate"><span class="pre">image/png</span></code> or <code class="docutils literal notranslate"><span class="pre">image/jpeg</span></code>).</p>
+</dd>
+</dl>
+<p><strong>Response format</strong></p>
+<blockquote>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Member image uploaded successfully&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;username&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="get-members-username-participations">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/members/&lt;username&gt;/participations/</span></code><a class="headerlink" href="#get-members-username-participations" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl>
+<dt><strong>Description</strong></dt><dd><p>Get list of member’s participations by username.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>No request body required.</p>
+</dd>
+<dt><strong>Response format</strong></dt><dd><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;join_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-08-12&quot;</span><span class="p">,</span><span class="w">                </span><span class="c1">// string, ISO 8601 date</span>
+<span class="w">    </span><span class="nt">&quot;project_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Platform Revamp&quot;</span><span class="p">,</span><span class="w">        </span><span class="c1">// string, 2–255 chars</span>
+<span class="w">    </span><span class="nt">&quot;roles&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;coordinator&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;participant&quot;</span><span class="p">]</span><span class="w">   </span><span class="c1">// array of strings</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+</section>
+<section id="projects">
+<h2>Projects<a class="headerlink" href="#projects" title="Link to this heading"></a></h2>
+<section id="post-projects">
+<h3><code class="docutils literal notranslate"><span class="pre">POST</span>&#160;&#160; <span class="pre">/projects</span></code><a class="headerlink" href="#post-projects" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Create a new project.</p>
+</dd>
+</dl>
+<p><strong>Request format</strong></p>
+<blockquote>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HS API&quot;</span><span class="p">,</span><span class="w">               </span><span class="c1">// required, string, 2–255 chars</span>
+<span class="w">    </span><span class="nt">&quot;state&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;active&quot;</span><span class="p">,</span><span class="w">              </span><span class="c1">// required, string, (enum: e.g., &quot;active&quot;, &quot;archived&quot;, &quot;planned&quot;)</span>
+<span class="w">    </span><span class="nt">&quot;start_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-18&quot;</span><span class="p">,</span><span class="w">     </span><span class="c1">// required, string, ISO 8601 date (YYYY-MM-D</span>
+
+<span class="w">    </span><span class="nt">&quot;end_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">               </span><span class="c1">// optional, string, ISO 8601 date (YYYY-MM-DD)</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CRUD HS API&quot;</span><span class="p">,</span><span class="w">   </span><span class="c1">// optional, string, max 2048 chars</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><strong>Response format</strong></p>
+<blockquote>
+<div><p>A project object, adds the <cite>slug</cite> key to the previous submitted object, as follows</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HS API&quot;</span><span class="p">,</span><span class="w">                          </span><span class="c1">// string, 2–255 chars</span>
+<span class="w">    </span><span class="nt">&quot;state&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;active&quot;</span><span class="p">,</span><span class="w">                         </span><span class="c1">// string (enum: e.g., &quot;active&quot;, &quot;archived&quot;, &quot;planned&quot;)</span>
+<span class="w">    </span><span class="nt">&quot;start_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-08-12&quot;</span><span class="p">,</span><span class="w">                </span><span class="c1">// string, required, ISO 8601 date (YYYY-MM-DD)</span>
+<span class="w">    </span><span class="nt">&quot;slug&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;hs-api&quot;</span><span class="p">,</span><span class="w">                          </span><span class="c1">// string, URL-safe identifier</span>
+
+<span class="w">    </span><span class="nt">&quot;end_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">                          </span><span class="c1">// string or null, ISO 8601 date</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CRUD API for HackerSchool&quot;</span><span class="w"> </span><span class="c1">// string or null, project description</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="get-projects">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/projects</span></code><a class="headerlink" href="#get-projects" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Retrieve a list of all projects.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>No request body required.</p>
+</dd>
+<dt><strong>Response format</strong></dt><dd><p>List of projects objects.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="get-projects-slug">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/projects/&lt;slug&gt;</span></code><a class="headerlink" href="#get-projects-slug" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Get a project by slug.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>No request body required.</p>
+</dd>
+<dt><strong>Response format</strong></dt><dd><p>Project object.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="put-projects-slug">
+<h3><code class="docutils literal notranslate"><span class="pre">PUT</span>&#160;&#160;&#160; <span class="pre">/projects/&lt;slug&gt;</span></code><a class="headerlink" href="#put-projects-slug" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl>
+<dt><strong>Description</strong></dt><dd><p>Update a project by slug.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>Update project object, as follows</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">     </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HackerSchool API&quot;</span><span class="p">,</span><span class="w">   </span><span class="c1">// optional, string, 2–255 chars</span>
+<span class="w">     </span><span class="nt">&quot;state&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">                </span><span class="c1">// optional, string (enum: e.g., &quot;active&quot;, &quot;archived&quot;, &quot;planned&quot;)</span>
+<span class="w">     </span><span class="nt">&quot;start_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">           </span><span class="c1">// optional, string, ISO 8601 date (YYYY-MM-DD)</span>
+<span class="w">     </span><span class="nt">&quot;end_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">             </span><span class="c1">// optional, string, ISO 8601 date (YYYY-MM-DD)</span>
+<span class="w">     </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">           </span><span class="c1">// optional, string, project description</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>Response format</strong></dt><dd><p>The updated project object.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="delete-projects-slug">
+<h3><code class="docutils literal notranslate"><span class="pre">DELETE</span> <span class="pre">/projects/&lt;slug&gt;</span></code><a class="headerlink" href="#delete-projects-slug" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Delete a project by slug.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>No request body required.</p>
+</dd>
+</dl>
+<p><strong>Response format</strong></p>
+<blockquote>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Project deleted successfully&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;project name&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="get-projects-slug-image">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/projects/&lt;slug&gt;/image</span></code><a class="headerlink" href="#get-projects-slug-image" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Retrieve the profile image of a member by their username.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>No request body required.</p>
+</dd>
+<dt><strong>Response format</strong></dt><dd><p>Binary image data with content type <code class="docutils literal notranslate"><span class="pre">image/jpeg</span></code> or <code class="docutils literal notranslate"><span class="pre">image/png</span></code> depending on the stored image format.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="post-projects-slug-image">
+<h3><code class="docutils literal notranslate"><span class="pre">POST</span>&#160;&#160; <span class="pre">/projects/&lt;slug&gt;/image</span></code><a class="headerlink" href="#post-projects-slug-image" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl>
+<dt><strong>Description</strong></dt><dd><p>Update the image of a project by slug.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">multipart/form-data</span></code> containing the image file with a <code class="docutils literal notranslate"><span class="pre">.png</span></code>, <code class="docutils literal notranslate"><span class="pre">.jpg</span></code>, or <code class="docutils literal notranslate"><span class="pre">.jpeg</span></code> extension.</p>
+<p>The image is included in the multipart body as a part named <code class="docutils literal notranslate"><span class="pre">file</span></code>, with the appropriate content type (<code class="docutils literal notranslate"><span class="pre">image/png</span></code> or <code class="docutils literal notranslate"><span class="pre">image/jpeg</span></code>).</p>
+</dd>
+</dl>
+<p><strong>Response format</strong></p>
+<blockquote>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Project image uploaded successfully&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;project name&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="post-projects-slug-participations">
+<h3><code class="docutils literal notranslate"><span class="pre">POST</span>&#160;&#160; <span class="pre">/projects/&lt;slug&gt;/participations</span></code><a class="headerlink" href="#post-projects-slug-participations" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Create a new participation entry for project by slug.</p>
+</dd>
+</dl>
+<p><strong>Request format</strong></p>
+<blockquote>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;johndoe&quot;</span><span class="p">,</span><span class="w">         </span><span class="c1">// required, string, 3–32 chars, alphanumeric only</span>
+<span class="w">    </span><span class="nt">&quot;join_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-08-12&quot;</span><span class="p">,</span><span class="w">     </span><span class="c1">// required, string, ISO 8601 date (YYYY-MM-DD)</span>
+<span class="w">    </span><span class="nt">&quot;roles&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;coordinator&quot;</span><span class="p">]</span><span class="w">       </span><span class="c1">// optional, array of strings</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<dl>
+<dt><strong>Response format</strong></dt><dd><p>A participation object, as follows</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;johndoe&quot;</span><span class="p">,</span><span class="w">         </span><span class="c1">// string, required, 3–32 chars, alphanumeric only</span>
+<span class="w">    </span><span class="nt">&quot;join_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-08-12&quot;</span><span class="p">,</span><span class="w">     </span><span class="c1">// string or null, optional, ISO 8601 date (YYYY-MM-DD)</span>
+<span class="w">    </span><span class="nt">&quot;project_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HS API&quot;</span><span class="p">,</span><span class="w">      </span><span class="c1">// string or null, optional, 2–255 chars</span>
+<span class="w">    </span><span class="nt">&quot;roles&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;coordinator&quot;</span><span class="p">]</span><span class="w">       </span><span class="c1">// array of strings or null, optional</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="get-projects-slug-participations">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/projects/&lt;slug&gt;/participations</span></code><a class="headerlink" href="#get-projects-slug-participations" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Retrieve a list of all participations in a specific project by slug.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>No request body required.</p>
+</dd>
+<dt><strong>Response format</strong></dt><dd><p>A participation object without the <cite>project_name</cite> field.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="get-projects-slug-participations-username">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/projects/&lt;slug&gt;/participations/&lt;username&gt;</span></code><a class="headerlink" href="#get-projects-slug-participations-username" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Retrieve details about a specific member’s participation in a project, identified by project slug and member username.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>No request body required.</p>
+</dd>
+<dt><strong>Response format</strong></dt><dd><p>A participation object.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+</section>
+<hr class="docutils" />
+<section id="tasks">
+<h2>Tasks<a class="headerlink" href="#tasks" title="Link to this heading"></a></h2>
+<section id="post-projects-slug-tasks">
+<h3><code class="docutils literal notranslate"><span class="pre">POST</span>&#160;&#160; <span class="pre">/projects/&lt;slug&gt;/tasks</span></code><a class="headerlink" href="#post-projects-slug-tasks" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Create a new task for a member participating in a project.</p>
+</dd>
+</dl>
+<p><strong>Request format</strong></p>
+<blockquote>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;point_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pj&quot;</span><span class="p">,</span><span class="w">               </span><span class="c1">// required, enum: [&quot;pj&quot;, &quot;pcc&quot;]</span>
+<span class="w">    </span><span class="nt">&quot;points&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">                      </span><span class="c1">// required, int</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Fix login issue&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">// optional, string</span>
+<span class="w">    </span><span class="nt">&quot;finished_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">              </span><span class="c1">// optional, string, ISO 8601 date (YYYY-MM-DD)</span>
+<span class="w">    </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alice&quot;</span><span class="w">               </span><span class="c1">// required, string, 3-32 chars, alphanumeric only</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<dl>
+<dt><strong>Response format</strong></dt><dd><p>Returns the created task object, as follows:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;point_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pj&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;points&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Fix login issue&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;finished_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alice&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;project_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HS API&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="get-tasks">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/tasks</span></code><a class="headerlink" href="#get-tasks" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Retrieve a list of all tasks across all projects.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>No request body required.</p>
+</dd>
+<dt><strong>Response format</strong></dt><dd><p>List of task objects.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="get-tasks-task-id">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/tasks/&lt;task_id&gt;</span></code><a class="headerlink" href="#get-tasks-task-id" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Retrieve a task by its ID.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>No request body required.</p>
+</dd>
+<dt><strong>Response format</strong></dt><dd><p>The task object with given ID.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="put-tasks-task-id">
+<h3><code class="docutils literal notranslate"><span class="pre">PUT</span>&#160;&#160;&#160; <span class="pre">/tasks/&lt;task_id&gt;</span></code><a class="headerlink" href="#put-tasks-task-id" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl>
+<dt><strong>Description</strong></dt><dd><p>Update an existing task by its ID.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>Updated task object.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;point_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pj&quot;</span><span class="p">,</span><span class="w">                   </span><span class="c1">// optional, enum: [&quot;pj&quot;, &quot;pcc&quot;]</span>
+<span class="w">    </span><span class="nt">&quot;points&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">                         </span><span class="c1">// optional, int</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Implement dashboard&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">// optional, string</span>
+<span class="w">    </span><span class="nt">&quot;finished_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-08-20&quot;</span><span class="w">           </span><span class="c1">// optional, string, ISO 8601 date (YYYY-MM-DD)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>Response format</strong></dt><dd><p>Updated task object.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="delete-tasks-task-id">
+<h3><code class="docutils literal notranslate"><span class="pre">DELETE</span> <span class="pre">/tasks/&lt;task_id&gt;</span></code><a class="headerlink" href="#delete-tasks-task-id" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Delete a task by its ID.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>No request body required.</p>
+</dd>
+</dl>
+<p><strong>Response format</strong></p>
+<blockquote>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Task deleted successfully&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="get-projects-slug-tasks">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/projects/&lt;slug&gt;/tasks</span></code><a class="headerlink" href="#get-projects-slug-tasks" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Retrieve all tasks associated with a specific project.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>No request body required.</p>
+</dd>
+<dt><strong>Response format</strong></dt><dd><p>List of tasks belonging to the given project.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="get-members-username-tasks">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span>&#160;&#160;&#160; <span class="pre">/members/&lt;username&gt;/tasks</span></code><a class="headerlink" href="#get-members-username-tasks" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Retrieve all tasks assigned to a specific member across all projects.</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><p>No request body required.</p>
+</dd>
+<dt><strong>Response format</strong></dt><dd><p>List of tasks done by given member.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+</section>
+<section id="authentication">
+<h2>Authentication<a class="headerlink" href="#authentication" title="Link to this heading"></a></h2>
+<p>Authentication is session based using cookies. The client authenticates with the API, at which point a session is created
+server side and a cookie is sent back with the session ID to identify the client in future requests.</p>
+<p>You can initiate a session with a traditional login password or through Fenix.</p>
+<section id="post-login">
+<h3><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/login</span></code><a class="headerlink" href="#post-login" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl>
+<dt><strong>Description</strong></dt><dd><p>Login with username and password</p>
+</dd>
+<dt><strong>Request format</strong></dt><dd><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;username&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;password&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;password&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>Response format</strong></dt><dd><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;member&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w"> </span><span class="c1">// logged in member object</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Logged in successfully!&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="get-fenix-login">
+<h3><code class="docutils literal notranslate"><span class="pre">GET</span>&#160; <span class="pre">/fenix-login</span></code><a class="headerlink" href="#get-fenix-login" title="Link to this heading"></a></h3>
+<p>The Fenix authentication is made using OAuth 2.0 and the <code class="docutils literal notranslate"><span class="pre">/fenix-login</span></code> endpoint starts the OAuth Flow. Provide a <code class="docutils literal notranslate"><span class="pre">?next=</span></code> query parameter with the
+URL to where the user should be redirected to on the frontend once the flow is completed.</p>
+<p>When the flow is complete and, if the user’s IST ID is also present in the database, then the authentication is complete and the user is redirected to the <code class="docutils literal notranslate"><span class="pre">next</span></code> param provided. The user is redirected with the following query parameters: <code class="docutils literal notranslate"><span class="pre">?login=success&amp;username=&lt;username&gt;</span></code> or simply <code class="docutils literal notranslate"><span class="pre">?login=fail</span></code> if the authentication fails.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="errors">
+<h2>Errors<a class="headerlink" href="#errors" title="Link to this heading"></a></h2>
+<p>All application errors are returned as follows:</p>
+<blockquote>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;404&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Not Found&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Member with username &#39;username&#39; not found&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;details&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w"> </span><span class="c1">// optional, set by 422 errors to inform the invalid fields of the request</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<dl class="simple">
+<dt>Custom application errors:</dt><dd><ul class="simple">
+<li><p><strong>401 Unauthorized</strong>: User doesn’t have a session or invalid credentials provided.</p></li>
+<li><p><strong>403 Forbidden</strong>: User has no permission to perform the action.</p></li>
+<li><p><strong>404 Not Found</strong>: Request entities that do not exist.</p></li>
+<li><p><strong>413 Request Entity Too Large</strong>: Upload of the image is too big.</p></li>
+<li><p><strong>422 Unprocessable Content</strong>: Invalid JSON schema in request.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="HS-API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../development-guide/index.html" class="btn btn-neutral float-right" title="Development Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, goncalorazevedo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
