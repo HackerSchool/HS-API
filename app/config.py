@@ -62,7 +62,7 @@ class Config:
     CLIENT_SECRET: str =           _get_env_or_default("CLIENT_SECRET", "")
     FENIX_REDIRECT_ENDPOINT: str = _get_env_or_default("FENIX_REDIRECT_ENDPOINT", "/fenix-login-callback")
 
-    SESSION_COOKIE_SAMESITE = _get_env_or_default("SAME_SITE_POLICY", "Strict")
+    SESSION_COOKIE_SAMESITE = _get_env_or_default("SESSION_COOKIE_SAMESITE", "Lax")
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SECURE   = True
 
