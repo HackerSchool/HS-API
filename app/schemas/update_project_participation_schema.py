@@ -1,0 +1,23 @@
+from typing import Optional, List
+
+from pydantic import BaseModel, Field, field_validator
+
+from app.utils import is_valid_datestring
+from app.utils import ProjectStateEnum
+
+from app.models.project_participation_model import ProjectParticipation
+
+class UpdateProjectParticipationSchema(BaseModel):
+    roles: Optional[List[str]] = Field(default=None)
+    join_date: Optional[str] = Field(default=None)
+
+    @field_validator("join_date")
+    @classmethod
+    def validate_datestring(cls, v: str):
+        if v is None:
+            return None
+        if not is_valid_datestring(v):
+            raise ValueError(
+                f'Invalid date format: "{v}". Expected format is "YYYY-MM-DD"'
+            )
+        return v

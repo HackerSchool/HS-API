@@ -1,0 +1,21 @@
+__pycache__/
+.venv/
+.scripts/
+.vscode/
+.idea/
+.scripts/
+
+resources/flask_sessions/
+resources/*.log
+resources/images/
+*.sqlite3
+
+.env
+ruff.toml
+
+.coverage
+htmlcov/
+
+# Private data files - contains real names, istIDs, and teams
+equipas.txt
+populate_real_data.py

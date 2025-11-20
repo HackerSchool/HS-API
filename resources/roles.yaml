@@ -1,0 +1,144 @@
+scopes:
+  - name: general
+    roles:
+    - name: sysadmin
+      privilege: 100
+      permissions:
+        - member:read
+        - member:create
+        - member:update
+        - member:delete
+        - project:read
+        - project:create
+        - project:update
+        - project:delete
+        - participation:read
+        - participation:create
+        - participation:update
+        - participation:delete
+        - task:read
+        - task:create
+        - task:update
+        - task:delete
+    - name: rh
+      privilege: 96
+      permissions:
+        - member:read
+        - member:create
+        - member:update
+        - member:delete
+        - project:read
+        - project:create
+        - project:update
+        - project:delete
+        - participation:read
+        - participation:create
+        - participation:update
+        - participation:delete
+        - task:read
+        - task:create
+        - task:update
+        - task:delete
+    - name: dev
+      privilege: 95
+      permissions:
+        - member:read
+        - member:create
+        - member:update
+        - member:delete
+        - project:read
+        - project:create
+        - project:update
+        - project:delete
+        - participation:read
+        - participation:create
+        - participation:update
+        - participation:delete
+        - task:read
+        - task:create
+        - task:update
+        - task:delete
+    - name: president
+      privilege: 95
+      permissions:
+        - member:read
+        - member:create
+        - member:update
+        - member:delete
+        - project:read
+        - project:create
+        - project:update
+        - project:delete
+        - participation:read
+        - participation:create
+        - participation:update
+        - participation:delete
+        - task:read
+        - task:create
+        - task:update
+        - task:delete
+    - name: vice
+      privilege: 90
+      permissions:
+        - member:read
+        - member:create
+        - member:update
+        - member:delete
+        - project:read
+        - project:create
+        - project:update
+        - project:delete
+        - participation:read
+        - participation:create
+        - participation:update
+        - participation:delete
+        - task:read
+        - task:create
+        - task:update
+        - task:delete
+    - name: finance
+      privilege: 50
+      permissions:
+        - member:read
+        - project:read
+        - participation:read
+        - task:read
+    - name: marketing
+      privilege: 50
+      permissions:
+        - member:read
+        - project:read
+        - participation:read
+        - task:read
+    - name: lab
+      privilege: 50
+      permissions:
+        - member:read
+        - project:read
+        - participation:read
+        - task:read
+    - name: member
+      privilege: 50
+      permissions:
+        - member:read
+        - project:read
+        - participation:read
+        - task:read
+    - name: hook
+      privilege: 50
+      permissions:
+        - task:create
+
+  - name: project
+    roles:
+    - name: coordinator
+      privilege: 100
+      permissions:
+        - update
+        - delete
+        - add-participant
+        - remove-participant
+        - edit-participant
+    - name: participant
+      privilege: 50
+      permissions:

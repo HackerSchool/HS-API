@@ -1,0 +1,13 @@
+services:
+  redis:
+    image: redis:6.2-alpine
+    restart: unless-stopped 
+  backend:
+    build: .
+    ports:
+      - "8080:5000"
+    volumes:
+      - ./resources:/hs-api/resources/
+    env_file: ".env"
+    depends_on:
+      - "redis"

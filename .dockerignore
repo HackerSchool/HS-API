@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Logs
+*.log
+resources/access.log
+resources/error.log
+
+# Database (will be mounted as volume)
+# resources/hackerschool.sqlite3
+
+# Documentation
+docs/
+*.md
+README.md
+
+# Tests
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Migrations (keep these)
+# migrations/
