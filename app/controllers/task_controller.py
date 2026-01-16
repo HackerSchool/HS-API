@@ -61,27 +61,99 @@ def create_task_bp(*, task_repo: TaskRepository, team_task_repo: TeamTaskReposit
             abort(HTTPStatus.NOT_FOUND, description=f"Project '{slug}' not found")
         return project
 
-    def _resolve_targets(*, username: str, slug: str):
+    def _resolve_member(*, username: str):
         member = member_repo.get_member_by_username(username)
         if member is None:
             abort(HTTPStatus.NOT_FOUND, description=f"Member '{username}' not found")
+        return member
 
-        project = _resolve_project(slug=slug)
-
+    def _resolve_targets(*, username: str, slug: str):
+        """Resolve member, project, and participation. Returns None for participation if user has no project."""
+        member = _resolve_member(username=username)
+        
+        # Special handling for "contribuicoes-individuais" - create project if it doesn't exist
+        INDIVIDUAL_PROJECT_SLUG = "contribuicoes-individuais"
+        if slug == INDIVIDUAL_PROJECT_SLUG:
+            project = _get_or_create_individual_project()
+        else:
+            project = _resolve_project(slug=slug)
+        
         participation = participation_repo.get_participation_by_project_and_member_id(project_id=project.id, member_id=member.id)
-        if participation is None:
-            abort(HTTPStatus.NOT_FOUND, description=f"Participation for '{username}' in '{project.name}' not found")
-
         return member, project, participation
+
+    def _get_or_create_individual_project():
+        """Get or create the 'Contribuições Individuais' project for users without teams"""
+        INDIVIDUAL_PROJECT_NAME = "Contribuições Individuais"
+        INDIVIDUAL_PROJECT_SLUG = "contribuicoes-individuais"
+        
+        project = project_repo.get_project_by_slug(INDIVIDUAL_PROJECT_SLUG)
+        if project is None:
+            # Create the project if it doesn't exist
+            from app.models.project_model import Project
+            from app.utils import ProjectStateEnum
+            from datetime import date
+            
+            project = Project(
+                name=INDIVIDUAL_PROJECT_NAME,
+                state=ProjectStateEnum.ACTIVE,
+                start_date=date.today().isoformat(),
+                description="Projeto especial para contribuições individuais de membros sem equipa atribuída"
+            )
+            project_repo.create_project(project)
+            # Flush to get the ID
+            from app.extensions import db
+            db.session.flush()
+        
+        return project
+
+    def _get_or_create_individual_participation(member):
+        """Get or create participation in 'Contribuições Individuais' for a member"""
+        project = _get_or_create_individual_project()
+        
+        # Check if participation already exists
+        participation = participation_repo.get_participation_by_project_and_member_id(
+            project_id=project.id, 
+            member_id=member.id
+        )
+        
+        if participation is None:
+            # Create participation automatically
+            from app.models.project_participation_model import ProjectParticipation
+            from datetime import date
+            
+            participation = ProjectParticipation(
+                member=member,
+                project=project,
+                roles=["member"],
+                join_date=date.today().isoformat()
+            )
+            participation_repo.create_participation(participation)
+            # Flush to ensure it's available
+            from app.extensions import db
+            db.session.flush()
+        
+        return participation
 
     @bp.route("/projects/<slug>/tasks", methods=["POST"])
     @auth_controller.requires_permission(general="task:create")
     @transactional
     def create_task(slug):
+        """Create a task for a specific project"""
         task_data = TaskSchema(**request.json)
+        # Resolve member first (always needed)
+        member = _resolve_member(username=task_data.username)
+        
+        # Try to find participation
         _, _, participation = _resolve_targets(username=task_data.username, slug=slug)
+        
+        # If participation is None, create one in "Contribuições Individuais"
+        if participation is None:
+            participation = _get_or_create_individual_participation(member)
 
-        task = task_repo.create_task(Task.from_schema(schema=task_data, participation=participation))
+        task = task_repo.create_task(Task.from_schema(
+            schema=task_data, 
+            participation=participation
+        ))
         return TaskSchema.from_task(task).model_dump()
 
     @bp.route("/projects/<slug>/tasks", methods=["GET"])

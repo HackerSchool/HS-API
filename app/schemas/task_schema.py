@@ -29,14 +29,18 @@ class TaskSchema(BaseModel):
 
     @classmethod
     def from_task(cls, task: Task):
+        # All tasks now have participation (including "Contribuições Individuais")
+        username = task.participation.member.username if task.participation else None
+        project_name = task.participation.project.name if task.participation else None
+        
         data = {
             "id": task.id,
             "point_type": task.point_type,
             "points": task.points,
             "description": task.description,
             "finished_at": task.finished_at,
-            "username": task.participation.member.username,
-            "project_name": task.participation.project.name,
+            "username": username,
+            "project_name": project_name,
         }
         return cls(**data)
 

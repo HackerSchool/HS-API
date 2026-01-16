@@ -18,19 +18,23 @@ class FenixService:
         self.root_uri = root_uri
         self.redirect_endpoint = redirect_endpoint
 
-    def redirect_url(self, state: str):
+    def redirect_url(self, state: str, root_uri: str = None):
+        # Use provided root_uri or fall back to configured one
+        base_uri = root_uri if root_uri is not None else self.root_uri
         params = {
             "client_id": self.client_id,
-            "redirect_uri": self.root_uri + self.redirect_endpoint,
+            "redirect_uri": base_uri + self.redirect_endpoint,
             "state": state,
         }
         return "https://fenix.tecnico.ulisboa.pt/oauth/userdialog?" + urlencode(params)
 
-    def fetch_access_token(self, *, redirect_endpoint: str, code: str) -> str:
+    def fetch_access_token(self, *, redirect_endpoint: str, code: str, root_uri: str = None) -> str:
+        # Use provided root_uri or fall back to configured one
+        base_uri = root_uri if root_uri is not None else self.root_uri
         params = {
             "client_id": self.client_id,
             "client_secret": self.client_secret,
-            "redirect_uri": self.root_uri + redirect_endpoint,
+            "redirect_uri": base_uri + redirect_endpoint,
             "grant_type": "authorization_code",
             "code": code,
         }

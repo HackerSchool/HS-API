@@ -67,8 +67,24 @@ def create_login_bp(*, member_repo: MemberRepository, auth_controller: AuthContr
         session["next"] = next_param
         session.permanent = True  # Mark session as permanent
         
+        # Build root_uri from current request to ensure callback goes to the same server
+        # This fixes the issue where ROOT_URI is set to production but user is in development
+        # Check for X-Forwarded-Proto header (common in reverse proxies) to get correct scheme
+        original_scheme = request.headers.get('X-Forwarded-Proto', request.scheme)
+        scheme = original_scheme
+        # Force https for production domains (hackerleague.app)
+        if '.hackerleague.app' in request.host or request.host == 'api.hackerleague.app':
+            scheme = 'https'
+        request_root_uri = f"{scheme}://{request.host}"
+        session["root_uri"] = request_root_uri  # Store in session for callback
+        
         # Debug: Log session creation
+        print(f"[DEBUG] Fenix login - Request scheme (original): {original_scheme}")
+        print(f"[DEBUG] Fenix login - Request scheme (final): {scheme}")
+        print(f"[DEBUG] Fenix login - Request host: {request.host}")
+        print(f"[DEBUG] Fenix login - X-Forwarded-Proto header: {request.headers.get('X-Forwarded-Proto', 'NOT SET')}")
         print(f"[DEBUG] Fenix login - Created session with state: {state[:8]}..., next: {next_param}")
+        print(f"[DEBUG] Fenix login - Request root_uri: {request_root_uri}")
         print(f"[DEBUG] Fenix login - Session keys: {list(session.keys())}")
         print(f"[DEBUG] Fenix login - Session cookie domain: {current_app.config.get('SESSION_COOKIE_DOMAIN')}")
         print(f"[DEBUG] Fenix login - Session cookie SameSite: {current_app.config.get('SESSION_COOKIE_SAMESITE')}")
@@ -82,7 +98,12 @@ def create_login_bp(*, member_repo: MemberRepository, auth_controller: AuthContr
         except Exception as e:
             print(f"[DEBUG] Error saving session before redirect: {e}")
         
-        fenix_url = fenix_service.redirect_url(state=state)
+        fenix_url = fenix_service.redirect_url(state=state, root_uri=request_root_uri)
+        # Extract redirect_uri from the generated URL for debugging
+        from urllib.parse import urlparse, parse_qs
+        parsed = urlparse(fenix_url)
+        redirect_uri_in_url = parse_qs(parsed.query).get('redirect_uri', [None])[0]
+        print(f"[DEBUG] Fenix login - Redirect URI being sent to Fenix: {redirect_uri_in_url}")
         print(f"[DEBUG] Fenix login - Redirecting to: {fenix_url}")
         return redirect(fenix_url)
 
@@ -93,6 +114,7 @@ def create_login_bp(*, member_repo: MemberRepository, auth_controller: AuthContr
         print(f"[DEBUG] Callback - Session keys: {list(session.keys())}")
         print(f"[DEBUG] Callback - Session has 'next': {'next' in session}")
         print(f"[DEBUG] Callback - Session has 'state': {'state' in session}")
+        print(f"[DEBUG] Callback - Session has 'root_uri': {'root_uri' in session}")
         print(f"[DEBUG] Callback - Request args: {dict(request.args)}")
         
         if "next" not in session:
@@ -107,7 +129,19 @@ def create_login_bp(*, member_repo: MemberRepository, auth_controller: AuthContr
             print(f"[DEBUG] Callback - State mismatch. Session state: {session.get('state')}, Callback state: {callback_args.state}")
             return None, session["next"]
 
-        token = fenix_service.fetch_access_token(redirect_endpoint="/fenix-login-callback", code=callback_args.code)
+        # Use root_uri from session (set during fenix-login) or fall back to configured one
+        root_uri = session.get("root_uri", current_app.config["ROOT_URI"])
+        # Ensure https for production domains
+        if root_uri.startswith('http://') and ('.hackerleague.app' in root_uri or 'api.hackerleague.app' in root_uri):
+            root_uri = root_uri.replace('http://', 'https://')
+            session["root_uri"] = root_uri  # Update session with corrected URI
+        print(f"[DEBUG] Callback - Using root_uri: {root_uri}")
+        print(f"[DEBUG] Callback - Using redirect_endpoint: {fenix_service.redirect_endpoint}")
+        full_redirect_uri = root_uri + fenix_service.redirect_endpoint
+        print(f"[DEBUG] Callback - Full redirect_uri being sent to Fenix: {full_redirect_uri}")
+        
+        # Use the same redirect_endpoint that was used in redirect_url to ensure consistency
+        token = fenix_service.fetch_access_token(redirect_endpoint=fenix_service.redirect_endpoint, code=callback_args.code, root_uri=root_uri)
         fenix_user_schema = FenixUserSchema(**fenix_service.fetch_user_info(token))
         if (member := member_repo.get_member_by_ist_id(fenix_user_schema.ist_id)) is None:
             print(f"[DEBUG] Callback - Member not found for IST ID: {fenix_user_schema.ist_id}")

@@ -1,5 +1,5 @@
 import re
-from typing import List, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING
 
 from sqlalchemy import Enum, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, validates, relationship
@@ -10,6 +10,7 @@ from app.utils import is_valid_datestring, PointTypeEnum
 if TYPE_CHECKING:
     from app.schemas.task_schema import TaskSchema
     from app.models.project_participation_model import ProjectParticipation
+    from app.models.member_model import Member
     from app.models.season_model import Season
 
 
@@ -23,9 +24,11 @@ class Task(db.Model):
     description: Mapped[str] = mapped_column(nullable=True)
     finished_at: Mapped[str] = mapped_column(nullable=True)
 
-    participation_id: Mapped[int] = mapped_column(ForeignKey("project_participations.id"))
+    participation_id: Mapped[int] = mapped_column(ForeignKey("project_participations.id"), nullable=True)
+    member_id: Mapped[Optional[int]] = mapped_column(ForeignKey("members.id"), nullable=True)
 
-    participation: Mapped["ProjectParticipation"] = relationship("ProjectParticipation", back_populates="tasks", lazy="joined")
+    participation: Mapped[Optional["ProjectParticipation"]] = relationship("ProjectParticipation", back_populates="tasks", lazy="joined")
+    member: Mapped[Optional["Member"]] = relationship("Member", lazy="joined")
 
     @classmethod
     def from_schema(cls, *, participation: "ProjectParticipation", schema: "TaskSchema"):
